@@ -67,6 +67,7 @@ model Package {
   itinerary          ItineraryDay[]
   inquiries          Inquiry[]
   bookings           Booking[]
+  quotations         Quotation[]
 }
 
 model ItineraryDay {
@@ -123,6 +124,7 @@ model Customer {
   inquiries      Inquiry[]
   bookings       Booking[]
   documents      CustomerDocument[]
+  quotations     Quotation[]
 }
 
 model Inquiry {
@@ -142,6 +144,7 @@ model Inquiry {
   customer      Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
   package       Package?  @relation(fields: [packageId], references: [id], onDelete: SetNull)
   booking       Booking?
+  quotations    Quotation[]
 }
 
 model Booking {
@@ -201,3 +204,60 @@ model PaymentTransaction {
 
   booking           Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
 }
+
+model MediaItem {
+  id          String   @id @default(cuid())
+  title       String
+  url         String
+  destination String?
+  category    String   @default("PLACE") // PLACE, HOTEL, TRANSFER, BANNER, MOMENT
+  fileSize    String?
+  mimeType    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model MasterPlace {
+  id               String   @id @default(cuid())
+  destination      String
+  placeTitle       String
+  locationSubtitle String?
+  description      String
+  category         String   @default("ATTRACTION") // TRANSFER, ATTRACTION, SHOW, HOTEL
+  photos           String   // JSON array of image URLs
+  tags             String?  // JSON array
+  order            Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Quotation {
+  id                 String    @id @default(cuid())
+  quotationNumber    String    @unique
+  customerId         String?
+  packageId          String?
+  inquiryId          String?
+  title              String
+  destination        String
+  durationDays       Int       @default(4)
+  durationNights     Int       @default(3)
+  pricePerPerson     Float
+  totalAmount        Float?
+  travelDate         DateTime?
+  paxCount           Int       @default(2)
+  adultsCount        Int       @default(2)
+  childrenCount      Int       @default(0)
+  status             String    @default("DRAFT") // DRAFT, SENT, ACCEPTED, CONVERTED, EXPIRED
+  content            String    // Full JSON storing: mapStops, costBreakdown, staySummary, mealsBanner, daySummaries, daysWithPlaces, momentsPhotos, inclusions, exclusions, paymentPolicy, reviews, advisor
+  pdfUrl             String?
+  shareSlug          String    @unique @default(cuid())
+  sentViaWhatsAppAt  DateTime?
+  sentViaEmailAt     DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  customer           Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  package            Package?  @relation(fields: [packageId], references: [id], onDelete: SetNull)
+  inquiry            Inquiry?  @relation(fields: [inquiryId], references: [id], onDelete: SetNull)
+}
+

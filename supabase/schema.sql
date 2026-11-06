@@ -218,3 +218,4 @@ USING (bucket_id = 'hotels');
 CREATE POLICY "Public Access for CMS"
 ON storage.objects FOR SELECT
 USING (bucket_id = 'cms-media');
+

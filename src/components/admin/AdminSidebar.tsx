@@ -14,6 +14,8 @@ import {
   ExternalLink,
   ChevronRight,
   ShieldCheck,
+  FileText,
+  Image as ImageIcon,
 } from "lucide-react";
 
 export function AdminSidebar() {
@@ -25,6 +27,18 @@ export function AdminSidebar() {
       href: "/admin",
       icon: LayoutDashboard,
       exact: true,
+    },
+    {
+      name: "Quotations & Plans",
+      href: "/admin/quotations",
+      icon: FileText,
+      badge: "Mobile PDF",
+    },
+    {
+      name: "Media Vault",
+      href: "/admin/gallery",
+      icon: ImageIcon,
+      badge: "Vault",
     },
     {
       name: "Packages & Assets",

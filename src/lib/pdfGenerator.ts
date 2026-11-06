@@ -1,0 +1,59 @@
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+
+export interface GeneratePdfOptions {
+  fileName?: string;
+  quality?: number;
+  scale?: number;
+}
+
+/**
+ * Generates an ultra-crisp, mobile-optimized continuous single-column PDF
+ * from a DOM element (sized at 430px width).
+ */
+export async function generateMobilePdf(
+  element: HTMLElement,
+  options: GeneratePdfOptions = {}
+): Promise<{ success: boolean; error?: string; pdf?: jsPDF }> {
+  try {
+    const {
+      fileName = "TripMaster_Mobile_Itinerary_Plan.pdf",
+      scale = 2.5, // 2.5x retina clarity for phone screens
+    } = options;
+
+    // Render DOM element to canvas with high fidelity
+    const canvas = await (html2canvas as any)(element, {
+      scale,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: "#FBFBFA",
+      logging: false,
+      windowWidth: 430,
+    });
+
+    const imgData = canvas.toDataURL("image/png", 0.95);
+
+    // Calculate mobile PDF dimensions (430pt width by dynamic continuous height)
+    // 1 pt approx 1 px at 72dpi. In px units:
+    const pdfWidth = 430;
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "pt",
+      format: [pdfWidth, pdfHeight],
+      hotfixes: ["px_scaling"],
+    });
+
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight, undefined, "FAST");
+    pdf.save(fileName);
+
+    return { success: true, pdf };
+  } catch (error: any) {
+    console.error("PDF generation error:", error);
+    return {
+      success: false,
+      error: error?.message || "Failed to generate mobile PDF",
+    };
+  }
+}
