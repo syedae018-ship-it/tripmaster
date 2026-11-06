@@ -1,0 +1,203 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String   @default("ADMIN")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model SiteSettings {
+  id              String   @id @default("default")
+  companyName     String   @default("Trip Master")
+  tagline         String   @default("Curating Unforgettable Luxury Journeys")
+  aboutText       String
+  heroTitle       String
+  heroSubtitle    String
+  heroImage       String
+  email           String   @default("concierge@tripmaster.in")
+  phone           String   @default("+91 98765 43210")
+  whatsappNumber  String   @default("+91 98765 43210")
+  address         String   @default("Luxury Tower, Suite 402, MG Road, Bangalore, India")
+  gstNumber       String   @default("29AABCU9603R1ZX")
+  bankDetails     String?  // JSON: { bankName, accountNumber, ifsc, accountName, upiId }
+  socialLinks     String   // JSON: { instagram, facebook, twitter, linkedin }
+  stats           String   // JSON: [{ label, value, icon, description }]
+  features        String   // JSON: [{ title, description, icon }]
+  updatedAt       DateTime @updatedAt
+  createdAt       DateTime @default(now())
+}
+
+model Package {
+  id                 String         @id @default(cuid())
+  title              String
+  slug               String         @unique
+  destination        String
+  durationDays       Int
+  durationNights     Int
+  basePrice          Float
+  discountedPrice    Float?
+  featuredImage      String
+  galleryImages      String         // JSON array of image URLs
+  overview           String
+  mapCoordinates     String         // JSON array: [{ name, lat, lng, dayNumber? }]
+  inclusions         String         // JSON array of string items
+  exclusions         String         // JSON array of string items
+  paymentPolicy      String
+  cancellationPolicy String
+  isFeatured         Boolean        @default(false)
+  isPublished        Boolean        @default(true)
+  viewsCount         Int            @default(0)
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  itinerary          ItineraryDay[]
+  inquiries          Inquiry[]
+  bookings           Booking[]
+}
+
+model ItineraryDay {
+  id                   String   @id @default(cuid())
+  packageId            String
+  dayNumber            Int
+  title                String
+  description          String
+  mealsIncluded        String   // JSON array: ["Breakfast", "Dinner"]
+  activityPhotos       String   // JSON array of image URLs
+  accommodationName    String?
+  accommodationPhoto   String?
+  accommodationRating  Float?
+  accommodationCategory String?  @default("Luxury Resort") // Standard, Deluxe, Luxury, Heritage, Houseboat
+  accommodationDetails String?
+
+  package              Package  @relation(fields: [packageId], references: [id], onDelete: Cascade)
+
+  @@unique([packageId, dayNumber])
+}
+
+model Testimonial {
+  id              String   @id @default(cuid())
+  customerName    String
+  tripDestination String
+  rating          Int      @default(5)
+  reviewText      String
+  customerPhoto   String?
+  isPublished     Boolean  @default(true)
+  createdAt       DateTime @default(now())
+}
+
+model FAQ {
+  id          String   @id @default(cuid())
+  question    String
+  answer      String
+  category    String   @default("General")
+  isPublished Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+model Customer {
+  id             String             @id @default(cuid())
+  name           String
+  email          String
+  phone          String
+  whatsappNumber String?
+  city           String?
+  notes          String?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  inquiries      Inquiry[]
+  bookings       Booking[]
+  documents      CustomerDocument[]
+}
+
+model Inquiry {
+  id            String    @id @default(cuid())
+  customerId    String
+  packageId     String?
+  destination   String
+  travelDate    DateTime?
+  paxCount      Int       @default(2)
+  status        String    @default("NEW") // NEW, CONTACTED, QUOTED, CONVERTED, LOST
+  followUpDate  DateTime?
+  followUpNote  String?
+  internalNotes String?   // JSON array of internal notes/timestamps
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  customer      Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  package       Package?  @relation(fields: [packageId], references: [id], onDelete: SetNull)
+  booking       Booking?
+}
+
+model Booking {
+  id                  String               @id @default(cuid())
+  bookingReference    String               @unique
+  customerId          String
+  packageId           String
+  inquiryId           String?              @unique
+  travelStartDate     DateTime
+  travelEndDate       DateTime
+  paxCount            Int                  @default(2)
+  adultsCount         Int                  @default(2)
+  childrenCount       Int                  @default(0)
+  specialRequests     String?
+  totalAmount         Float
+  amountPaid          Float                @default(0)
+  balanceAmount       Float                @default(0)
+  bookingStatus       String               @default("PENDING") // PENDING, CONFIRMED, PARTIALLY_PAID, COMPLETED, CANCELLED
+  documents           String?              // JSON array of document URLs
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+
+  customer            Customer             @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  package             Package              @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  inquiry             Inquiry?             @relation(fields: [inquiryId], references: [id], onDelete: SetNull)
+  paymentTransactions PaymentTransaction[]
+  customerDocuments   CustomerDocument[]
+}
+
+model CustomerDocument {
+  id         String   @id @default(cuid())
+  customerId String
+  bookingId  String?
+  title      String
+  type       String   @default("QUOTATION") // QUOTATION, CONFIRMATION, RECEIPT, ID_PROOF, TICKET
+  fileUrl    String
+  fileSize   String?
+  createdAt  DateTime @default(now())
+
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  booking    Booking? @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+}
+
+model PaymentTransaction {
+  id                String   @id @default(cuid())
+  bookingId         String
+  razorpayOrderId   String?
+  razorpayPaymentId String?
+  razorpaySignature String?
+  amount            Float
+  paymentMethod     String?  // RAZORPAY_ONLINE, UPI, BANK_TRANSFER, CASH, CARD
+  status            String   @default("SUCCESS") // SUCCESS, FAILED, REFUNDED, PENDING
+  refundStatus      String?  // FULL_REFUND, PARTIAL_REFUND
+  refundAmount      Float?   @default(0)
+  notes             String?  // Bank UTR, reference, or refund reason
+  createdAt         DateTime @default(now())
+
+  booking           Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+}
