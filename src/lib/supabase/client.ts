@@ -8,3 +8,4 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
  * Uses the public publishable anon key.
  */
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
