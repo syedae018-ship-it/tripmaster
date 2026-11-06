@@ -73,23 +73,17 @@ export function Navbar() {
       >
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-[68px]">
-            {/* Architectural Wordmark Logo */}
+            {/* Official Brand Logo */}
             <Link
               href="/"
-              className="flex items-center gap-2.5 text-[#111111] group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0D2C24] rounded-sm"
-              aria-label="Trip Master Luxury Travel Concierge"
+              className="flex items-center group focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-[#0D2C24] rounded-sm py-1"
+              aria-label="TripMaster - Experience Neighbourhood"
             >
-              <div className="w-8 h-8 rounded-lg bg-[#0D2C24] text-white flex items-center justify-center font-heading font-bold text-sm tracking-tight shadow-xs">
-                TM
-              </div>
-              <div className="flex flex-col">
-                <span className="font-heading text-lg sm:text-xl font-bold tracking-tight uppercase leading-none text-[#111111]">
-                  Trip Master
-                </span>
-                <span className="font-sans text-[10px] tracking-[0.2em] uppercase text-[#52525B] font-semibold mt-0.5">
-                  Private Journeys
-                </span>
-              </div>
+              <img
+                src="/images/logo.png"
+                alt="TripMaster - Experience Neighbourhood"
+                className="h-10 sm:h-11 w-auto object-contain transition-transform duration-200 group-hover:scale-102"
+              />
             </Link>
 
             {/* Centered / Flowing Primary Navigation */}

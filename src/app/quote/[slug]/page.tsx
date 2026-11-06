@@ -127,14 +127,13 @@ export default function ClientQuotationPage() {
       {/* Floating Client Action Bar */}
       <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#E4E2DD] shadow-xs px-4 py-3">
         <div className="max-w-[430px] mx-auto flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-[#0D2C24] text-white flex items-center justify-center font-heading font-bold text-xs">
-              TM
-            </div>
-            <span className="font-heading font-bold text-xs uppercase tracking-wider text-[#0D2C24]">
-              Trip Master
-            </span>
-          </div>
+          <a href="/" className="inline-block">
+            <img
+              src="/images/logo.png"
+              alt="TripMaster - Experience Neighbourhood"
+              className="h-8 w-auto object-contain"
+            />
+          </a>
 
           <div className="flex items-center gap-2">
             <button
@@ -173,3 +172,4 @@ export default function ClientQuotationPage() {
     </div>
   );
 }
+

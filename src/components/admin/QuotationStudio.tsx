@@ -1065,3 +1065,4 @@ export function QuotationStudio({ initialQuotationId }: QuotationStudioProps) {
     </div>
   );
 }
+

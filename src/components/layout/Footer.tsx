@@ -19,19 +19,13 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-12 pb-14 border-b border-[#1A453B]">
           {/* Column 1 (Brand) */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-white text-[#0D2C24] flex items-center justify-center font-heading font-bold text-sm tracking-tight shadow-xs">
-                TM
-              </div>
-              <div>
-                <span className="font-heading text-xl font-bold tracking-tight uppercase leading-none block text-white">
-                  Trip Master
-                </span>
-                <span className="text-[10px] tracking-[0.2em] uppercase text-amber-300 font-semibold mt-0.5 block">
-                  Holiday Collections
-                </span>
-              </div>
-            </div>
+            <Link href="/" className="inline-block">
+              <img
+                src="/images/logo-white.png"
+                alt="TripMaster - Experience Neighbourhood"
+                className="h-12 w-auto object-contain"
+              />
+            </Link>
 
             <p className="text-sm text-white/75 leading-relaxed max-w-sm">
               Your trusted travel partner for memorable holiday experiences around the world.

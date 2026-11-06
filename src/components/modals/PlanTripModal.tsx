@@ -93,12 +93,14 @@ export function PlanTripModal({
       >
         {/* Modal Top Header */}
         <div className="bg-[#0D2C24] text-white px-6 py-5 flex items-center justify-between border-b border-[#1A453B]">
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-amber-400 text-[#0D2C24] flex items-center justify-center font-heading font-bold text-xs">
-              TM
-            </div>
-            <div>
-              <h3 className="font-heading text-lg font-bold tracking-tight text-white leading-none">
+          <div className="flex items-center gap-3">
+            <img
+              src="/images/logo-white.png"
+              alt="TripMaster"
+              className="h-9 w-auto object-contain"
+            />
+            <div className="border-l border-white/20 pl-3">
+              <h3 className="font-heading text-base font-bold tracking-tight text-white leading-none">
                 Plan Your Holiday Experience
               </h3>
               <span className="text-[10px] text-amber-300 uppercase tracking-widest font-semibold mt-0.5 block">

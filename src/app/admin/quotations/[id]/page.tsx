@@ -13,3 +13,4 @@ export default async function EditQuotationPage({
   const { id } = await params;
   return <QuotationStudio initialQuotationId={id} />;
 }
+

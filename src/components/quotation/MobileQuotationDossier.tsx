@@ -119,11 +119,15 @@ export const MobileQuotationDossier = React.forwardRef<
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20 flex flex-col justify-between p-5 text-white">
           {/* Top Brand Header inside Mobile PDF */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10">
-              <span className="font-heading font-bold text-xs uppercase tracking-wider text-amber-300">
-                Trip Master
+            <div className="flex items-center gap-2 bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/15">
+              <img
+                src="/images/logo-white.png"
+                alt="TripMaster"
+                className="h-6 w-auto object-contain"
+              />
+              <span className="text-[10px] text-white/70 font-medium border-l border-white/20 pl-2">
+                Mobile Dossier
               </span>
-              <span className="text-[10px] text-white/70">• Luxury Dossier</span>
             </div>
             {quotationNumber && (
               <span className="text-[10px] font-mono bg-white/20 px-2 py-0.5 rounded text-white backdrop-blur-xs">
@@ -631,11 +635,13 @@ export const MobileQuotationDossier = React.forwardRef<
             11. ABOUT US & HOLIDAY ADVISOR CARD
             ===================================================================== */}
         <div className="bg-[#0D2C24] text-white rounded-2xl p-4 space-y-3.5">
-          <div>
-            <span className="text-[10px] text-amber-300 font-bold uppercase tracking-wider block">
-              About Trip Master
-            </span>
-            <p className="text-xs text-white/80 font-normal leading-relaxed mt-1">
+          <div className="space-y-2">
+            <img
+              src="/images/logo-white.png"
+              alt="TripMaster - Experience Neighbourhood"
+              className="h-9 w-auto object-contain"
+            />
+            <p className="text-xs text-white/80 font-normal leading-relaxed">
               Trip Master is an artisanal luxury travel concierge. We curate bespoke holiday experiences with handpicked 4-star and 5-star properties, seamless transfers, and dedicated concierge support.
             </p>
           </div>
@@ -688,3 +694,4 @@ export const MobileQuotationDossier = React.forwardRef<
 });
 
 MobileQuotationDossier.displayName = "MobileQuotationDossier";
+

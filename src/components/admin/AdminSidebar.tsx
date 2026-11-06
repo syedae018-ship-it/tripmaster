@@ -82,18 +82,15 @@ export function AdminSidebar() {
       <div>
         {/* Admin Brand */}
         <div className="p-5 border-b border-[#1F2937]/80">
-          <Link href="/admin" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#dfbd75] to-[#c5a059] flex items-center justify-center text-[#0C1116] shadow-xs group-hover:scale-105 transition-transform">
-              <Compass className="w-5 h-5 stroke-[2.2]" />
-            </div>
-            <div>
-              <span className="font-heading text-lg font-bold tracking-[0.14em] text-white uppercase block leading-none">
-                Trip Master
-              </span>
-              <span className="text-[9px] tracking-[0.24em] uppercase text-[#dfbd75] font-semibold mt-1 block">
-                Command Center
-              </span>
-            </div>
+          <Link href="/admin" className="block group">
+            <img
+              src="/images/logo-white.png"
+              alt="TripMaster - Experience Neighbourhood"
+              className="h-10 w-auto object-contain transition-transform duration-200 group-hover:scale-102"
+            />
+            <span className="text-[9px] tracking-[0.24em] uppercase text-[#dfbd75] font-semibold mt-1.5 block">
+              Admin Command Center
+            </span>
           </Link>
         </div>
 

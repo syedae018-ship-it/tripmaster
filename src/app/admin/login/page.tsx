@@ -147,12 +147,11 @@ export default function AdminLoginPage() {
       <div className="relative z-10 w-full max-w-md">
         {/* Brand emblem */}
         <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#dfbd75] to-[#c5a059] flex items-center justify-center text-[#082F24] mx-auto shadow-xl mb-3">
-            <Compass className="w-8 h-8 stroke-[2.2]" />
-          </div>
-          <h1 className="font-heading text-3xl font-bold text-white tracking-wider uppercase">
-            Trip Master
-          </h1>
+          <img
+            src="/images/logo-white.png"
+            alt="TripMaster - Experience Neighbourhood"
+            className="h-14 mx-auto object-contain mb-3 drop-shadow-md"
+          />
           <p className="text-xs uppercase tracking-[0.25em] text-[#dfbd75] font-semibold mt-1">
             Concierge Management Portal
           </p>
