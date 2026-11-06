@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export function PreFooterCtaBanner() {
   const handleOpenPlanTrip = () => {
@@ -25,11 +25,6 @@ export function PreFooterCtaBanner() {
 
         {/* Centered Content */}
         <div className="relative z-10 max-w-2xl mx-auto space-y-5">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-amber-300 text-xs font-semibold uppercase tracking-widest">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Unforgettable Holiday Escapes</span>
-          </div>
-
           {/* Heading in Helvetica Bold */}
           <h2 className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.12]">
             Your next story is waiting.

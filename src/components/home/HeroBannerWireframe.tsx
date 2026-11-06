@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Compass } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export function HeroBannerWireframe({
   title = "Your next unforgettable journey starts here.",
@@ -30,11 +30,6 @@ export function HeroBannerWireframe({
 
         {/* Centered Content */}
         <div className="relative z-10 max-w-3xl mx-auto space-y-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-semibold uppercase tracking-widest shadow-xs">
-            <Compass className="w-3.5 h-3.5 text-amber-300 animate-spin-slow" />
-            <span>Trip Master Holiday Collections</span>
-          </div>
-
           {/* Main Headline (Helvetica Bold) */}
           <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-[4.1rem] font-bold tracking-tight text-white leading-[1.12] text-balance">
             {title}
