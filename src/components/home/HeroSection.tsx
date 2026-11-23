@@ -37,37 +37,38 @@ export function HeroSection() {
       />
       <div className="absolute inset-0 bg-gradient-to-b from-[#0D2C24]/75 via-[#0D2C24]/88 to-[#0D2C24]" />
 
-      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-24 pb-16 sm:pb-24 flex flex-col justify-between min-h-[82vh]">
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-24 pb-12 sm:pb-24 flex flex-col justify-between min-h-[78vh] sm:min-h-[82vh]">
         {/* Editorial Headline & Narrative */}
-        <div className="max-w-3xl space-y-5">
+        <div className="max-w-3xl space-y-4 sm:space-y-5">
           <p className="eyebrow text-[11px] font-semibold tracking-[0.18em] uppercase text-amber-400 font-sans">
             Private Concierge & Handcrafted Itineraries
           </p>
-          <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-[4.25rem] font-bold tracking-tight leading-[1.12] text-white">
+          <h1 className="font-heading text-3xl sm:text-5xl md:text-6xl lg:text-[4.25rem] font-bold tracking-tight leading-[1.12] text-white break-words text-balance">
             Curated journeys through India's most <span className="text-amber-300">extraordinary sanctuaries</span>.
           </h1>
-          <p className="font-sans text-base sm:text-lg text-white/85 font-normal leading-relaxed text-pretty pt-1">
+          <p className="font-sans text-sm sm:text-base md:text-lg text-white/85 font-normal leading-relaxed text-pretty pt-1">
             Private cedar houseboats in Kashmir, misted cardamom estates in Munnar, untouched coral lagoons in Havelock, and historic desert fortresses in Rajasthan.
           </p>
         </div>
 
         {/* Grounded Search & Filter Console */}
-        <div className="mt-12 w-full bg-white rounded-2xl p-2.5 sm:p-3 shadow-[0_16px_32px_-12px_rgba(0,0,0,0.12)] border border-[#E4E2DD] text-[#111111] font-sans">
+        <div className="mt-8 sm:mt-12 w-full bg-white rounded-2xl p-2 sm:p-3 shadow-[0_16px_32px_-12px_rgba(0,0,0,0.12)] border border-[#E4E2DD] text-[#111111] font-sans">
           <form
             onSubmit={handleSearch}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 items-center"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1.5 sm:gap-2 items-center"
           >
             {/* Destination Field */}
-            <div className="flex items-center gap-3 px-3 py-2 border-b sm:border-b-0 sm:border-r border-[#E4E2DD]">
+            <div className="flex items-center gap-3 px-3 py-2.5 sm:py-2 min-h-[50px] border-b sm:border-b-0 sm:border-r border-[#E4E2DD]">
               <MapPin className="w-4 h-4 text-[#0D2C24] shrink-0" />
               <div className="w-full text-left">
-                <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#52525B]">
+                <label className="block text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[#52525B]">
                   Destination
                 </label>
                 <select
                   value={destination}
                   onChange={(e) => setDestination(e.target.value)}
                   className="w-full bg-transparent text-xs sm:text-sm font-medium text-[#111111] focus:outline-none cursor-pointer mt-0.5"
+                  aria-label="Filter by destination"
                 >
                   <option value="">All Regions</option>
                   <option value="Kashmir">Kashmir (Srinagar & Gulmarg)</option>
@@ -79,16 +80,17 @@ export function HeroSection() {
             </div>
 
             {/* Duration Field */}
-            <div className="flex items-center gap-3 px-3 py-2 border-b sm:border-b-0 lg:border-r border-[#E4E2DD]">
+            <div className="flex items-center gap-3 px-3 py-2.5 sm:py-2 min-h-[50px] border-b sm:border-b-0 lg:border-r border-[#E4E2DD]">
               <Calendar className="w-4 h-4 text-[#0D2C24] shrink-0" />
               <div className="w-full text-left">
-                <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#52525B]">
+                <label className="block text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[#52525B]">
                   Duration
                 </label>
                 <select
                   value={duration}
                   onChange={(e) => setDuration(e.target.value)}
                   className="w-full bg-transparent text-xs sm:text-sm font-medium text-[#111111] focus:outline-none cursor-pointer mt-0.5"
+                  aria-label="Filter by duration"
                 >
                   <option value="">Any Length</option>
                   <option value="1-5">1 to 5 Days (Escape)</option>
@@ -99,16 +101,17 @@ export function HeroSection() {
             </div>
 
             {/* Budget / Price Tier */}
-            <div className="flex items-center gap-3 px-3 py-2 border-b sm:border-b-0 lg:border-r border-[#E4E2DD]">
+            <div className="flex items-center gap-3 px-3 py-2.5 sm:py-2 min-h-[50px] border-b sm:border-b-0 lg:border-r border-[#E4E2DD]">
               <IndianRupee className="w-4 h-4 text-[#0D2C24] shrink-0" />
               <div className="w-full text-left">
-                <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#52525B]">
+                <label className="block text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[#52525B]">
                   Per Guest Tariff
                 </label>
                 <select
                   value={budget}
                   onChange={(e) => setBudget(e.target.value)}
                   className="w-full bg-transparent text-xs sm:text-sm font-medium text-[#111111] focus:outline-none cursor-pointer mt-0.5"
+                  aria-label="Filter by tariff"
                 >
                   <option value="">All Tariffs</option>
                   <option value="under_1lakh">Under ₹1,00,000</option>
@@ -118,11 +121,11 @@ export function HeroSection() {
               </div>
             </div>
 
-            {/* Search Submit */}
-            <div className="p-1 sm:col-span-2 lg:col-span-1">
+            {/* Search Submit Button */}
+            <div className="p-0.5 sm:p-1 sm:col-span-2 lg:col-span-1">
               <button
                 type="submit"
-                className="btn btn-primary w-full h-11 text-xs uppercase tracking-wider font-semibold rounded-xl justify-between shadow-sm"
+                className="btn btn-primary w-full h-12 min-h-[48px] text-xs uppercase tracking-wider font-semibold rounded-xl flex items-center justify-between px-4 shadow-sm active:scale-[0.99] transition-transform"
               >
                 <span>Explore Journeys</span>
                 <ArrowRight className="w-4 h-4 text-amber-300" />

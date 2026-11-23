@@ -13,13 +13,13 @@ export function Footer() {
   }
 
   return (
-    <footer id="contact" className="bg-[#0D2C24] text-white border-t border-[#1A453B] pt-16 pb-10 font-sans">
+    <footer id="contact" className="bg-[#0D2C24] text-white border-t border-[#1A453B] pt-12 sm:pt-16 pb-10 font-sans overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Footer: 3 Columns */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-12 pb-14 border-b border-[#1A453B]">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 lg:gap-12 pb-10 sm:pb-14 border-b border-[#1A453B]">
           {/* Column 1 (Brand) */}
           <div className="space-y-4">
-            <Link href="/" className="inline-block">
+            <Link href="/" className="inline-block" aria-label="TripMaster Home">
               <img
                 src="/images/logo-white.png"
                 alt="TripMaster - Experience Neighbourhood"
@@ -29,38 +29,50 @@ export function Footer() {
                     target.src = "/logo.png";
                   }
                 }}
-                className="h-12 w-auto object-contain"
+                className="h-10 sm:h-12 w-auto object-contain"
               />
             </Link>
 
-            <p className="text-sm text-white/75 leading-relaxed max-w-sm">
+            <p className="text-xs sm:text-sm text-white/75 leading-relaxed max-w-sm">
               Your trusted travel partner for memorable holiday experiences around the world.
             </p>
           </div>
 
           {/* Column 2 (Explore) */}
-          <div className="space-y-3.5">
+          <div className="space-y-3">
             <h4 className="font-heading font-bold text-xs uppercase tracking-wider text-amber-300">
               Explore
             </h4>
-            <ul className="space-y-2.5 text-xs text-white/80 font-medium">
+            <ul className="space-y-1 text-xs text-white/80 font-medium">
               <li>
-                <Link href="/destinations" className="hover:text-white transition-colors">
+                <Link
+                  href="/destinations"
+                  className="min-h-[40px] sm:min-h-[auto] inline-flex items-center hover:text-white transition-colors py-1"
+                >
                   Destinations
                 </Link>
               </li>
               <li>
-                <Link href="/packages" className="hover:text-white transition-colors">
+                <Link
+                  href="/packages"
+                  className="min-h-[40px] sm:min-h-[auto] inline-flex items-center hover:text-white transition-colors py-1"
+                >
                   Holiday Packages
                 </Link>
               </li>
               <li>
-                <Link href="/#about" className="hover:text-white transition-colors">
+                <Link
+                  href="/#about"
+                  className="min-h-[40px] sm:min-h-[auto] inline-flex items-center hover:text-white transition-colors py-1"
+                >
                   About Us
                 </Link>
               </li>
               <li>
-                <Link href="/#reviews" className="hover:text-white transition-colors">
+                <Link
+                  href="/#reviews"
+                  className="min-h-[40px] sm:min-h-[auto] inline-flex items-center hover:text-white transition-colors py-1"
+                >
                   Customer Reviews
                 </Link>
               </li>
@@ -72,31 +84,37 @@ export function Footer() {
             <h4 className="font-heading font-bold text-xs uppercase tracking-wider text-amber-300">
               Get in Touch
             </h4>
-            <div className="space-y-3 text-xs text-white/80 font-medium">
-              <div className="flex items-center gap-2.5">
-                <Phone className="w-4 h-4 text-amber-300 shrink-0" />
-                <a href="tel:+919876543210" className="hover:text-white tabular-nums">
-                  +91 98765 43210
+            <div className="space-y-2 text-xs text-white/80 font-medium">
+              <div>
+                <a
+                  href="tel:+919876543210"
+                  className="min-h-[44px] inline-flex items-center gap-2.5 hover:text-white tabular-nums py-1"
+                >
+                  <Phone className="w-4 h-4 text-amber-300 shrink-0" />
+                  <span>+91 98765 43210</span>
                 </a>
               </div>
-              <div className="flex items-center gap-2.5">
-                <Mail className="w-4 h-4 text-amber-300 shrink-0" />
-                <a href="mailto:info@travelcompany.com" className="hover:text-white">
-                  info@travelcompany.com
+              <div>
+                <a
+                  href="mailto:info@travelcompany.com"
+                  className="min-h-[44px] inline-flex items-center gap-2.5 hover:text-white py-1"
+                >
+                  <Mail className="w-4 h-4 text-amber-300 shrink-0" />
+                  <span>info@travelcompany.com</span>
                 </a>
               </div>
-              <div className="flex items-start gap-2.5">
+              <div className="flex items-start gap-2.5 py-1">
                 <MapPin className="w-4 h-4 text-amber-300 shrink-0 mt-0.5" />
                 <span>The Oberoi Grand Arc, MG Road, Bengaluru, India</span>
               </div>
 
-              {/* Social Icons Row */}
+              {/* Social Icons Row (>= 44x44px touch targets) */}
               <div className="pt-2 flex items-center gap-3 text-white">
                 <a
                   href="https://instagram.com/tripmasterluxury"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                  className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center transition-all"
                   aria-label="Instagram"
                 >
                   <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24" aria-hidden="true">
@@ -107,7 +125,7 @@ export function Footer() {
                   href="https://youtube.com/@tripmastertravel"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                  className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center transition-all"
                   aria-label="YouTube"
                 >
                   <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24" aria-hidden="true">
@@ -118,7 +136,7 @@ export function Footer() {
                   href="https://wa.me/919876543210"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                  className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center transition-all"
                   aria-label="WhatsApp"
                 >
                   <MessageSquare className="w-4 h-4" />
@@ -129,9 +147,9 @@ export function Footer() {
         </div>
 
         {/* Bottom Legal Bar (Separated by 1px top border) */}
-        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/60">
+        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] sm:text-xs text-white/60">
           {/* Left: Credentials & Policies */}
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-center sm:text-left">
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3 text-center sm:text-left">
             <span>Business Registration</span>
             <span>•</span>
             <span>Travel Credentials</span>
@@ -142,8 +160,11 @@ export function Footer() {
           </div>
 
           {/* Right: Copyright */}
-          <div className="flex items-center gap-4">
-            <Link href="/admin/login" className="hover:text-white transition-colors">
+          <div className="flex items-center justify-center gap-3 sm:gap-4">
+            <Link
+              href="/admin/login"
+              className="min-h-[38px] sm:min-h-[auto] inline-flex items-center hover:text-white transition-colors py-1"
+            >
               Admin Portal
             </Link>
             <span>•</span>

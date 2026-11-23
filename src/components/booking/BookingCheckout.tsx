@@ -21,6 +21,7 @@ import {
   HelpCircle,
   AlertCircle,
   ExternalLink,
+  ChevronDown,
 } from "lucide-react";
 import { RazorpayModal } from "@/components/payment/RazorpayModal";
 
@@ -71,6 +72,9 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
     amount: number;
     amountDue: number;
   } | null>(null);
+
+  // Mobile order summary accordion state
+  const [mobileSummaryOpen, setMobileSummaryOpen] = useState(false);
 
   useEffect(() => {
     fetch(`/api/packages/${packageSlug}`)
@@ -346,18 +350,142 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
           </div>
         )}
 
+        {/* MOBILE ORDER SUMMARY ACCORDION (Visible on Mobile only: lg:hidden) */}
+        <div className="lg:hidden mb-6 bg-white rounded-2xl border border-[#E4E2DD] shadow-card overflow-hidden">
+          <div
+            onClick={() => setMobileSummaryOpen(!mobileSummaryOpen)}
+            className="p-4 flex items-center justify-between cursor-pointer active:bg-[#FAF9F6] transition-colors"
+          >
+            <div className="flex items-center gap-3.5 min-w-0">
+              <div className="relative w-14 h-14 rounded-xl overflow-hidden shrink-0 border border-[#E4E2DD]">
+                <Image
+                  src={pkg.featuredImage}
+                  alt={pkg.title}
+                  fill
+                  className="object-cover"
+                  onError={(e) => {
+                    const target = e.currentTarget as HTMLImageElement;
+                    if (!target.src.includes("1598091383021")) {
+                      target.srcset = "";
+                      target.src =
+                        "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=600&q=80";
+                    }
+                  }}
+                />
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-300 bg-[#0D2C24] px-2 py-0.5 rounded-full inline-block">
+                    {pkg.destination}
+                  </span>
+                  <span className="text-[11px] text-[#52525B] tabular-nums font-medium">
+                    {pkg.durationDays}D / {pkg.durationNights}N
+                  </span>
+                </div>
+                <h3 className="font-heading font-bold text-sm text-[#111111] truncate mt-1">
+                  {pkg.title}
+                </h3>
+                <div className="text-[11px] text-emerald-800 font-semibold flex items-center gap-1 mt-0.5">
+                  <span>Due today:</span>
+                  <span className="price-display font-bold tabular-nums text-sm text-[#0D2C24]">
+                    ₹{amountDueToday.toLocaleString("en-IN")}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0 ml-2">
+              <span className="text-[11px] font-semibold text-[#0D2C24]">
+                {mobileSummaryOpen ? "Hide" : "Details"}
+              </span>
+              <div
+                className={`w-7 h-7 rounded-full bg-[#FAF9F6] border border-[#E4E2DD] flex items-center justify-center transition-transform duration-200 ${
+                  mobileSummaryOpen ? "rotate-180" : ""
+                }`}
+              >
+                <ChevronDown className="w-3.5 h-3.5 text-[#52525B]" />
+              </div>
+            </div>
+          </div>
+
+          {/* Expanded Breakdown on Mobile */}
+          {mobileSummaryOpen && (
+            <div className="px-4 pb-4 pt-2 border-t border-[#E4E2DD] bg-[#FAF9F6] space-y-3 text-xs">
+              {/* Dates and Guests */}
+              <div className="p-3 bg-white rounded-xl border border-[#E4E2DD] space-y-1.5 text-xs text-[#52525B]">
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1.5 font-medium">
+                    <Calendar className="w-3.5 h-3.5 text-[#0D2C24]" /> Departure:
+                  </span>
+                  <span className="font-semibold text-[#111111]">
+                    {startDateObj.toLocaleDateString("en-IN", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1.5 font-medium">
+                    <Clock className="w-3.5 h-3.5 text-[#0D2C24]" /> Return:
+                  </span>
+                  <span className="font-semibold text-[#111111]">{returnDateStr}</span>
+                </div>
+                <div className="flex items-center justify-between pt-1 border-t border-[#E4E2DD]">
+                  <span className="flex items-center gap-1.5 font-medium">
+                    <Users className="w-3.5 h-3.5 text-[#0D2C24]" /> Guests:
+                  </span>
+                  <span className="font-semibold text-[#111111]">
+                    {adultsCount} Adults {childrenCount > 0 ? `, ${childrenCount} Children` : ""}
+                  </span>
+                </div>
+              </div>
+
+              {/* Pricing itemization */}
+              <div className="p-3 bg-white rounded-xl border border-[#E4E2DD] space-y-2 text-xs">
+                <div className="flex items-center justify-between text-[#52525B]">
+                  <span>Adult Tariff ({adultsCount} × ₹{unitPrice.toLocaleString("en-IN")})</span>
+                  <span className="tabular-nums font-semibold text-[#111111]">₹{(adultsCount * unitPrice).toLocaleString("en-IN")}</span>
+                </div>
+                {childrenCount > 0 && (
+                  <div className="flex items-center justify-between text-[#52525B]">
+                    <span>Children Tariff ({childrenCount} × ₹{Math.round(unitPrice * 0.6).toLocaleString("en-IN")})</span>
+                    <span className="tabular-nums font-semibold text-[#111111]">₹{Math.round(childrenCount * unitPrice * 0.6).toLocaleString("en-IN")}</span>
+                  </div>
+                )}
+                <div className="flex items-center justify-between text-emerald-800 font-medium">
+                  <span>Luxury Concierge & Taxes</span>
+                  <span>Included</span>
+                </div>
+                <div className="pt-2 border-t border-[#E4E2DD] flex items-center justify-between font-bold text-[#111111]">
+                  <span>Total Package Cost:</span>
+                  <span className="tabular-nums">₹{totalAmount.toLocaleString("en-IN")}</span>
+                </div>
+                <div className="p-2.5 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-amber-900">
+                    {paymentPlan === "FULL" ? "Full Settle (100%):" : "Advance Due Today (30%):"}
+                  </span>
+                  <span className="price-display font-bold text-base text-amber-900 tabular-nums">
+                    ₹{amountDueToday.toLocaleString("en-IN")}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* LEFT COLUMN: GUEST & PAYMENT FORM (7 COLS) */}
           <div className="lg:col-span-7 space-y-6">
             <form onSubmit={handleInitiatePayment} className="space-y-6">
               {/* STEP 1: TRAVELER INFORMATION */}
-              <div className="bg-white rounded-2xl p-6 sm:p-8 border border-[#E4E2DD] shadow-card">
+              <div className="bg-white rounded-2xl p-5 sm:p-8 border border-[#E4E2DD] shadow-card">
                 <div className="flex items-center gap-3 pb-4 border-b border-[#E4E2DD]">
-                  <div className="w-8 h-8 rounded-lg bg-[#0D2C24] text-amber-300 flex items-center justify-center font-heading font-bold text-sm">
+                  <div className="w-8 h-8 rounded-lg bg-[#0D2C24] text-amber-300 flex items-center justify-center font-heading font-bold text-sm shrink-0">
                     1
                   </div>
                   <div>
-                    <h2 className="font-heading text-xl font-bold text-[#111111]">
+                    <h2 className="font-heading text-lg sm:text-xl font-bold text-[#111111]">
                       Guest & Travel Details
                     </h2>
                     <p className="text-xs text-[#52525B] mt-0.5">
@@ -377,7 +505,7 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
                       placeholder="e.g. Rohan Malhotra"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl border border-[#E4E2DD] text-sm text-[#111111] focus:outline-none focus:border-[#0D2C24] transition-all"
+                      className="w-full min-h-[44px] px-4 py-2.5 rounded-xl border border-[#E4E2DD] text-base sm:text-sm text-[#111111] focus:outline-none focus:border-[#0D2C24] transition-all"
                     />
                   </div>
 
@@ -392,7 +520,7 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
                         placeholder="rohan@example.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl border border-[#E4E2DD] text-sm text-[#111111] focus:outline-none focus:border-[#0D2C24] transition-all"
+                        className="w-full min-h-[44px] px-4 py-2.5 rounded-xl border border-[#E4E2DD] text-base sm:text-sm text-[#111111] focus:outline-none focus:border-[#0D2C24] transition-all"
                       />
                     </div>
                     <div>
@@ -408,7 +536,7 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
                           setPhone(e.target.value);
                           if (!whatsappNumber) setWhatsappNumber(e.target.value);
                         }}
-                        className="w-full px-4 py-2.5 rounded-xl border border-[#E4E2DD] text-sm tabular-nums text-[#111111] focus:outline-none focus:border-[#0D2C24] transition-all"
+                        className="w-full min-h-[44px] px-4 py-2.5 rounded-xl border border-[#E4E2DD] text-base sm:text-sm tabular-nums text-[#111111] focus:outline-none focus:border-[#0D2C24] transition-all"
                       />
                     </div>
                   </div>
@@ -423,7 +551,7 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
                         placeholder="e.g. Mumbai, India"
                         value={city}
                         onChange={(e) => setCity(e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl border border-[#E4E2DD] text-sm text-[#111111] focus:outline-none focus:border-[#0D2C24] transition-all"
+                        className="w-full min-h-[44px] px-4 py-2.5 rounded-xl border border-[#E4E2DD] text-base sm:text-sm text-[#111111] focus:outline-none focus:border-[#0D2C24] transition-all"
                       />
                     </div>
                     <div>
@@ -435,7 +563,7 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
                         required
                         value={travelStartDate}
                         onChange={(e) => setTravelStartDate(e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl border border-[#E4E2DD] text-sm tabular-nums text-[#111111] focus:outline-none focus:border-[#0D2C24] transition-all"
+                        className="w-full min-h-[44px] px-4 py-2.5 rounded-xl border border-[#E4E2DD] text-base sm:text-sm tabular-nums text-[#111111] focus:outline-none focus:border-[#0D2C24] transition-all"
                       />
                     </div>
                   </div>
@@ -448,7 +576,7 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
                       <select
                         value={adultsCount}
                         onChange={(e) => setAdultsCount(Number(e.target.value))}
-                        className="w-full px-4 py-2.5 rounded-xl border border-[#E4E2DD] text-sm text-[#111111] focus:outline-none focus:border-[#0D2C24] bg-white transition-all cursor-pointer"
+                        className="w-full min-h-[44px] px-4 py-2.5 rounded-xl border border-[#E4E2DD] text-base sm:text-sm text-[#111111] focus:outline-none focus:border-[#0D2C24] bg-white transition-all cursor-pointer"
                       >
                         {[1, 2, 3, 4, 5, 6, 8, 10].map((n) => (
                           <option key={n} value={n}>
@@ -465,7 +593,7 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
                       <select
                         value={childrenCount}
                         onChange={(e) => setChildrenCount(Number(e.target.value))}
-                        className="w-full px-4 py-2.5 rounded-xl border border-[#E4E2DD] text-sm text-[#111111] focus:outline-none focus:border-[#0D2C24] bg-white transition-all cursor-pointer"
+                        className="w-full min-h-[44px] px-4 py-2.5 rounded-xl border border-[#E4E2DD] text-base sm:text-sm text-[#111111] focus:outline-none focus:border-[#0D2C24] bg-white transition-all cursor-pointer"
                       >
                         {[0, 1, 2, 3, 4].map((n) => (
                           <option key={n} value={n}>
@@ -485,20 +613,20 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
                       placeholder="e.g. Celebrating 10th anniversary, king bed preference, vegetarian meals, airport wheelchair assistance..."
                       value={specialRequests}
                       onChange={(e) => setSpecialRequests(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl border border-[#E4E2DD] text-sm text-[#111111] focus:outline-none focus:border-[#0D2C24] transition-all"
+                      className="w-full px-4 py-2.5 rounded-xl border border-[#E4E2DD] text-base sm:text-sm text-[#111111] focus:outline-none focus:border-[#0D2C24] transition-all"
                     />
                   </div>
                 </div>
               </div>
 
               {/* STEP 2: FLEXIBLE PAYMENT OPTIONS */}
-              <div className="bg-white rounded-2xl p-6 sm:p-8 border border-[#E4E2DD] shadow-card">
+              <div className="bg-white rounded-2xl p-5 sm:p-8 border border-[#E4E2DD] shadow-card">
                 <div className="flex items-center gap-3 pb-4 border-b border-[#E4E2DD]">
-                  <div className="w-8 h-8 rounded-lg bg-[#0D2C24] text-amber-300 flex items-center justify-center font-heading font-bold text-sm">
+                  <div className="w-8 h-8 rounded-lg bg-[#0D2C24] text-amber-300 flex items-center justify-center font-heading font-bold text-sm shrink-0">
                     2
                   </div>
                   <div>
-                    <h2 className="font-heading text-xl font-bold text-[#111111]">
+                    <h2 className="font-heading text-lg sm:text-xl font-bold text-[#111111]">
                       Payment Plan Selection
                     </h2>
                     <p className="text-xs text-[#52525B] mt-0.5">
@@ -511,15 +639,15 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
                   {/* Plan Option 1: Full Payment */}
                   <div
                     onClick={() => setPaymentPlan("FULL")}
-                    className={`cursor-pointer rounded-xl p-5 border-2 active:scale-[0.99] transition-[background-color,border-color,transform] duration-150 flex items-start justify-between gap-4 ${
+                    className={`cursor-pointer rounded-xl p-4 sm:p-5 border-2 active:scale-[0.99] transition-[background-color,border-color,transform] duration-150 flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4 ${
                       paymentPlan === "FULL"
                         ? "border-[#0D2C24] bg-[#0D2C24]/5"
                         : "border-[#E4E2DD] hover:border-slate-300"
                     }`}
                   >
-                    <div className="flex items-start gap-3.5">
+                    <div className="flex items-start gap-3 sm:gap-3.5">
                       <div
-                        className={`mt-1 w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                        className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
                           paymentPlan === "FULL"
                             ? "border-[#0D2C24] bg-[#0D2C24]"
                             : "border-slate-300"
@@ -530,21 +658,21 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
                         )}
                       </div>
                       <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-heading font-bold text-[#111111] text-base">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-heading font-bold text-[#111111] text-sm sm:text-base">
                             Pay Full Amount (100%)
                           </span>
                           <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-emerald-100 text-emerald-800">
                             Instant Confirmation
                           </span>
                         </div>
-                        <p className="text-xs text-[#52525B] mt-1">
+                        <p className="text-xs text-[#52525B] mt-1 leading-relaxed">
                           Zero pending balances. Complete peace of mind with instant vouchers issued.
                         </p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="font-heading font-bold text-lg text-[#111111] tabular-nums">
+                    <div className="text-left sm:text-right pl-8 sm:pl-0 pt-2 sm:pt-0 border-t border-[#E4E2DD]/60 sm:border-0 shrink-0">
+                      <div className="font-heading font-bold text-base sm:text-lg text-[#111111] tabular-nums">
                         ₹{totalAmount.toLocaleString("en-IN")}
                       </div>
                       <span className="text-[11px] text-[#52525B]">Total payable</span>
@@ -554,15 +682,15 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
                   {/* Plan Option 2: Advance Deposit */}
                   <div
                     onClick={() => setPaymentPlan("ADVANCE")}
-                    className={`cursor-pointer rounded-xl p-5 border-2 active:scale-[0.99] transition-[background-color,border-color,transform] duration-150 flex items-start justify-between gap-4 ${
+                    className={`cursor-pointer rounded-xl p-4 sm:p-5 border-2 active:scale-[0.99] transition-[background-color,border-color,transform] duration-150 flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4 ${
                       paymentPlan === "ADVANCE"
                         ? "border-[#0D2C24] bg-[#0D2C24]/5"
                         : "border-[#E4E2DD] hover:border-slate-300"
                     }`}
                   >
-                    <div className="flex items-start gap-3.5">
+                    <div className="flex items-start gap-3 sm:gap-3.5">
                       <div
-                        className={`mt-1 w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                        className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
                           paymentPlan === "ADVANCE"
                             ? "border-[#0D2C24] bg-[#0D2C24]"
                             : "border-slate-300"
@@ -573,15 +701,15 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
                         )}
                       </div>
                       <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-heading font-bold text-[#111111] text-base">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-heading font-bold text-[#111111] text-sm sm:text-base">
                             Pay Booking Token Advance (30%)
                           </span>
                           <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-100 text-amber-800">
                             Lock Dates Now
                           </span>
                         </div>
-                        <p className="text-xs text-[#52525B] mt-1">
+                        <p className="text-xs text-[#52525B] mt-1 leading-relaxed">
                           Lock your luxury retreat slots today. Balance of{" "}
                           <span className="tabular-nums font-semibold">
                             ₹{remainingBalance.toLocaleString("en-IN")}
@@ -590,8 +718,8 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
                         </p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="font-heading font-bold text-lg text-[#111111] tabular-nums">
+                    <div className="text-left sm:text-right pl-8 sm:pl-0 pt-2 sm:pt-0 border-t border-[#E4E2DD]/60 sm:border-0 shrink-0">
+                      <div className="font-heading font-bold text-base sm:text-lg text-[#111111] tabular-nums">
                         ₹{advanceAmount.toLocaleString("en-IN")}
                       </div>
                       <span className="text-[11px] text-[#52525B]">Due today</span>
@@ -600,12 +728,12 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
                 </div>
 
                 {/* Razorpay Guaranteed Badge */}
-                <div className="mt-6 pt-5 border-t border-[#E4E2DD] flex flex-wrap items-center justify-between gap-4 text-xs text-[#52525B]">
+                <div className="mt-6 pt-5 border-t border-[#E4E2DD] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#52525B]">
                   <div className="flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4 text-[#0D2C24]" />
+                    <ShieldCheck className="w-4 h-4 text-[#0D2C24] shrink-0" />
                     <span>Protected by Razorpay Payment Gateway & 100% Refund Policy</span>
                   </div>
-                  <div className="flex items-center gap-2 text-[11px]">
+                  <div className="flex items-center gap-1.5 text-[11px]">
                     <span className="px-2 py-0.5 bg-[#F3F1ED] rounded-md border border-[#E4E2DD]">UPI</span>
                     <span className="px-2 py-0.5 bg-[#F3F1ED] rounded-md border border-[#E4E2DD]">Cards</span>
                     <span className="px-2 py-0.5 bg-[#F3F1ED] rounded-md border border-[#E4E2DD]">NetBanking</span>
@@ -613,11 +741,32 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
                 </div>
               </div>
 
+              {/* Pre-Payment Review Box */}
+              <div className="p-4 rounded-xl bg-white border border-[#E4E2DD] shadow-xs flex items-center justify-between font-sans">
+                <div>
+                  <span className="text-[10px] uppercase tracking-wider text-[#52525B] font-semibold block">
+                    {paymentPlan === "FULL" ? "Full Settle (100%)" : "Advance Deposit (30%)"}
+                  </span>
+                  <span className="text-xs text-[#111111] font-medium">
+                    {adultsCount} {adultsCount === 1 ? "Adult" : "Adults"}
+                    {childrenCount > 0 ? `, ${childrenCount} Child` : ""} • {pkg.durationDays}D Journey
+                  </span>
+                </div>
+                <div className="text-right">
+                  <span className="text-[10px] uppercase tracking-wider text-emerald-800 font-semibold block">
+                    Total Due Now
+                  </span>
+                  <span className="price-display font-heading font-bold text-xl text-[#0D2C24] tabular-nums">
+                    ₹{amountDueToday.toLocaleString("en-IN")}
+                  </span>
+                </div>
+              </div>
+
               {/* SUBMIT BUTTON */}
               <button
                 type="submit"
                 disabled={processing}
-                className="btn btn-primary w-full min-h-[48px] py-4 rounded-xl text-sm font-semibold uppercase tracking-wider justify-center gap-3 shadow-md active:scale-[0.98] transition-[background-color,transform,box-shadow] duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none cursor-pointer"
+                className="btn btn-primary w-full min-h-[50px] py-3.5 sm:py-4 rounded-xl text-sm font-semibold uppercase tracking-wider justify-center gap-2.5 shadow-md active:scale-[0.98] transition-[background-color,transform,box-shadow] duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none cursor-pointer"
               >
                 {processing ? (
                   <>

@@ -19,22 +19,22 @@ interface PackageCardProps {
 
 export function FeaturedPackages({ packages }: { packages: PackageCardProps[] }) {
   return (
-    <section id="destinations" className="py-20 sm:py-28 bg-[#FAF9F6] border-t border-[#E4E2DD] font-sans">
+    <section id="destinations" className="py-14 sm:py-24 lg:py-28 bg-[#FAF9F6] border-t border-[#E4E2DD] font-sans">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12 pb-6 border-b border-[#E4E2DD]">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 sm:gap-6 mb-8 sm:mb-12 pb-5 sm:pb-6 border-b border-[#E4E2DD]">
           <div className="max-w-xl">
             <p className="eyebrow text-[11px] font-semibold tracking-[0.18em] uppercase text-emerald-800">
               Curated Portfolio
             </p>
-            <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-[#111111] tracking-tight leading-[1.12] mt-2 text-balance">
+            <h2 className="font-heading text-2xl sm:text-4xl lg:text-5xl font-bold text-[#111111] tracking-tight leading-[1.12] mt-2 text-balance">
               Featured private expeditions.
             </h2>
           </div>
 
           <Link
             href="/packages"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#0D2C24] hover:text-[#133E33] transition-colors self-start sm:self-end group pb-1"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#0D2C24] hover:text-[#133E33] transition-colors self-start sm:self-end group py-1.5"
           >
             <span>View All Journeys</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
@@ -42,7 +42,7 @@ export function FeaturedPackages({ packages }: { packages: PackageCardProps[] })
         </div>
 
         {/* 2-Column Editorial Card Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
           {packages.map((pkg) => {
             const price = pkg.discountedPrice || pkg.basePrice;
 
@@ -78,18 +78,18 @@ export function FeaturedPackages({ packages }: { packages: PackageCardProps[] })
                 </div>
 
                 {/* Card Body */}
-                <div className="p-6 sm:p-7 flex-1 flex flex-col justify-between">
+                <div className="p-5 sm:p-7 flex-1 flex flex-col justify-between">
                   <div>
-                    <h3 className="font-heading text-xl sm:text-2xl font-bold text-[#111111] group-hover:text-[#0D2C24] transition-colors leading-snug tracking-tight">
+                    <h3 className="font-heading text-lg sm:text-2xl font-bold text-[#111111] group-hover:text-[#0D2C24] transition-colors leading-snug tracking-tight">
                       <Link href={`/packages/${pkg.slug}`}>{pkg.title}</Link>
                     </h3>
 
-                    <p className="mt-3 text-sm text-[#52525B] font-normal line-clamp-2 leading-relaxed">
+                    <p className="mt-2.5 sm:mt-3 text-xs sm:text-sm text-[#52525B] font-normal line-clamp-2 leading-relaxed">
                       {pkg.overview}
                     </p>
 
                     {/* Inclusions Row */}
-                    <div className="mt-4 pt-3.5 border-t border-[#F3F1ED] flex flex-wrap gap-1.5">
+                    <div className="mt-3.5 sm:mt-4 pt-3 sm:pt-3.5 border-t border-[#F3F1ED] flex flex-wrap gap-1.5">
                       {pkg.inclusions.slice(0, 3).map((item, idx) => (
                         <span
                           key={idx}
@@ -102,7 +102,7 @@ export function FeaturedPackages({ packages }: { packages: PackageCardProps[] })
                   </div>
 
                   {/* Pricing Strip & Action Button */}
-                  <div className="mt-6 pt-4 border-t border-[#E4E2DD] flex items-baseline justify-between gap-4">
+                  <div className="mt-5 sm:mt-6 pt-4 border-t border-[#E4E2DD] flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 sm:gap-4">
                     <div>
                       <span className="text-[10px] font-semibold uppercase tracking-wider text-[#52525B] block">
                         Tariff From
@@ -117,7 +117,7 @@ export function FeaturedPackages({ packages }: { packages: PackageCardProps[] })
 
                     <Link
                       href={`/packages/${pkg.slug}`}
-                      className="btn btn-secondary text-xs uppercase tracking-wider font-semibold rounded-xl px-4 py-2"
+                      className="btn btn-secondary text-xs uppercase tracking-wider font-semibold rounded-xl px-4 py-2.5 min-h-[44px] flex items-center justify-center gap-1.5 w-full sm:w-auto self-stretch sm:self-auto"
                     >
                       <span>View Itinerary</span>
                       <ArrowRight className="w-3.5 h-3.5" />

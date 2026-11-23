@@ -123,6 +123,15 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
   const paxBookingCount = parseInt(bookingForm.paxCount || "2", 10);
   const calculatedTotal = effectivePrice * paxBookingCount;
 
+  // Scroll to booking sidebar smoothly on mobile
+  const scrollToBooking = (tab: "inquiry" | "book") => {
+    setActiveTab(tab);
+    const element = document.getElementById("booking-sidebar");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   // Handle Inquiry Submit
   const handleInquirySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -202,7 +211,7 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
   );
 
   return (
-    <div className="bg-[#FAF9F6] min-h-screen pb-24 font-sans">
+    <div className="bg-[#FAF9F6] min-h-screen pb-32 sm:pb-36 lg:pb-24 font-sans">
       {/* 1. Top Breadcrumb & Title Hero */}
       <div className="bg-[#0D2C24] text-white pt-8 pb-12 border-b border-[#1A453B]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -459,7 +468,7 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
               </div>
 
               {/* Editorial Day-Wise Dossier Timeline with Continuous Left Track */}
-              <div className="relative pl-6 sm:pl-10 border-l-2 border-[#E4E2DD] ml-3 sm:ml-6 space-y-8">
+              <div className="relative pl-5 sm:pl-10 border-l-2 border-[#E4E2DD] ml-4 sm:ml-6 space-y-6 sm:space-y-8">
                 {pkg.itinerary.map((day) => {
                   const isExpanded = !!expandedDays[day.dayNumber];
                   const dayPadded = String(day.dayNumber).padStart(2, "0");
@@ -467,7 +476,7 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                   return (
                     <div key={day.id} className="relative">
                       {/* Timeline Numbered Node */}
-                      <div className="absolute -left-[35px] sm:-left-[51px] top-5 w-8 h-8 rounded-full bg-[#0D2C24] text-amber-300 border-2 border-[#FAF9F6] flex items-center justify-center font-heading text-[10px] sm:text-[11px] font-bold tabular-nums shadow-sm">
+                      <div className="absolute -left-[37px] sm:-left-[57px] top-4 sm:top-5 w-8 h-8 rounded-full bg-[#0D2C24] text-amber-300 border-2 border-[#FAF9F6] flex items-center justify-center font-heading text-[10px] sm:text-[11px] font-bold tabular-nums shadow-sm">
                         {dayPadded}
                       </div>
 
@@ -476,19 +485,34 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                         <button
                           type="button"
                           onClick={() => toggleDay(day.dayNumber)}
-                          className="w-full flex items-center justify-between p-6 text-left hover:bg-[#FAF9F6] transition-colors focus:outline-none"
+                          className="w-full flex items-start sm:items-center justify-between p-4 sm:p-6 text-left hover:bg-[#FAF9F6] transition-colors focus:outline-none min-h-[52px]"
                         >
-                          <div className="space-y-1">
-                            <span className="eyebrow text-emerald-800 block">
-                              Day {dayPadded} Expedition
-                            </span>
-                            <h3 className="font-heading text-xl sm:text-2xl font-bold text-[#111111] leading-snug tracking-tight">
+                          <div className="space-y-1.5 flex-1 pr-2">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="eyebrow text-emerald-800">
+                                Day {dayPadded} Expedition
+                              </span>
+                              {/* Mobile Meal Chips */}
+                              {day.mealsIncluded.length > 0 && (
+                                <div className="flex sm:hidden flex-wrap items-center gap-1">
+                                  {day.mealsIncluded.map((meal, mIdx) => (
+                                    <span
+                                      key={mIdx}
+                                      className="bg-[#F3F1ED] text-[#111111] text-[9px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border border-[#E4E2DD]"
+                                    >
+                                      {meal}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                            <h3 className="font-heading text-lg sm:text-2xl font-bold text-[#111111] leading-snug tracking-tight">
                               {day.title}
                             </h3>
                           </div>
 
-                          <div className="flex items-center gap-3 shrink-0 ml-4">
-                            {/* Meal Chips */}
+                          <div className="flex items-center gap-2 sm:gap-3 shrink-0 ml-2 pt-1 sm:pt-0">
+                            {/* Desktop Meal Chips */}
                             <div className="hidden sm:flex items-center gap-1.5">
                               {day.mealsIncluded.map((meal, mIdx) => (
                                 <span
@@ -501,7 +525,7 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                             </div>
 
                             <div
-                              className={`w-8 h-8 rounded-full bg-[#FAF9F6] border border-[#E4E2DD] flex items-center justify-center transition-transform duration-300 ${
+                              className={`w-9 h-9 sm:w-8 sm:h-8 rounded-full bg-[#FAF9F6] border border-[#E4E2DD] flex items-center justify-center transition-transform duration-300 shrink-0 ${
                                 isExpanded ? "rotate-180 bg-[#0D2C24] text-amber-300" : "text-[#52525B]"
                               }`}
                             >
@@ -512,7 +536,7 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
 
                         {/* Accordion Body */}
                         {isExpanded && (
-                          <div className="px-6 pb-7 pt-2 border-t border-[#E4E2DD]/60 space-y-6">
+                          <div className="px-4 pb-5 pt-3 sm:px-6 sm:pb-7 border-t border-[#E4E2DD]/60 space-y-5 sm:space-y-6">
                             {/* Detailed Narrative */}
                             <p className="text-sm sm:text-base text-[#52525B] font-normal leading-relaxed">
                               {day.description}
@@ -520,11 +544,11 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
 
                             {/* Activity Photos */}
                             {day.activityPhotos.length > 0 && (
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                 {day.activityPhotos.map((photo, pIdx) => (
                                   <div
                                     key={pIdx}
-                                    className="relative h-48 rounded-xl overflow-hidden shadow-xs border border-[#E4E2DD]"
+                                    className="relative h-44 sm:h-48 rounded-xl overflow-hidden shadow-xs border border-[#E4E2DD]"
                                   >
                                     <img
                                       src={photo}
@@ -543,27 +567,27 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                               </div>
                             )}
 
-                            {/* Bespoke Stay Highlight Feature Card (Horizontal Split) */}
+                            {/* Bespoke Stay Highlight Feature Card (Horizontal Split / Responsive Mobile Stacking) */}
                             {day.accommodationName && (
-                              <div className="bg-[#F3F1ED] border border-[#E4E2DD] rounded-xl p-5 shadow-xs">
-                                <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#E4E2DD]/60">
+                              <div className="bg-[#F3F1ED] border border-[#E4E2DD] rounded-xl p-4 sm:p-5 shadow-xs">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-3 border-b border-[#E4E2DD]/60 gap-2">
                                   <div className="flex items-center gap-2">
-                                    <Building className="w-4 h-4 text-[#0D2C24]" />
+                                    <Building className="w-4 h-4 text-[#0D2C24] shrink-0" />
                                     <span className="eyebrow text-[#0D2C24]">
                                       Sanctuary Stay For Day {dayPadded}
                                     </span>
                                   </div>
                                   {day.accommodationRating && (
-                                    <div className="flex items-center gap-1 text-[11px] font-bold text-amber-300 bg-[#0D2C24] px-2.5 py-0.5 rounded-full font-sans tabular-nums">
+                                    <div className="inline-flex items-center self-start sm:self-auto gap-1 text-[11px] font-bold text-amber-300 bg-[#0D2C24] px-2.5 py-0.5 rounded-full font-sans tabular-nums shrink-0">
                                       <Star className="w-3 h-3 fill-amber-300" />
                                       <span>{day.accommodationRating.toFixed(1)} ★ Luxury Standard</span>
                                     </div>
                                   )}
                                 </div>
 
-                                <div className="flex flex-col sm:flex-row gap-5 items-start">
+                                <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 items-start">
                                   {day.accommodationPhoto && (
-                                    <div className="w-full sm:w-44 h-32 rounded-lg overflow-hidden shrink-0 border border-[#E4E2DD] relative">
+                                    <div className="w-full sm:w-44 h-44 sm:h-32 rounded-lg overflow-hidden shrink-0 border border-[#E4E2DD] relative">
                                       <img
                                         src={day.accommodationPhoto}
                                         alt={day.accommodationName}
@@ -578,15 +602,15 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                                       />
                                     </div>
                                   )}
-                                  <div className="space-y-2 flex-1">
-                                    <h4 className="font-heading text-lg font-bold text-[#111111]">
+                                  <div className="space-y-2 flex-1 w-full">
+                                    <h4 className="font-heading text-base sm:text-lg font-bold text-[#111111]">
                                       {day.accommodationName}
                                     </h4>
                                     <p className="text-xs text-[#52525B] font-normal leading-relaxed">
                                       {day.accommodationDetails || "Handpicked 5-star heritage sanctuary featuring personalized butler service and gourmet dining."}
                                     </p>
                                     {day.mealsIncluded.length > 0 && (
-                                      <div className="pt-2 flex flex-wrap gap-2 text-[11px]">
+                                      <div className="pt-2 flex flex-wrap items-center gap-1.5 text-[11px]">
                                         <span className="text-emerald-800 font-semibold">Included Dining:</span>
                                         {day.mealsIncluded.map((meal, idx) => (
                                           <span
@@ -738,7 +762,7 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
           </div>
 
           {/* RIGHT 4 COLUMNS: Sticky Dual-Tab Booking & Inquiry Sidebar */}
-          <div className="lg:col-span-4 sticky top-24 space-y-5">
+          <div id="booking-sidebar" className="lg:col-span-4 sticky top-24 space-y-5 scroll-mt-28">
             <div className="bg-white rounded-2xl shadow-card border border-[#E4E2DD] overflow-hidden">
               {/* Tabs Switcher */}
               <div className="flex border-b border-[#E4E2DD] bg-[#FAF9F6]">
@@ -850,11 +874,11 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                           onChange={(e) =>
                             setInquiryForm({ ...inquiryForm, name: e.target.value })
                           }
-                          className="w-full h-10 px-3.5 rounded-xl border border-[#E4E2DD] text-xs text-[#111111] focus:outline-none focus:border-[#0D2C24]"
+                          className="w-full h-11 sm:h-10 px-3.5 rounded-xl border border-[#E4E2DD] text-base sm:text-xs text-[#111111] focus:outline-none focus:border-[#0D2C24]"
                         />
                       </div>
 
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                           <label className="block text-xs font-semibold uppercase tracking-wider text-[#52525B] mb-1">
                             Phone / WhatsApp *
@@ -871,7 +895,7 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                                 whatsappNumber: e.target.value,
                               })
                             }
-                            className="w-full h-10 px-3.5 rounded-xl border border-[#E4E2DD] text-xs tabular-nums text-[#111111] focus:outline-none focus:border-[#0D2C24]"
+                            className="w-full h-11 sm:h-10 px-3.5 rounded-xl border border-[#E4E2DD] text-base sm:text-xs tabular-nums text-[#111111] focus:outline-none focus:border-[#0D2C24]"
                           />
                         </div>
 
@@ -887,7 +911,7 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                             onChange={(e) =>
                               setInquiryForm({ ...inquiryForm, email: e.target.value })
                             }
-                            className="w-full h-10 px-3.5 rounded-xl border border-[#E4E2DD] text-xs text-[#111111] focus:outline-none focus:border-[#0D2C24]"
+                            className="w-full h-11 sm:h-10 px-3.5 rounded-xl border border-[#E4E2DD] text-base sm:text-xs text-[#111111] focus:outline-none focus:border-[#0D2C24]"
                           />
                         </div>
                       </div>
@@ -906,7 +930,7 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                                 travelDate: e.target.value,
                               })
                             }
-                            className="w-full h-10 px-3.5 rounded-xl border border-[#E4E2DD] text-xs tabular-nums text-[#111111] focus:outline-none focus:border-[#0D2C24]"
+                            className="w-full h-11 sm:h-10 px-3.5 rounded-xl border border-[#E4E2DD] text-base sm:text-xs tabular-nums text-[#111111] focus:outline-none focus:border-[#0D2C24]"
                           />
                         </div>
 
@@ -922,7 +946,7 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                                 paxCount: e.target.value,
                               })
                             }
-                            className="w-full h-10 px-3.5 rounded-xl border border-[#E4E2DD] text-xs text-[#111111] focus:outline-none focus:border-[#0D2C24] bg-white cursor-pointer"
+                            className="w-full h-11 sm:h-10 px-3.5 rounded-xl border border-[#E4E2DD] text-base sm:text-xs text-[#111111] focus:outline-none focus:border-[#0D2C24] bg-white cursor-pointer"
                           >
                             <option value="1">1 Guest</option>
                             <option value="2">2 Guests (Couple)</option>
@@ -944,14 +968,14 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                           onChange={(e) =>
                             setInquiryForm({ ...inquiryForm, notes: e.target.value })
                           }
-                          className="w-full p-3 rounded-xl border border-[#E4E2DD] text-xs text-[#111111] focus:outline-none focus:border-[#0D2C24]"
+                          className="w-full p-3 rounded-xl border border-[#E4E2DD] text-base sm:text-xs text-[#111111] focus:outline-none focus:border-[#0D2C24]"
                         />
                       </div>
 
                       <button
                         type="submit"
                         disabled={inquiryLoading}
-                        className="btn btn-primary w-full h-11 text-xs uppercase tracking-wider font-semibold rounded-xl justify-center active:scale-[0.98] transition-[background-color,transform,box-shadow] duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none cursor-pointer"
+                        className="btn btn-primary w-full min-h-[44px] h-11 text-xs uppercase tracking-wider font-semibold rounded-xl justify-center active:scale-[0.98] transition-[background-color,transform,box-shadow] duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none cursor-pointer"
                       >
                         {inquiryLoading ? (
                           <div className="flex items-center gap-2">
@@ -1076,11 +1100,11 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                           onChange={(e) =>
                             setBookingForm({ ...bookingForm, name: e.target.value })
                           }
-                          className="w-full h-10 px-3.5 rounded-xl border border-[#E4E2DD] text-xs text-[#111111] focus:outline-none focus:border-[#0D2C24]"
+                          className="w-full h-11 sm:h-10 px-3.5 rounded-xl border border-[#E4E2DD] text-base sm:text-xs text-[#111111] focus:outline-none focus:border-[#0D2C24]"
                         />
                       </div>
 
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                           <label className="block text-xs font-semibold uppercase tracking-wider text-[#52525B] mb-1">
                             Phone *
@@ -1097,7 +1121,7 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                                 whatsappNumber: e.target.value,
                               })
                             }
-                            className="w-full h-10 px-3.5 rounded-xl border border-[#E4E2DD] text-xs tabular-nums text-[#111111] focus:outline-none focus:border-[#0D2C24]"
+                            className="w-full h-11 sm:h-10 px-3.5 rounded-xl border border-[#E4E2DD] text-base sm:text-xs tabular-nums text-[#111111] focus:outline-none focus:border-[#0D2C24]"
                           />
                         </div>
 
@@ -1113,7 +1137,7 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                             onChange={(e) =>
                               setBookingForm({ ...bookingForm, email: e.target.value })
                             }
-                            className="w-full h-10 px-3.5 rounded-xl border border-[#E4E2DD] text-xs text-[#111111] focus:outline-none focus:border-[#0D2C24]"
+                            className="w-full h-11 sm:h-10 px-3.5 rounded-xl border border-[#E4E2DD] text-base sm:text-xs text-[#111111] focus:outline-none focus:border-[#0D2C24]"
                           />
                         </div>
                       </div>
@@ -1133,7 +1157,7 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                                 travelStartDate: e.target.value,
                               })
                             }
-                            className="w-full h-10 px-3.5 rounded-xl border border-[#E4E2DD] text-xs tabular-nums text-[#111111] focus:outline-none focus:border-[#0D2C24]"
+                            className="w-full h-11 sm:h-10 px-3.5 rounded-xl border border-[#E4E2DD] text-base sm:text-xs tabular-nums text-[#111111] focus:outline-none focus:border-[#0D2C24]"
                           />
                         </div>
 
@@ -1149,7 +1173,7 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                                 paxCount: e.target.value,
                               })
                             }
-                            className="w-full h-10 px-3.5 rounded-xl border border-[#E4E2DD] text-xs text-[#111111] focus:outline-none focus:border-[#0D2C24] bg-white cursor-pointer"
+                            className="w-full h-11 sm:h-10 px-3.5 rounded-xl border border-[#E4E2DD] text-base sm:text-xs text-[#111111] focus:outline-none focus:border-[#0D2C24] bg-white cursor-pointer"
                           >
                             <option value="1">1 Guest</option>
                             <option value="2">2 Guests</option>
@@ -1163,7 +1187,7 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                       <button
                         type="submit"
                         disabled={bookingLoading}
-                        className="btn btn-primary w-full h-11 rounded-xl text-xs uppercase tracking-wider font-semibold justify-center active:scale-[0.98] transition-[background-color,transform,box-shadow] duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none cursor-pointer"
+                        className="btn btn-primary w-full min-h-[44px] h-11 rounded-xl text-xs uppercase tracking-wider font-semibold justify-center active:scale-[0.98] transition-[background-color,transform,box-shadow] duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none cursor-pointer"
                       >
                         {bookingLoading ? (
                           <div className="flex items-center gap-2">
@@ -1218,6 +1242,45 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                 <span className="font-medium text-[#111111]">Complimentary Room Upgrades (Subject to availability)</span>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Sticky Mobile Bottom Booking Action Bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E4E2DD] shadow-[0_-4px_20px_rgba(0,0,0,0.08)] px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        <div className="max-w-md mx-auto flex items-center justify-between gap-3">
+          {/* Price & Duration info */}
+          <div className="shrink-0">
+            <span className="text-[10px] uppercase tracking-wider text-[#52525B] font-semibold block leading-tight">
+              Tariff From
+            </span>
+            <div className="flex items-baseline gap-1 mt-0.5">
+              <span className="price-display font-heading text-xl font-bold text-[#0D2C24] tabular-nums leading-none">
+                ₹{effectivePrice.toLocaleString("en-IN")}
+              </span>
+              <span className="text-[10px] text-[#52525B] font-medium">/ guest</span>
+            </div>
+            <div className="text-[10px] text-emerald-800 font-medium tabular-nums mt-0.5">
+              {pkg.durationDays}D / {pkg.durationNights}N • 5★ Stays
+            </div>
+          </div>
+
+          {/* Dual CTA Actions */}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => scrollToBooking("inquiry")}
+              className="min-h-[44px] px-3.5 py-2 rounded-xl border border-[#0D2C24] text-[#0D2C24] text-xs font-semibold uppercase tracking-wider hover:bg-[#FAF9F6] active:scale-[0.98] transition-all whitespace-nowrap cursor-pointer"
+            >
+              Quote
+            </button>
+            <Link
+              href={`/book/${pkg.slug}`}
+              className="btn btn-primary min-h-[44px] px-4 py-2 rounded-xl text-xs uppercase tracking-wider font-semibold inline-flex items-center gap-1.5 shadow-md active:scale-[0.98] transition-all whitespace-nowrap"
+            >
+              <span>Instant Book</span>
+              <ArrowRight className="w-3.5 h-3.5 text-amber-300" />
+            </Link>
           </div>
         </div>
       </div>
