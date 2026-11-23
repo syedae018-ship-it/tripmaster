@@ -1,6 +1,7 @@
 import { PackageItem } from "@/components/packages/PackageCatalog";
 
 export interface FallbackItineraryDay {
+  id: string;
   dayNumber: number;
   title: string;
   description: string;
@@ -23,7 +24,9 @@ export interface FallbackPackageDetail extends PackageItem {
   itinerary: FallbackItineraryDay[];
 }
 
-export const FALLBACK_PACKAGES: FallbackPackageDetail[] = [
+const RAW_FALLBACK_PACKAGES: (Omit<FallbackPackageDetail, "itinerary"> & {
+  itinerary: Omit<FallbackItineraryDay, "id">[];
+})[] = [
   {
     id: "pkg-kashmir-celestial",
     title: "Kashmir Celestial Serenade: Gulmarg Gondola & Dal Royal Houseboat",
@@ -580,6 +583,14 @@ export const FALLBACK_PACKAGES: FallbackPackageDetail[] = [
     ],
   },
 ];
+
+export const FALLBACK_PACKAGES: FallbackPackageDetail[] = RAW_FALLBACK_PACKAGES.map((pkg) => ({
+  ...pkg,
+  itinerary: pkg.itinerary.map((day) => ({
+    ...day,
+    id: `${pkg.slug}-day-${day.dayNumber}`,
+  })),
+}));
 
 export function safeParseJson<T>(value: any, fallback: T): T {
   if (value === null || value === undefined || value === "") return fallback;
