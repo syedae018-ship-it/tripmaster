@@ -3,19 +3,18 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Compass,
   LayoutDashboard,
-  Package,
+  BarChart3,
   MessageSquareText,
   Users,
+  MapPin,
+  FileText,
   CreditCard,
+  Image as ImageIcon,
   FileEdit,
-  BarChart3,
   ExternalLink,
   ChevronRight,
   ShieldCheck,
-  FileText,
-  Image as ImageIcon,
 } from "lucide-react";
 
 export function AdminSidebar() {
@@ -29,138 +28,121 @@ export function AdminSidebar() {
       exact: true,
     },
     {
-      name: "Quotations & Plans",
-      href: "/admin/quotations",
-      icon: FileText,
-      badge: "Mobile PDF",
+      name: "Analytics & Reports",
+      href: "/admin/analytics",
+      icon: BarChart3,
     },
     {
-      name: "Media Vault",
-      href: "/admin/gallery",
-      icon: ImageIcon,
-      badge: "Vault",
-    },
-    {
-      name: "Packages & Assets",
-      href: "/admin/packages",
-      icon: Package,
-      badge: "Core",
-    },
-    {
-      name: "Inquiries & Leads",
-      href: "/admin/inquiries",
+      name: "Leads & Inquiries",
+      href: "/admin/leads",
       icon: MessageSquareText,
-      badge: "Active",
+      aliases: ["/admin/inquiries"],
     },
     {
       name: "Customer Profiles",
       href: "/admin/customers",
       icon: Users,
-      badge: "CRM",
     },
     {
-      name: "Bookings & Payments",
+      name: "Destinations & Presets",
+      href: "/admin/presets",
+      icon: MapPin,
+    },
+    {
+      name: "Quotation Builder",
+      href: "/admin/quotations",
+      icon: FileText,
+    },
+    {
+      name: "Bookings & Invoices",
       href: "/admin/bookings",
       icon: CreditCard,
-      badge: "Ledger",
     },
     {
-      name: "Website Content / CMS",
+      name: "Media Vault",
+      href: "/admin/media",
+      icon: ImageIcon,
+      aliases: ["/admin/gallery"],
+    },
+    {
+      name: "Website CMS",
       href: "/admin/cms",
       icon: FileEdit,
-    },
-    {
-      name: "Analytics & Reports",
-      href: "/admin/analytics",
-      icon: BarChart3,
-      badge: "Phase 6",
     },
   ];
 
   return (
-    <aside className="w-64 bg-[#0C1116] text-[#E6EDF3] flex flex-col justify-between shrink-0 border-r border-[#1F2937]/90 min-h-screen select-none">
+    <aside className="w-64 flex-shrink-0 h-screen sticky top-0 overflow-y-auto border-r border-slate-200 bg-white flex flex-col justify-between select-none font-sans z-40">
       <div>
-        {/* Admin Brand */}
-        <div className="p-5 border-b border-[#1F2937]/80">
-          <Link href="/admin" className="block group">
-            <img
-              src="/images/logo-white.png"
-              alt="TripMaster - Experience Neighbourhood"
-              className="h-10 w-auto object-contain transition-transform duration-200 group-hover:scale-102"
-            />
-            <span className="text-[9px] tracking-[0.24em] uppercase text-[#dfbd75] font-semibold mt-1.5 block">
-              Admin Command Center
-            </span>
+        {/* Official Brand Logo Container */}
+        <div className="p-4 border-b border-slate-200/90 bg-white">
+          <Link href="/admin" className="flex items-center gap-3 group">
+            <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-center p-1.5 shadow-2xs group-hover:border-blue-400 transition-colors">
+              <img
+                src="/logo.png"
+                alt="TripMaster"
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <div>
+              <div className="font-heading font-bold text-sm tracking-tight text-slate-900 flex items-center gap-1.5">
+                TRIP MASTER
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              </div>
+              <span className="text-[10px] tracking-[0.16em] uppercase text-sky-600 font-semibold block">
+                Workstation CRM
+              </span>
+            </div>
           </Link>
         </div>
 
         {/* Navigation Menu */}
-        <div className="px-3 py-5 space-y-1">
-          <div className="px-3 mb-2 text-[10px] uppercase font-bold tracking-[0.18em] text-slate-500">
-            Operations
+        <div className="px-3 py-4 space-y-1">
+          <div className="px-2.5 mb-2 text-[10px] uppercase font-bold tracking-[0.16em] text-slate-400">
+            Core Modules
           </div>
+
           {navigation.map((item) => {
             const Icon = item.icon;
             const isActive = item.exact
               ? pathname === item.href
-              : pathname.startsWith(item.href);
+              : pathname.startsWith(item.href) ||
+                (item.aliases && item.aliases.some((a) => pathname.startsWith(a)));
 
             return (
               <Link
                 key={item.name}
                 href={item.href}
-                className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium tracking-wide transition-all ${
+                className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-all ${
                   isActive
-                    ? "bg-[#1F2937] text-white shadow-xs border border-white/10 font-semibold"
-                    : "text-slate-400 hover:bg-[#161F28] hover:text-slate-200"
+                    ? "bg-blue-50 text-blue-800 shadow-2xs border border-blue-200/90 font-semibold"
+                    : "text-slate-600 hover:bg-blue-50/60 hover:text-blue-700 border border-transparent"
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <Icon
-                    className={`w-4 h-4 ${
-                      isActive ? "text-[#dfbd75]" : "text-slate-400"
-                    }`}
-                  />
-                  <span>{item.name}</span>
-                </div>
-
-                {item.badge && (
-                  <span
-                    className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${
-                      isActive
-                        ? "bg-[#dfbd75] text-[#0C1116]"
-                        : "bg-[#1E293B] text-slate-400 border border-slate-700/60"
-                    }`}
-                  >
-                    {item.badge}
-                  </span>
-                )}
+                <Icon
+                  className={`w-4 h-4 shrink-0 transition-colors ${
+                    isActive ? "text-blue-600" : "text-slate-400 group-hover:text-blue-600"
+                  }`}
+                />
+                <span className="whitespace-nowrap">{item.name}</span>
               </Link>
             );
           })}
         </div>
       </div>
 
-      {/* Public Site Shortcut & Concierge Status */}
-      <div className="p-4 border-t border-[#1F2937]/80 bg-[#080D11] space-y-2.5">
-        <div className="flex items-center justify-between px-1 text-[11px] text-slate-400">
-          <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="font-mono tabular-nums text-slate-300">Concierge Desk Live</span>
-          </span>
-          <span className="font-mono text-[10px] text-slate-500">v2.4</span>
-        </div>
-
+      {/* Public Portal Quicklink */}
+      <div className="p-3.5 border-t border-slate-200 bg-slate-50/70">
         <Link
           href="/"
           target="_blank"
-          className="flex items-center justify-between p-2.5 rounded-xl bg-[#161F28] hover:bg-[#1F2937] text-xs font-medium text-slate-300 hover:text-white transition-all border border-slate-700/60"
+          className="flex items-center justify-between px-3 py-2 rounded-xl bg-white hover:bg-sky-50/60 text-xs font-semibold text-slate-700 hover:text-blue-700 transition-all border border-slate-200 shadow-2xs"
         >
           <div className="flex items-center gap-2">
-            <ExternalLink className="w-3.5 h-3.5 text-[#dfbd75]" />
-            <span>Open Public Portal</span>
+            <ExternalLink className="w-3.5 h-3.5 text-blue-600" />
+            <span>Public Website</span>
           </div>
-          <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
+          <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
         </Link>
       </div>
     </aside>

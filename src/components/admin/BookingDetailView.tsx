@@ -66,7 +66,9 @@ interface BookingFullDetail {
   balanceAmount: number;
   bookingStatus: string;
   createdAt: string;
-  customer: {
+  customPackageTitle?: string | null;
+  customDestination?: string | null;
+  customer?: {
     id: string;
     name: string;
     email: string;
@@ -74,8 +76,8 @@ interface BookingFullDetail {
     whatsappNumber: string | null;
     city: string | null;
     notes: string | null;
-  };
-  package: {
+  } | null;
+  package?: {
     id: string;
     title: string;
     slug: string;
@@ -85,7 +87,7 @@ interface BookingFullDetail {
     basePrice: number;
     discountedPrice: number | null;
     featuredImage: string;
-  };
+  } | null;
   paymentTransactions: PaymentTx[];
   customerDocuments: DocumentItem[];
   inquiry: {
@@ -283,7 +285,10 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
   // Handle attach document
   const handleAttachDocument = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!booking) return;
+    if (!booking || !booking.customer) {
+      alert("No customer record is associated with this booking.");
+      return;
+    }
     setAttachingDoc(true);
     try {
       const res = await fetch(`/api/admin/customers/${booking.customer.id}/documents`, {
@@ -336,7 +341,7 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
         </p>
         <Link
           href="/admin/bookings"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[#082F24] text-white rounded-xl text-sm"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl text-sm"
         >
           <ArrowLeft className="w-4 h-4" /> Return to Bookings
         </Link>
@@ -344,12 +349,18 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
     );
   }
 
-  const rawPhone = (booking.customer.whatsappNumber || booking.customer.phone || "").replace(
-    /\D/g,
+  const packageTitle =
+    booking.package?.title || booking.customPackageTitle || "Bespoke Journey";
+  const packageDestination =
+    booking.package?.destination || booking.customDestination || "Custom Destination";
+  const customerName = booking.customer?.name || "Direct Guest";
+  const rawPhone = (
+    booking.customer?.whatsappNumber ||
+    booking.customer?.phone ||
     ""
-  );
+  ).replace(/\D/g, "");
   const waUrl = `https://wa.me/${rawPhone}?text=${encodeURIComponent(
-    `Hello ${booking.customer.name}, warm greetings from Trip Master Concierge regarding your reservation ${booking.bookingReference} for ${booking.package.title}.`
+    `Hello ${customerName}, warm greetings from Trip Master Concierge regarding your reservation ${booking.bookingReference} for ${packageTitle}.`
   )}`;
 
   const paymentShareUrl = `https://tripmaster.in/pay/${booking.bookingReference}`;
@@ -358,8 +369,8 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
     <div className="max-w-7xl mx-auto space-y-8 pb-16">
       {/* Toast Notification */}
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#082F24] text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 border border-[#dfbd75]/40 text-sm font-medium animate-in slide-in-from-bottom-5">
-          <CheckCircle2 className="w-5 h-5 text-[#dfbd75]" />
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 border border-slate-700 text-sm font-medium animate-in slide-in-from-bottom-5">
+          <CheckCircle2 className="w-5 h-5 text-sky-400" />
           <span>{toast}</span>
         </div>
       )}
@@ -368,7 +379,7 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <Link
           href="/admin/bookings"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-[#082F24] transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" /> Back to Bookings Ledger
         </Link>
@@ -406,7 +417,7 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-3">
-              <span className="font-mono text-xl sm:text-2xl font-bold bg-[#082F24] text-[#dfbd75] px-3.5 py-1 rounded-xl">
+              <span className="font-mono text-xl sm:text-2xl font-bold bg-slate-900 text-sky-400 px-3.5 py-1 rounded-xl">
                 {booking.bookingReference}
               </span>
               <span className="text-xs text-slate-400">
@@ -419,8 +430,8 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
               </span>
             </div>
 
-            <h1 className="font-heading text-2xl sm:text-3xl font-bold text-[#082F24]">
-              {booking.package.title}
+            <h1 className="font-heading text-2xl sm:text-3xl font-bold text-slate-900">
+              {packageTitle}
             </h1>
 
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-slate-600">
@@ -443,49 +454,67 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
               </span>
               <span className="flex items-center gap-1.5 text-slate-500">
                 <MapPin className="w-4 h-4 text-slate-400" />
-                {booking.package.destination}
+                {packageDestination}
               </span>
             </div>
           </div>
 
           {/* Guest Contact Action Buttons */}
           <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-slate-200/80 space-y-3 min-w-[280px]">
-            <div className="flex items-center justify-between">
+            {booking.customer ? (
+              <>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase text-slate-400 block">
+                      Primary Guest
+                    </span>
+                    <Link
+                      href={`/admin/customers/${booking.customer.id}`}
+                      className="font-heading font-bold text-slate-800 text-sm hover:underline hover:text-slate-900"
+                    >
+                      {booking.customer.name}
+                    </Link>
+                  </div>
+                  <Link
+                    href={`/admin/customers/${booking.customer.id}`}
+                    className="text-[11px] text-slate-900 font-semibold hover:underline"
+                  >
+                    View 360° Profile
+                  </Link>
+                </div>
+
+                <div className="flex flex-wrap gap-2 pt-1 border-t border-slate-200/60">
+                  {rawPhone ? (
+                    <a
+                      href={waUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-semibold hover:bg-emerald-700 transition-colors inline-flex items-center justify-center gap-1.5"
+                    >
+                      <Send className="w-3 h-3" /> WhatsApp
+                    </a>
+                  ) : null}
+                  {booking.customer.phone ? (
+                    <a
+                      href={`tel:${booking.customer.phone}`}
+                      className="flex-1 py-1.5 rounded-lg bg-slate-100 text-slate-700 text-xs font-semibold hover:bg-slate-200 transition-colors inline-flex items-center justify-center gap-1.5"
+                    >
+                      <Phone className="w-3 h-3 text-slate-500" /> Call
+                    </a>
+                  ) : null}
+                </div>
+              </>
+            ) : (
               <div>
                 <span className="text-[10px] font-bold uppercase text-slate-400 block">
                   Primary Guest
                 </span>
-                <Link
-                  href={`/admin/customers/${booking.customer.id}`}
-                  className="font-heading font-bold text-slate-800 text-sm hover:underline hover:text-[#082F24]"
-                >
-                  {booking.customer.name}
-                </Link>
+                <span className="font-heading font-bold text-slate-800 text-sm">
+                  Direct Guest Reservation
+                </span>
+                <p className="text-[11px] text-slate-500 mt-1">Guest account profile not linked.</p>
               </div>
-              <Link
-                href={`/admin/customers/${booking.customer.id}`}
-                className="text-[11px] text-[#082F24] font-semibold hover:underline"
-              >
-                View 360° Profile
-              </Link>
-            </div>
-
-            <div className="flex flex-wrap gap-2 pt-1 border-t border-slate-200/60">
-              <a
-                href={waUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-semibold hover:bg-emerald-700 transition-colors inline-flex items-center justify-center gap-1.5"
-              >
-                <Send className="w-3 h-3" /> WhatsApp
-              </a>
-              <a
-                href={`tel:${booking.customer.phone}`}
-                className="flex-1 py-1.5 rounded-lg bg-slate-100 text-slate-700 text-xs font-semibold hover:bg-slate-200 transition-colors inline-flex items-center justify-center gap-1.5"
-              >
-                <Phone className="w-3 h-3 text-slate-500" /> Call
-              </a>
-            </div>
+            )}
           </div>
         </div>
 
@@ -501,11 +530,11 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
       <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-[#082F24] text-[#dfbd75] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-slate-900 text-sky-400 flex items-center justify-center">
               <CreditCard className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="font-heading text-xl font-bold text-[#082F24]">
+              <h2 className="font-heading text-xl font-bold text-slate-900">
                 Financial Ledger & Balance Tracking
               </h2>
               <p className="text-xs text-slate-500">
@@ -610,14 +639,14 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
       <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden">
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Receipt className="w-5 h-5 text-[#082F24]" />
-            <h3 className="font-heading text-lg font-bold text-[#082F24]">
+            <Receipt className="w-5 h-5 text-slate-900" />
+            <h3 className="font-heading text-lg font-bold text-slate-900">
               Payment Transactions & Receipt History ({booking.paymentTransactions.length})
             </h3>
           </div>
           <button
             onClick={() => setShowPaymentModal(true)}
-            className="text-xs text-[#082F24] font-semibold hover:underline inline-flex items-center gap-1"
+            className="text-xs text-slate-900 font-semibold hover:underline inline-flex items-center gap-1"
           >
             <PlusCircle className="w-3.5 h-3.5" /> Add Payment
           </button>
@@ -715,8 +744,8 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
       <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 space-y-5">
         <div className="flex items-center justify-between pb-4 border-b border-slate-100">
           <div>
-            <h3 className="font-heading text-lg font-bold text-[#082F24] flex items-center gap-2">
-              <FileText className="w-5 h-5 text-[#dfbd75]" />
+            <h3 className="font-heading text-lg font-bold text-slate-900 flex items-center gap-2">
+              <FileText className="w-5 h-5 text-sky-400" />
               Booking Documents & Vouchers ({booking.customerDocuments.length})
             </h3>
             <p className="text-xs text-slate-500">
@@ -725,9 +754,9 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
           </div>
           <button
             onClick={() => setShowDocModal(true)}
-            className="px-3.5 py-2 rounded-xl bg-[#082F24] text-white text-xs font-semibold hover:bg-[#0c4434] transition-colors inline-flex items-center gap-1.5"
+            className="px-3.5 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 transition-colors inline-flex items-center gap-1.5"
           >
-            <FilePlus className="w-3.5 h-3.5 text-[#dfbd75]" />
+            <FilePlus className="w-3.5 h-3.5 text-sky-400" />
             Attach Document
           </button>
         </div>
@@ -741,7 +770,7 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
             {booking.customerDocuments.map((doc) => (
               <div
                 key={doc.id}
-                className="p-4 rounded-2xl border border-slate-200/80 bg-slate-50/50 flex flex-col justify-between hover:border-[#dfbd75] transition-colors"
+                className="p-4 rounded-2xl border border-slate-200/80 bg-slate-50/50 flex flex-col justify-between hover:border-blue-300 transition-colors"
               >
                 <div>
                   <div className="flex items-center justify-between">
@@ -765,7 +794,7 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
                     href={doc.fileUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs font-semibold text-[#082F24] hover:text-[#dfbd75] inline-flex items-center gap-1"
+                    className="text-xs font-semibold text-slate-900 hover:text-blue-600 inline-flex items-center gap-1"
                   >
                     View / Download
                     <ExternalLink className="w-3 h-3" />
@@ -782,7 +811,7 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl animate-in zoom-in-95 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="font-heading text-lg font-bold text-[#082F24]">
+              <h3 className="font-heading text-lg font-bold text-slate-900">
                 Adjust Agreed Package Tariff
               </h3>
               <button
@@ -803,7 +832,7 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
                   required
                   value={newTotalAmount}
                   onChange={(e) => setNewTotalAmount(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:border-[#082F24]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:border-blue-600"
                 />
                 <p className="text-[11px] text-slate-400 mt-1">
                   Outstanding balance will automatically adjust against the ₹
@@ -822,7 +851,7 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
                 <button
                   type="submit"
                   disabled={updatingTariff}
-                  className="px-5 py-2 rounded-xl bg-[#082F24] text-white text-xs font-semibold hover:bg-[#0c4434] transition-all disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 transition-all disabled:opacity-50"
                 >
                   {updatingTariff ? "Updating..." : "Save New Tariff"}
                 </button>
@@ -837,7 +866,7 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl animate-in zoom-in-95 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="font-heading text-lg font-bold text-[#082F24]">
+              <h3 className="font-heading text-lg font-bold text-slate-900">
                 Record Offline / Installment Payment
               </h3>
               <button
@@ -866,7 +895,7 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
                   onChange={(e) =>
                     setPaymentForm({ ...paymentForm, amount: e.target.value })
                   }
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:border-[#082F24]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:border-blue-600"
                 />
               </div>
 
@@ -879,7 +908,7 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
                   onChange={(e) =>
                     setPaymentForm({ ...paymentForm, paymentMethod: e.target.value })
                   }
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs bg-white focus:outline-none focus:border-[#082F24]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs bg-white focus:outline-none focus:border-blue-600"
                 >
                   <option value="BANK_TRANSFER">Bank Transfer (NEFT / RTGS / IMPS)</option>
                   <option value="UPI">UPI (GooglePay / PhonePe / Paytm)</option>
@@ -899,7 +928,7 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
                   onChange={(e) =>
                     setPaymentForm({ ...paymentForm, date: e.target.value })
                   }
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-[#082F24]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-blue-600"
                 />
               </div>
 
@@ -914,7 +943,7 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
                   onChange={(e) =>
                     setPaymentForm({ ...paymentForm, notes: e.target.value })
                   }
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-[#082F24]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-blue-600"
                 />
               </div>
 
@@ -1035,7 +1064,7 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl animate-in zoom-in-95 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="font-heading text-lg font-bold text-[#082F24]">
+              <h3 className="font-heading text-lg font-bold text-slate-900">
                 Attach Document to Booking
               </h3>
               <button
@@ -1057,7 +1086,7 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
                   placeholder="e.g. Confirmed Taj Lake Palace Voucher"
                   value={docForm.title}
                   onChange={(e) => setDocForm({ ...docForm, title: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-[#082F24]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-blue-600"
                 />
               </div>
 
@@ -1102,7 +1131,7 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
                   placeholder="https://tripmaster.in/vouchers/..."
                   value={docForm.fileUrl}
                   onChange={(e) => setDocForm({ ...docForm, fileUrl: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-[#082F24]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-blue-600"
                 />
               </div>
 
@@ -1117,7 +1146,7 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
                 <button
                   type="submit"
                   disabled={attachingDoc}
-                  className="px-5 py-2 rounded-xl bg-[#082F24] text-white text-xs font-semibold hover:bg-[#0c4434] transition-all disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 transition-all disabled:opacity-50"
                 >
                   {attachingDoc ? "Attaching..." : "Attach Document"}
                 </button>

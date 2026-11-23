@@ -283,21 +283,25 @@ export function InquiriesHub() {
   const statusList = ["NEW", "CONTACTED", "QUOTED", "CONVERTED", "LOST"] as const;
 
   const statusColors: Record<string, string> = {
-    NEW: "bg-rose-50 text-rose-800 border-rose-200",
-    CONTACTED: "bg-amber-50 text-amber-800 border-amber-200",
+    NEW: "bg-blue-50 text-blue-700 border-blue-200",
+    CONTACTED: "bg-slate-100 text-slate-700 border-slate-200",
     QUOTED: "bg-blue-50 text-blue-800 border-blue-200",
     CONVERTED: "bg-emerald-50 text-emerald-800 border-emerald-200",
-    LOST: "bg-slate-100 text-slate-700 border-slate-200",
+    LOST: "bg-rose-50 text-rose-800 border-rose-200",
   };
 
+  const newLeadsCount = inquiries.filter((i) => i.status === "NEW").length;
+  const inPipelineCount = inquiries.filter((i) => ["CONTACTED", "QUOTED"].includes(i.status)).length;
+  const convertedCount = inquiries.filter((i) => i.status === "CONVERTED").length;
+
   return (
-    <div className="space-y-8 max-w-7xl mx-auto pb-20">
+    <div className="space-y-6 max-w-7xl mx-auto pb-16 font-sans">
       {/* Toast Alert */}
       {toast && (
         <div
           className={`fixed bottom-6 right-6 z-50 px-5 py-3 rounded-2xl shadow-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 border transition-all ${
             toast.type === "success"
-              ? "bg-[#082F24] text-[#dfbd75] border-[#dfbd75]/40"
+              ? "bg-blue-600 text-white border-blue-600"
               : "bg-rose-900 text-rose-100 border-rose-700"
           }`}
         >
@@ -306,34 +310,83 @@ export function InquiriesHub() {
         </div>
       )}
 
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* 1. Standardized Top Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-1">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold uppercase tracking-wider mb-2">
-            <Sparkles className="w-3.5 h-3.5 text-[#c5a059]" />
-            <span>Lead Tracking & Pipeline Engine</span>
+          {/* Breadcrumb Tag / Module Pill */}
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-semibold uppercase tracking-wider mb-1.5 border border-blue-100">
+            <MessageSquare className="w-3.5 h-3.5 text-blue-600" />
+            <span>Lead Tracking & Pipeline</span>
           </div>
-          <h1 className="font-heading text-3xl font-bold text-[#082F24]">
+          <h1 className="font-heading text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
             Inquiries Management & Travel CRM
           </h1>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
             Manage incoming guest leads, schedule follow-ups, and convert inquiries to confirmed bookings.
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center gap-2 bg-[#082F24] text-[#dfbd75] hover:bg-[#0c4031] hover:text-white px-5 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-md self-start sm:self-center"
-        >
-          <PlusCircle className="w-4 h-4" />
-          <span>+ Add Manual Inquiry</span>
-        </button>
+        {/* Top-Right Action Button */}
+        <div className="flex flex-wrap items-center gap-2.5 self-start sm:self-auto shrink-0">
+          <button
+            type="button"
+            onClick={() => setShowAddModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 text-white font-semibold text-xs hover:bg-blue-700 transition-all shadow-xs"
+          >
+            <PlusCircle className="w-4 h-4 text-white" />
+            <span>+ Add Manual Inquiry</span>
+          </button>
+        </div>
       </div>
 
-      {/* Filter Toolbar */}
-      <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm space-y-4">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+      {/* 2. TOP KPI SUMMARY STRIP */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white p-4.5 rounded-2xl border border-slate-200/90 shadow-xs">
+          <span className="text-[11px] uppercase font-bold tracking-wider text-slate-400 block">
+            Total Inquiries
+          </span>
+          <div className="text-2xl font-bold text-slate-900 mt-1 font-mono tabular-nums">
+            {inquiries.length}
+          </div>
+          <span className="text-[11px] text-slate-400 mt-0.5 block">Logged customer leads</span>
+        </div>
+
+        <div className="bg-white p-4.5 rounded-2xl border border-slate-200/90 shadow-xs">
+          <span className="text-[11px] uppercase font-bold tracking-wider text-blue-600 block">
+            New Leads
+          </span>
+          <div className="text-2xl font-bold text-blue-700 mt-1 font-mono tabular-nums">
+            {newLeadsCount}
+          </div>
+          <span className="text-[11px] text-blue-600/80 mt-0.5 block">Awaiting advisor response</span>
+        </div>
+
+        <div className="bg-white p-4.5 rounded-2xl border border-slate-200/90 shadow-xs">
+          <span className="text-[11px] uppercase font-bold tracking-wider text-slate-500 block">
+            Active Follow-ups
+          </span>
+          <div className="text-2xl font-bold text-slate-900 mt-1 font-mono tabular-nums">
+            {inPipelineCount}
+          </div>
+          <span className="text-[11px] text-slate-400 mt-0.5 block">In contact or custom quote</span>
+        </div>
+
+        <div className="bg-white p-4.5 rounded-2xl border border-slate-200/90 shadow-xs">
+          <span className="text-[11px] uppercase font-bold tracking-wider text-emerald-700 block">
+            Confirmed Bookings
+          </span>
+          <div className="text-2xl font-bold text-emerald-700 mt-1 font-mono tabular-nums">
+            {convertedCount}
+          </div>
+          <span className="text-[11px] text-emerald-600 mt-0.5 block">
+            {inquiries.length > 0 ? ((convertedCount / inquiries.length) * 100).toFixed(1) : 0}% win rate
+          </span>
+        </div>
+      </div>
+
+      {/* 3. FILTER & SEARCH TOOLBAR */}
+      <div className="bg-white rounded-2xl p-3.5 sm:p-4 border border-slate-200/90 shadow-xs space-y-3">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-3">
           {/* Search form */}
           <form onSubmit={handleSearchSubmit} className="relative w-full md:w-80">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -342,7 +395,7 @@ export function InquiriesHub() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by name, phone, email..."
-              className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+              className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600"
             />
           </form>
 
@@ -352,7 +405,7 @@ export function InquiriesHub() {
             <select
               value={followUpFilter}
               onChange={(e) => setFollowUpFilter(e.target.value)}
-              className="px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 bg-[#FAF8F5] focus:outline-none focus:ring-2 focus:ring-[#082F24] cursor-pointer"
+              className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer"
             >
               <option value="all">All Follow-ups</option>
               <option value="today">Follow-ups Due Today</option>
@@ -367,7 +420,7 @@ export function InquiriesHub() {
                 onClick={() => setViewMode("table")}
                 className={`p-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
                   viewMode === "table"
-                    ? "bg-white text-[#082F24] shadow-sm font-bold"
+                    ? "bg-white text-slate-900 shadow-sm font-bold"
                     : "text-slate-500 hover:text-slate-900"
                 }`}
                 title="Table View"
@@ -380,7 +433,7 @@ export function InquiriesHub() {
                 onClick={() => setViewMode("kanban")}
                 className={`p-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
                   viewMode === "kanban"
-                    ? "bg-white text-[#082F24] shadow-sm font-bold"
+                    ? "bg-white text-slate-900 shadow-sm font-bold"
                     : "text-slate-500 hover:text-slate-900"
                 }`}
                 title="Kanban Pipeline"
@@ -404,7 +457,7 @@ export function InquiriesHub() {
               onClick={() => setStatusFilter(st)}
               className={`px-3 py-1 rounded-full text-xs font-semibold tracking-wide transition-all ${
                 statusFilter === st
-                  ? "bg-[#082F24] text-[#dfbd75] shadow-sm font-bold"
+                  ? "bg-blue-600 text-white shadow-sm font-bold"
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >
@@ -432,7 +485,7 @@ export function InquiriesHub() {
                   setFollowUpFilter("all");
                   fetchInquiries();
                 }}
-                className="text-xs font-bold text-[#082F24] underline"
+                className="text-xs font-bold text-slate-900 underline"
               >
                 Clear all filters
               </button>
@@ -566,7 +619,7 @@ export function InquiriesHub() {
                               <button
                                 type="button"
                                 onClick={() => handleConvertToBooking(inq)}
-                                className="p-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-[#c5a059] transition-colors"
+                                className="p-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-blue-600 transition-colors"
                                 title="Convert to Booking"
                               >
                                 <CreditCard className="w-3.5 h-3.5" />
@@ -654,7 +707,7 @@ export function InquiriesHub() {
                         className="bg-white rounded-xl p-3.5 border border-slate-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer space-y-2.5 group"
                       >
                         <div className="flex items-start justify-between">
-                          <h4 className="font-bold text-xs text-slate-900 group-hover:text-[#082F24] line-clamp-1">
+                          <h4 className="font-bold text-xs text-slate-900 group-hover:text-slate-900 line-clamp-1">
                             {inq.customer.name}
                           </h4>
                           <span className="text-[10px] text-slate-400 font-mono">
@@ -662,7 +715,7 @@ export function InquiriesHub() {
                           </span>
                         </div>
 
-                        <p className="text-[11px] font-semibold text-[#082F24] line-clamp-1">
+                        <p className="text-[11px] font-semibold text-slate-900 line-clamp-1">
                           {inq.package?.title || inq.destination}
                         </p>
 
@@ -713,9 +766,9 @@ export function InquiriesHub() {
         <div className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-sm flex justify-end">
           <div className="w-full max-w-xl bg-white h-full shadow-2xl flex flex-col justify-between overflow-y-auto">
             {/* Drawer Header */}
-            <div className="p-6 bg-[#082F24] text-white flex items-center justify-between border-b border-emerald-900">
+            <div className="p-6 bg-slate-900 text-white flex items-center justify-between border-b border-emerald-900">
               <div>
-                <span className="text-[10px] uppercase font-bold tracking-widest text-[#dfbd75]">
+                <span className="text-[10px] uppercase font-bold tracking-widest text-sky-300">
                   Inquiry #{selectedInquiry.id.slice(-6)}
                 </span>
                 <h2 className="font-heading text-2xl font-bold">
@@ -762,7 +815,7 @@ export function InquiriesHub() {
 
                 <Link
                   href={`/admin/customers/${selectedInquiry.customerId}`}
-                  className="flex items-center justify-center gap-1.5 bg-[#082F24] hover:bg-[#0c4031] text-[#dfbd75] py-2.5 px-3 rounded-xl text-xs font-bold"
+                  className="flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-sky-300 py-2.5 px-3 rounded-xl text-xs font-bold"
                 >
                   <User className="w-3.5 h-3.5" />
                   <span>360° Profile</span>
@@ -770,7 +823,7 @@ export function InquiriesHub() {
               </div>
 
               {/* Lead Details Card */}
-              <div className="p-5 rounded-2xl bg-[#FAF8F5] border border-slate-200/80 space-y-3">
+              <div className="p-5 rounded-2xl bg-slate-50/50 border border-slate-200/80 space-y-3">
                 <div className="flex items-center justify-between border-b border-slate-200/60 pb-2">
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
                     Lead Summary
@@ -799,7 +852,7 @@ export function InquiriesHub() {
                   </div>
                   <div>
                     <span className="text-slate-400 block">Destination</span>
-                    <span className="font-bold text-[#082F24]">
+                    <span className="font-bold text-slate-900">
                       {selectedInquiry.package?.title || selectedInquiry.destination}
                     </span>
                   </div>
@@ -819,8 +872,8 @@ export function InquiriesHub() {
               <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-[#c5a059]" />
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#082F24]">
+                    <Clock className="w-4 h-4 text-blue-600" />
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
                       Next Follow-Up Schedule
                     </h3>
                   </div>
@@ -828,7 +881,7 @@ export function InquiriesHub() {
                     type="button"
                     onClick={handleSaveFollowUp}
                     disabled={updatingFollowUp}
-                    className="text-xs font-bold uppercase text-[#082F24] hover:underline"
+                    className="text-xs font-bold uppercase text-slate-900 hover:underline"
                   >
                     {updatingFollowUp ? "Saving..." : "Save Schedule"}
                   </button>
@@ -843,7 +896,7 @@ export function InquiriesHub() {
                       type="datetime-local"
                       value={editFollowUpDate}
                       onChange={(e) => setEditFollowUpDate(e.target.value)}
-                      className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-[#FAF8F5]"
+                      className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-slate-50/50"
                     />
                   </div>
 
@@ -856,7 +909,7 @@ export function InquiriesHub() {
                       value={editFollowUpNote}
                       onChange={(e) => setEditFollowUpNote(e.target.value)}
                       placeholder="e.g. Call back to confirm suite..."
-                      className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-[#FAF8F5]"
+                      className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-slate-50/50"
                     />
                   </div>
                 </div>
@@ -875,12 +928,12 @@ export function InquiriesHub() {
                     value={newNoteText}
                     onChange={(e) => setNewNoteText(e.target.value)}
                     placeholder="Log call discussion, client requirement..."
-                    className="flex-1 px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+                    className="flex-1 px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600"
                   />
                   <button
                     type="submit"
                     disabled={submittingNote}
-                    className="bg-[#082F24] text-[#dfbd75] hover:bg-[#0c4031] px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1 disabled:opacity-50"
+                    className="bg-blue-600 text-white hover:bg-[#0c4031] px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1 disabled:opacity-50"
                   >
                     <Send className="w-3.5 h-3.5" />
                     <span>Log</span>
@@ -894,7 +947,7 @@ export function InquiriesHub() {
                     selectedInquiry.internalNotes.map((note, idx) => (
                       <div
                         key={idx}
-                        className="p-3 rounded-xl bg-[#FAF8F5] border border-slate-200 text-xs text-slate-700 leading-relaxed"
+                        className="p-3 rounded-xl bg-slate-50/50 border border-slate-200 text-xs text-slate-700 leading-relaxed"
                       >
                         {note}
                       </div>
@@ -908,7 +961,7 @@ export function InquiriesHub() {
                 <button
                   type="button"
                   onClick={() => handleConvertToBooking(selectedInquiry)}
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-[#dfbd75] to-[#c5a059] text-[#082F24] font-bold text-xs uppercase tracking-wider shadow-md hover:brightness-105 transition-all flex items-center justify-center gap-2"
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-[#dfbd75] to-[#c5a059] text-slate-900 font-bold text-xs uppercase tracking-wider shadow-md hover:brightness-105 transition-all flex items-center justify-center gap-2"
                 >
                   <CreditCard className="w-4 h-4" />
                   <span>Convert This Inquiry To Booking</span>
@@ -922,10 +975,10 @@ export function InquiriesHub() {
       {/* MODAL: ADD MANUAL INQUIRY */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-[#dfbd75]/40 space-y-6">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-slate-200 space-y-6">
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div>
-                <h3 className="font-heading text-2xl font-bold text-[#082F24]">
+                <h3 className="font-heading text-2xl font-bold text-slate-900">
                   Log Walk-In / Phone Lead
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
@@ -955,7 +1008,7 @@ export function InquiriesHub() {
                       setManualForm({ ...manualForm, name: e.target.value })
                     }
                     placeholder="e.g. Vikramaditya Singhania"
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-[#082F24]"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-blue-600"
                   />
                 </div>
 
@@ -975,7 +1028,7 @@ export function InquiriesHub() {
                       })
                     }
                     placeholder="+91 98765 43210"
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-[#082F24]"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-blue-600"
                   />
                 </div>
 
@@ -990,7 +1043,7 @@ export function InquiriesHub() {
                       setManualForm({ ...manualForm, email: e.target.value })
                     }
                     placeholder="guest@luxury.com"
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-[#082F24]"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-blue-600"
                   />
                 </div>
 
@@ -1006,7 +1059,7 @@ export function InquiriesHub() {
                       setManualForm({ ...manualForm, destination: e.target.value })
                     }
                     placeholder="e.g. Kashmir Luxury Escape"
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-[#082F24]"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-blue-600"
                   />
                 </div>
 
@@ -1021,7 +1074,7 @@ export function InquiriesHub() {
                     onChange={(e) =>
                       setManualForm({ ...manualForm, paxCount: e.target.value })
                     }
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-[#082F24]"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-blue-600"
                   />
                 </div>
 
@@ -1035,7 +1088,7 @@ export function InquiriesHub() {
                     onChange={(e) =>
                       setManualForm({ ...manualForm, travelDate: e.target.value })
                     }
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-[#082F24]"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-blue-600"
                   />
                 </div>
 
@@ -1048,7 +1101,7 @@ export function InquiriesHub() {
                     onChange={(e) =>
                       setManualForm({ ...manualForm, status: e.target.value })
                     }
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-[#082F24] bg-white cursor-pointer"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-blue-600 bg-white cursor-pointer"
                   >
                     {statusList.map((st) => (
                       <option key={st} value={st}>
@@ -1071,7 +1124,7 @@ export function InquiriesHub() {
                         followUpDate: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-[#082F24]"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-blue-600"
                   />
                 </div>
 
@@ -1089,7 +1142,7 @@ export function InquiriesHub() {
                       })
                     }
                     placeholder="e.g. Call regarding houseboat..."
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-[#082F24]"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-blue-600"
                   />
                 </div>
 
@@ -1104,7 +1157,7 @@ export function InquiriesHub() {
                       setManualForm({ ...manualForm, notes: e.target.value })
                     }
                     placeholder="Guest requirements, suite preferences..."
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-[#082F24]"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-blue-600"
                   />
                 </div>
               </div>
@@ -1120,7 +1173,7 @@ export function InquiriesHub() {
                 <button
                   type="submit"
                   disabled={submittingManual}
-                  className="bg-[#082F24] text-[#dfbd75] hover:bg-[#0c4031] hover:text-white px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider disabled:opacity-50"
+                  className="bg-blue-600 text-white hover:bg-blue-700 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider disabled:opacity-50"
                 >
                   {submittingManual ? "Logging Lead..." : "Log Manual Inquiry"}
                 </button>

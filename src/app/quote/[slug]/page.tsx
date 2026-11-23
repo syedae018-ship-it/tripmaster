@@ -15,7 +15,7 @@ import {
   MobileQuotationDossier,
   QuotationContentData,
 } from "@/components/quotation/MobileQuotationDossier";
-import { generateMobilePdf } from "@/lib/pdfGenerator";
+import { generateMobilePdf, printVectorMobileDossier } from "@/lib/pdfGenerator";
 
 export default function ClientQuotationPage() {
   const params = useParams();
@@ -55,7 +55,7 @@ export default function ClientQuotationPage() {
       const fileName = `${quotation.title.replace(/[^a-zA-Z0-9]/g, "_")}_Mobile_Plan.pdf`;
       const res = await generateMobilePdf(dossierRef.current, {
         fileName,
-        scale: 2.5,
+        scale: 3.5,
       });
       if (res.success) {
         setToast("PDF downloaded! You can now view it or share via WhatsApp.");

@@ -239,7 +239,7 @@ export function PackageStudio({
     <div className="max-w-6xl mx-auto space-y-8 pb-20">
       {/* Toast Alert */}
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50 px-5 py-3 rounded-2xl shadow-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 bg-[#082F24] text-[#dfbd75] border border-[#dfbd75]/40 animate-fade-in">
+        <div className="fixed bottom-6 right-6 z-50 px-5 py-3 rounded-2xl shadow-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 bg-blue-600 text-white border border-slate-700 animate-fade-in">
           <CheckCircle2 className="w-4 h-4" />
           <span>{toast}</span>
         </div>
@@ -250,13 +250,13 @@ export function PackageStudio({
         <div className="flex items-center gap-3">
           <Link
             href="/admin/packages"
-            className="p-2 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-[#082F24] hover:border-[#082F24] transition-all"
+            className="p-2 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-slate-900 hover:border-blue-600 transition-all"
             title="Back to Packages"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="font-heading text-2xl sm:text-3xl font-bold text-[#082F24]">
+            <h1 className="font-heading text-2xl sm:text-3xl font-bold text-slate-900">
               {isEdit ? "Edit Luxury Package & Assets" : "Create New Luxury Escape"}
             </h1>
             <p className="text-xs text-slate-500 mt-0.5">
@@ -269,7 +269,7 @@ export function PackageStudio({
           type="button"
           onClick={handleSubmit}
           disabled={loading}
-          className="inline-flex items-center gap-2 bg-[#082F24] text-[#dfbd75] hover:bg-[#0c4031] hover:text-white px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-md self-start sm:self-center disabled:opacity-50"
+          className="inline-flex items-center gap-2 bg-blue-600 text-white hover:bg-blue-700 px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-md self-start sm:self-center disabled:opacity-50"
         >
           <Save className="w-4 h-4" />
           <span>{loading ? "Saving Package..." : isEdit ? "Update Package" : "Publish Package"}</span>
@@ -289,7 +289,7 @@ export function PackageStudio({
           onClick={() => setActiveTab("basic")}
           className={`flex-1 min-w-[130px] py-2.5 px-4 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
             activeTab === "basic"
-              ? "bg-[#082F24] text-[#dfbd75] shadow-sm"
+              ? "bg-blue-600 text-white shadow-sm"
               : "text-slate-600 hover:bg-slate-100"
           }`}
         >
@@ -302,7 +302,7 @@ export function PackageStudio({
           onClick={() => setActiveTab("itinerary")}
           className={`flex-1 min-w-[130px] py-2.5 px-4 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
             activeTab === "itinerary"
-              ? "bg-[#082F24] text-[#dfbd75] shadow-sm"
+              ? "bg-blue-600 text-white shadow-sm"
               : "text-slate-600 hover:bg-slate-100"
           }`}
         >
@@ -315,7 +315,7 @@ export function PackageStudio({
           onClick={() => setActiveTab("map")}
           className={`flex-1 min-w-[130px] py-2.5 px-4 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
             activeTab === "map"
-              ? "bg-[#082F24] text-[#dfbd75] shadow-sm"
+              ? "bg-blue-600 text-white shadow-sm"
               : "text-slate-600 hover:bg-slate-100"
           }`}
         >
@@ -328,7 +328,7 @@ export function PackageStudio({
           onClick={() => setActiveTab("policies")}
           className={`flex-1 min-w-[130px] py-2.5 px-4 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
             activeTab === "policies"
-              ? "bg-[#082F24] text-[#dfbd75] shadow-sm"
+              ? "bg-blue-600 text-white shadow-sm"
               : "text-slate-600 hover:bg-slate-100"
           }`}
         >
@@ -341,7 +341,7 @@ export function PackageStudio({
       {activeTab === "basic" && (
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-6">
           <div className="border-b border-slate-100 pb-4">
-            <h2 className="font-heading text-xl font-bold text-[#082F24]">
+            <h2 className="font-heading text-xl font-bold text-slate-900">
               Basic Package Information & Luxury Pricing
             </h2>
             <p className="text-xs text-slate-500 mt-1">
@@ -361,7 +361,7 @@ export function PackageStudio({
                 value={formData.title}
                 onChange={(e) => handleTitleChange(e.target.value)}
                 placeholder="e.g. Kashmir Celestial Serenade: Gulmarg Gondola & Dal Houseboat"
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
             </div>
 
@@ -380,7 +380,7 @@ export function PackageStudio({
                   value={formData.slug}
                   onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                   placeholder="kashmir-celestial-serenade"
-                  className="w-full px-4 py-3 rounded-r-xl border border-slate-200 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+                  className="w-full px-4 py-3 rounded-r-xl border border-slate-200 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-600"
                 />
               </div>
             </div>
@@ -398,7 +398,7 @@ export function PackageStudio({
                   setFormData({ ...formData, destination: e.target.value })
                 }
                 placeholder="e.g. Kashmir, India or Kerala Backwaters"
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
             </div>
 
@@ -418,7 +418,7 @@ export function PackageStudio({
                     durationDays: parseInt(e.target.value, 10),
                   })
                 }
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
             </div>
 
@@ -438,7 +438,7 @@ export function PackageStudio({
                     durationNights: parseInt(e.target.value, 10),
                   })
                 }
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
             </div>
 
@@ -458,7 +458,7 @@ export function PackageStudio({
                     basePrice: parseFloat(e.target.value),
                   })
                 }
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
             </div>
 
@@ -478,7 +478,7 @@ export function PackageStudio({
                   })
                 }
                 placeholder="Leave blank if no discount"
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
             </div>
 
@@ -495,7 +495,7 @@ export function PackageStudio({
                   setFormData({ ...formData, featuredImage: e.target.value })
                 }
                 placeholder="https://images.unsplash.com/..."
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
               {formData.featuredImage && (
                 <div className="mt-3 relative h-40 w-full max-w-md rounded-2xl overflow-hidden border border-slate-200">
@@ -525,7 +525,7 @@ export function PackageStudio({
                       ],
                     })
                   }
-                  className="text-xs font-bold uppercase text-[#082F24] hover:underline flex items-center gap-1"
+                  className="text-xs font-bold uppercase text-slate-900 hover:underline flex items-center gap-1"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Gallery Image</span>
@@ -543,7 +543,7 @@ export function PackageStudio({
                         copy[idx] = e.target.value;
                         setFormData({ ...formData, galleryImages: copy });
                       }}
-                      className="flex-1 px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+                      className="flex-1 px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600"
                     />
                     <button
                       type="button"
@@ -572,7 +572,7 @@ export function PackageStudio({
                 onChange={(e) =>
                   setFormData({ ...formData, overview: e.target.value })
                 }
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
             </div>
 
@@ -585,7 +585,7 @@ export function PackageStudio({
                   onChange={(e) =>
                     setFormData({ ...formData, isPublished: e.target.checked })
                   }
-                  className="w-4 h-4 accent-[#082F24]"
+                  className="w-4 h-4 accent-blue-600"
                 />
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
                   Publish to Public Website
@@ -599,7 +599,7 @@ export function PackageStudio({
                   onChange={(e) =>
                     setFormData({ ...formData, isFeatured: e.target.checked })
                   }
-                  className="w-4 h-4 accent-[#082F24]"
+                  className="w-4 h-4 accent-blue-600"
                 />
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
                   Feature on Homepage
@@ -615,7 +615,7 @@ export function PackageStudio({
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
             <div>
-              <h2 className="font-heading text-xl font-bold text-[#082F24]">
+              <h2 className="font-heading text-xl font-bold text-slate-900">
                 Day-by-Day Itinerary & Stay Asset Engine
               </h2>
               <p className="text-xs text-slate-500 mt-1">
@@ -626,7 +626,7 @@ export function PackageStudio({
             <button
               type="button"
               onClick={addDay}
-              className="inline-flex items-center gap-1.5 bg-[#082F24] text-[#dfbd75] hover:bg-[#0c4031] hover:text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all"
+              className="inline-flex items-center gap-1.5 bg-blue-600 text-white hover:bg-blue-700 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all"
             >
               <Plus className="w-4 h-4" />
               <span>Add Day {formData.itinerary.length + 1}</span>
@@ -643,11 +643,11 @@ export function PackageStudio({
                 {/* Header row */}
                 <div className="flex items-center justify-between pb-4 border-b border-slate-100">
                   <div className="flex items-center gap-3">
-                    <span className="w-10 h-10 rounded-xl bg-[#082F24] text-[#dfbd75] font-heading font-bold text-base flex items-center justify-center shrink-0">
+                    <span className="w-10 h-10 rounded-xl bg-blue-600 text-white font-heading font-bold text-base flex items-center justify-center shrink-0">
                       D{day.dayNumber}
                     </span>
                     <div>
-                      <span className="text-[10px] uppercase font-bold text-[#c5a059] block">
+                      <span className="text-[10px] uppercase font-bold text-blue-600 block">
                         Day {day.dayNumber} Sequence
                       </span>
                       <h3 className="font-heading text-lg font-bold text-slate-900">
@@ -680,7 +680,7 @@ export function PackageStudio({
                       value={day.title}
                       onChange={(e) => updateDay(idx, { title: e.target.value })}
                       placeholder="e.g. Ascent to Gulmarg: Meadow of Flowers & Phase II Gondola"
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
                     />
                   </div>
 
@@ -694,7 +694,7 @@ export function PackageStudio({
                       value={day.description}
                       onChange={(e) => updateDay(idx, { description: e.target.value })}
                       placeholder="Detail the experiences, monuments visited, and timings..."
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
                     />
                   </div>
                 </div>
@@ -726,7 +726,7 @@ export function PackageStudio({
                                   : day.mealsIncluded.filter((m) => m !== meal);
                                 updateDay(idx, { mealsIncluded: newMeals });
                               }}
-                              className="accent-[#082F24]"
+                              className="accent-blue-600"
                             />
                             <span>{meal}</span>
                           </label>
@@ -751,7 +751,7 @@ export function PackageStudio({
                         ];
                         updateDay(idx, { activityPhotos: newPhotos });
                       }}
-                      className="text-xs font-bold uppercase text-[#082F24] hover:underline flex items-center gap-1"
+                      className="text-xs font-bold uppercase text-slate-900 hover:underline flex items-center gap-1"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       <span>Add Activity Photo URL</span>
@@ -769,7 +769,7 @@ export function PackageStudio({
                             copy[pIdx] = e.target.value;
                             updateDay(idx, { activityPhotos: copy });
                           }}
-                          className="flex-1 px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+                          className="flex-1 px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600"
                         />
                         <button
                           type="button"
@@ -787,10 +787,10 @@ export function PackageStudio({
                 </div>
 
                 {/* DEDICATED STAY CARD BUILDER FOR THIS DAY */}
-                <div className="p-5 rounded-2xl bg-[#FAF8F5] border border-[#c5a059]/40 space-y-4">
+                <div className="p-5 rounded-2xl bg-slate-50/50 border border-[#c5a059]/40 space-y-4">
                   <div className="flex items-center gap-2">
-                    <Building className="w-4 h-4 text-[#c5a059]" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-[#082F24]">
+                    <Building className="w-4 h-4 text-blue-600" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-900">
                       Dedicated Stay Card (Day {day.dayNumber})
                     </span>
                   </div>
@@ -808,7 +808,7 @@ export function PackageStudio({
                           updateDay(idx, { accommodationName: e.target.value })
                         }
                         placeholder="e.g. The Khyber Himalayan Resort & Spa"
-                        className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#082F24] bg-white"
+                        className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white"
                       />
                     </div>
 
@@ -824,7 +824,7 @@ export function PackageStudio({
                             accommodationRating: parseFloat(e.target.value),
                           })
                         }
-                        className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#082F24] bg-white cursor-pointer"
+                        className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white cursor-pointer"
                       >
                         <option value="5.0">5.0 ★ Luxury 5-Star</option>
                         <option value="4.9">4.9 ★ Heritage Palace</option>
@@ -843,7 +843,7 @@ export function PackageStudio({
                         onChange={(e) =>
                           updateDay(idx, { accommodationCategory: e.target.value })
                         }
-                        className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#082F24] bg-white cursor-pointer"
+                        className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white cursor-pointer"
                       >
                         <option value="Luxury Resort">Luxury Resort</option>
                         <option value="Heritage Palace">Heritage Palace</option>
@@ -865,7 +865,7 @@ export function PackageStudio({
                           updateDay(idx, { accommodationPhoto: e.target.value })
                         }
                         placeholder="https://images.unsplash.com/..."
-                        className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#082F24] bg-white"
+                        className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white"
                       />
                     </div>
 
@@ -881,7 +881,7 @@ export function PackageStudio({
                           updateDay(idx, { accommodationDetails: e.target.value })
                         }
                         placeholder="e.g. Floor-to-ceiling pine views, heated indoor infinity pool, L'Occitane luxury bath essentials."
-                        className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#082F24] bg-white"
+                        className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white"
                       />
                     </div>
                   </div>
@@ -897,7 +897,7 @@ export function PackageStudio({
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
-              <h2 className="font-heading text-xl font-bold text-[#082F24]">
+              <h2 className="font-heading text-xl font-bold text-slate-900">
                 Interactive Map Waypoints & Route Pins
               </h2>
               <p className="text-xs text-slate-500 mt-1">
@@ -921,7 +921,7 @@ export function PackageStudio({
                   ],
                 })
               }
-              className="inline-flex items-center gap-1.5 bg-[#082F24] text-[#dfbd75] hover:bg-[#0c4031] hover:text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all"
+              className="inline-flex items-center gap-1.5 bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Add Waypoint</span>
@@ -932,9 +932,9 @@ export function PackageStudio({
             {formData.mapCoordinates.map((pin, idx) => (
               <div
                 key={idx}
-                className="p-4 rounded-2xl bg-[#FAF8F5] border border-slate-200 flex flex-col sm:flex-row items-center gap-3"
+                className="p-4 rounded-2xl bg-slate-50/50 border border-slate-200 flex flex-col sm:flex-row items-center gap-3"
               >
-                <div className="w-8 h-8 rounded-full bg-[#082F24] text-[#dfbd75] text-xs font-bold flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center shrink-0">
                   {idx + 1}
                 </div>
 
@@ -951,7 +951,7 @@ export function PackageStudio({
                       setFormData({ ...formData, mapCoordinates: copy });
                     }}
                     placeholder="e.g. Gulmarg Meadows"
-                    className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+                    className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
                   />
                 </div>
 
@@ -968,7 +968,7 @@ export function PackageStudio({
                       copy[idx].lat = parseFloat(e.target.value);
                       setFormData({ ...formData, mapCoordinates: copy });
                     }}
-                    className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+                    className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
                   />
                 </div>
 
@@ -985,7 +985,7 @@ export function PackageStudio({
                       copy[idx].lng = parseFloat(e.target.value);
                       setFormData({ ...formData, mapCoordinates: copy });
                     }}
-                    className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+                    className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
                   />
                 </div>
 
@@ -1047,7 +1047,7 @@ export function PackageStudio({
                         copy[idx] = e.target.value;
                         setFormData({ ...formData, inclusions: copy });
                       }}
-                      className="flex-1 px-3 py-1.5 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+                      className="flex-1 px-3 py-1.5 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600"
                     />
                     <button
                       type="button"
@@ -1100,7 +1100,7 @@ export function PackageStudio({
                         copy[idx] = e.target.value;
                         setFormData({ ...formData, exclusions: copy });
                       }}
-                      className="flex-1 px-3 py-1.5 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+                      className="flex-1 px-3 py-1.5 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600"
                     />
                     <button
                       type="button"
@@ -1120,7 +1120,7 @@ export function PackageStudio({
 
           {/* Payment & Cancellation Policies */}
           <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-4">
-            <h3 className="font-heading text-xl font-bold text-[#082F24]">
+            <h3 className="font-heading text-xl font-bold text-slate-900">
               Payment & Cancellation Terms
             </h3>
 
@@ -1135,7 +1135,7 @@ export function PackageStudio({
                   onChange={(e) =>
                     setFormData({ ...formData, paymentPolicy: e.target.value })
                   }
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600"
                 />
               </div>
 
@@ -1149,7 +1149,7 @@ export function PackageStudio({
                   onChange={(e) =>
                     setFormData({ ...formData, cancellationPolicy: e.target.value })
                   }
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600"
                 />
               </div>
             </div>
@@ -1167,7 +1167,7 @@ export function PackageStudio({
           type="button"
           onClick={handleSubmit}
           disabled={loading}
-          className="inline-flex items-center gap-2 bg-[#082F24] text-[#dfbd75] hover:bg-[#0c4031] hover:text-white px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-md disabled:opacity-50"
+          className="inline-flex items-center gap-2 bg-blue-600 text-white hover:bg-blue-700 px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-md disabled:opacity-50"
         >
           <Save className="w-4 h-4" />
           <span>{loading ? "Saving..." : isEdit ? "Update Package" : "Publish Package"}</span>

@@ -69,6 +69,8 @@ interface BookingItem {
   balanceAmount: number;
   bookingStatus: string;
   createdAt: string;
+  customPackageTitle?: string | null;
+  customDestination?: string | null;
   package: {
     id: string;
     title: string;
@@ -275,7 +277,7 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
         </p>
         <Link
           href="/admin/customers"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[#082F24] text-white rounded-xl text-sm"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl text-sm"
         >
           <ArrowLeft className="w-4 h-4" /> Return to Customer Directory
         </Link>
@@ -292,8 +294,8 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
     <div className="max-w-7xl mx-auto space-y-8 pb-12">
       {/* Toast Notification */}
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#082F24] text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 border border-[#dfbd75]/40 text-sm font-medium animate-in slide-in-from-bottom-5">
-          <CheckCircle2 className="w-5 h-5 text-[#dfbd75]" />
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 border border-slate-700 text-sm font-medium animate-in slide-in-from-bottom-5">
+          <CheckCircle2 className="w-5 h-5 text-sky-400" />
           <span>{toast}</span>
         </div>
       )}
@@ -302,7 +304,7 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
       <div className="flex items-center justify-between gap-4">
         <Link
           href="/admin/customers"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-[#082F24] transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" /> Back to Customer Directory
         </Link>
@@ -317,9 +319,9 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
           </button>
           <button
             onClick={() => setShowDocModal(true)}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#082F24] text-white hover:bg-[#0c4434] text-xs font-medium transition-colors shadow-xs"
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 text-xs font-medium transition-colors shadow-xs"
           >
-            <PlusCircle className="w-3.5 h-3.5 text-[#dfbd75]" />
+            <PlusCircle className="w-3.5 h-3.5 text-sky-400" />
             Attach Document
           </button>
         </div>
@@ -327,16 +329,16 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
 
       {/* CUSTOMER 360° SUMMARY CARD */}
       <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-[#dfbd75]/10 to-transparent rounded-full blur-2xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-sky-500/10 to-transparent rounded-full blur-2xl pointer-events-none" />
 
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
           <div className="flex items-start gap-4 sm:gap-6">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-[#082F24] to-[#125845] text-[#dfbd75] flex items-center justify-center font-heading text-2xl sm:text-3xl font-bold shadow-md shrink-0">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-blue-600 to-sky-700 text-white flex items-center justify-center font-heading text-2xl sm:text-3xl font-bold shadow-md shrink-0">
               {customer.name ? customer.name.charAt(0).toUpperCase() : "G"}
             </div>
             <div>
               <div className="flex flex-wrap items-center gap-3">
-                <h1 className="font-heading text-2xl sm:text-3xl font-bold text-[#082F24]">
+                <h1 className="font-heading text-2xl sm:text-3xl font-bold text-slate-900">
                   {customer.name}
                 </h1>
                 {customer.metrics.totalBookings > 0 && (
@@ -350,7 +352,7 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
               <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs sm:text-sm text-slate-600">
                 <a
                   href={`tel:${customer.phone}`}
-                  className="flex items-center gap-1.5 hover:text-[#082F24] transition-colors"
+                  className="flex items-center gap-1.5 hover:text-slate-900 transition-colors"
                 >
                   <Phone className="w-4 h-4 text-slate-400" />
                   {customer.phone}
@@ -370,7 +372,7 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
 
                 <a
                   href={`mailto:${customer.email}`}
-                  className="flex items-center gap-1.5 hover:text-[#082F24] transition-colors"
+                  className="flex items-center gap-1.5 hover:text-slate-900 transition-colors"
                 >
                   <Mail className="w-4 h-4 text-slate-400" />
                   {customer.email}
@@ -478,7 +480,7 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
           onClick={() => setActiveTab("inquiries")}
           className={`pb-3 text-sm font-semibold transition-all relative flex items-center gap-2 ${
             activeTab === "inquiries"
-              ? "text-[#082F24] border-b-2 border-[#082F24]"
+              ? "text-slate-900 border-b-2 border-blue-600"
               : "text-slate-400 hover:text-slate-700"
           }`}
         >
@@ -490,7 +492,7 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
           onClick={() => setActiveTab("bookings")}
           className={`pb-3 text-sm font-semibold transition-all relative flex items-center gap-2 ${
             activeTab === "bookings"
-              ? "text-[#082F24] border-b-2 border-[#082F24]"
+              ? "text-slate-900 border-b-2 border-blue-600"
               : "text-slate-400 hover:text-slate-700"
           }`}
         >
@@ -502,7 +504,7 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
           onClick={() => setActiveTab("documents")}
           className={`pb-3 text-sm font-semibold transition-all relative flex items-center gap-2 ${
             activeTab === "documents"
-              ? "text-[#082F24] border-b-2 border-[#082F24]"
+              ? "text-slate-900 border-b-2 border-blue-600"
               : "text-slate-400 hover:text-slate-700"
           }`}
         >
@@ -518,7 +520,7 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
             customer.inquiries.map((inq) => (
               <div
                 key={inq.id}
-                className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-6 hover:border-[#dfbd75]/60 transition-all"
+                className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-6 hover:border-blue-300 transition-all"
               >
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
                   <div>
@@ -526,7 +528,7 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
                       <span className="text-xs font-mono font-medium text-slate-400">
                         #{inq.id.slice(-6)}
                       </span>
-                      <h3 className="font-heading text-lg font-bold text-[#082F24]">
+                      <h3 className="font-heading text-lg font-bold text-slate-900">
                         {inq.package?.title || inq.destination}
                       </h3>
                       <span
@@ -569,7 +571,7 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
 
                   <Link
                     href={`/admin/inquiries?id=${inq.id}`}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold hover:bg-[#082F24] hover:text-white transition-all self-start md:self-center"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold hover:bg-blue-600 hover:text-white transition-all self-start md:self-center"
                   >
                     View in Pipeline
                     <ExternalLink className="w-3.5 h-3.5" />
@@ -631,16 +633,16 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
                     <div className="flex items-center gap-3">
                       <Link
                         href={`/admin/bookings/${b.id}`}
-                        className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-[#082F24] text-[#dfbd75] hover:underline inline-flex items-center gap-1"
+                        className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-blue-600 text-white hover:underline inline-flex items-center gap-1"
                       >
                         <span>{b.bookingReference}</span>
-                        <ExternalLink className="w-3 h-3 text-[#dfbd75]/80" />
+                        <ExternalLink className="w-3 h-3 text-sky-300" />
                       </Link>
                       <Link
                         href={`/admin/bookings/${b.id}`}
-                        className="font-heading text-lg font-bold text-[#082F24] hover:underline"
+                        className="font-heading text-lg font-bold text-slate-900 hover:underline"
                       >
-                        {b.package?.title || "Custom Private Itinerary"}
+                        {b.package?.title || b.customPackageTitle || "Custom Private Itinerary"}
                       </Link>
                       <span
                         className={`text-xs px-2.5 py-0.5 rounded-full font-semibold ${
@@ -773,9 +775,9 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
             </p>
             <button
               onClick={() => setShowDocModal(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#082F24] text-white text-xs font-semibold hover:bg-[#0c4434] transition-all"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 transition-all"
             >
-              <FilePlus className="w-3.5 h-3.5 text-[#dfbd75]" />
+              <FilePlus className="w-3.5 h-3.5 text-sky-400" />
               Add Document
             </button>
           </div>
@@ -785,12 +787,12 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
               {customer.documents.map((doc) => (
                 <div
                   key={doc.id}
-                  className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-5 hover:border-[#dfbd75]/70 transition-all flex flex-col justify-between"
+                  className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-5 hover:border-blue-300 transition-all flex flex-col justify-between"
                 >
                   <div>
                     <div className="flex items-start justify-between gap-3">
                       <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-700 shrink-0">
-                        <FileText className="w-5 h-5 text-[#082F24]" />
+                        <FileText className="w-5 h-5 text-slate-900" />
                       </div>
                       <span
                         className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded ${
@@ -830,7 +832,7 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
                       href={doc.fileUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs font-semibold text-[#082F24] hover:text-[#dfbd75] inline-flex items-center gap-1"
+                      className="text-xs font-semibold text-slate-900 hover:text-blue-600 inline-flex items-center gap-1"
                     >
                       View File
                       <ExternalLink className="w-3.5 h-3.5" />
@@ -852,7 +854,7 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
               <p className="font-medium">No documents attached to this customer vault.</p>
               <button
                 onClick={() => setShowDocModal(true)}
-                className="mt-3 inline-flex items-center gap-2 text-xs text-[#082F24] font-semibold hover:underline"
+                className="mt-3 inline-flex items-center gap-2 text-xs text-slate-900 font-semibold hover:underline"
               >
                 <PlusCircle className="w-3.5 h-3.5" /> Attach Quotation or Passport Copy
               </button>
@@ -866,7 +868,7 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl animate-in zoom-in-95">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-              <h3 className="font-heading text-xl font-bold text-[#082F24]">
+              <h3 className="font-heading text-xl font-bold text-slate-900">
                 Edit Customer Profile
               </h3>
               <button
@@ -887,7 +889,7 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
                   required
                   value={editForm.name}
                   onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-[#082F24]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-blue-600"
                 />
               </div>
 
@@ -901,7 +903,7 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
                     required
                     value={editForm.phone}
                     onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-[#082F24]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-blue-600"
                   />
                 </div>
                 <div>
@@ -914,7 +916,7 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
                     onChange={(e) =>
                       setEditForm({ ...editForm, whatsappNumber: e.target.value })
                     }
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-[#082F24]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-blue-600"
                   />
                 </div>
               </div>
@@ -929,7 +931,7 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
                     required
                     value={editForm.email}
                     onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-[#082F24]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-blue-600"
                   />
                 </div>
                 <div>
@@ -940,7 +942,7 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
                     type="text"
                     value={editForm.city}
                     onChange={(e) => setEditForm({ ...editForm, city: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-[#082F24]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-blue-600"
                   />
                 </div>
               </div>
@@ -954,7 +956,7 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
                   value={editForm.notes}
                   onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
                   placeholder="e.g. High net worth client, prefers suites with valley view and private chauffeur..."
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-[#082F24]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-blue-600"
                 />
               </div>
 
@@ -969,7 +971,7 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
                 <button
                   type="submit"
                   disabled={updating}
-                  className="px-5 py-2 rounded-xl bg-[#082F24] text-white text-sm font-semibold hover:bg-[#0c4434] transition-all disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-all disabled:opacity-50"
                 >
                   {updating ? "Saving..." : "Save Changes"}
                 </button>
@@ -984,7 +986,7 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl animate-in zoom-in-95">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-              <h3 className="font-heading text-xl font-bold text-[#082F24]">
+              <h3 className="font-heading text-xl font-bold text-slate-900">
                 Attach Document to Vault
               </h3>
               <button
@@ -1006,7 +1008,7 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
                   placeholder="e.g. Signed Quotation - Kashmir Luxury Escape"
                   value={docForm.title}
                   onChange={(e) => setDocForm({ ...docForm, title: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-[#082F24]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-blue-600"
                 />
               </div>
 
@@ -1018,7 +1020,7 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
                   <select
                     value={docForm.type}
                     onChange={(e) => setDocForm({ ...docForm, type: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-[#082F24] bg-white"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-blue-600 bg-white"
                   >
                     <option value="QUOTATION">Quotation PDF</option>
                     <option value="CONFIRMATION">Booking Confirmation / Voucher</option>
@@ -1037,7 +1039,7 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
                     value={docForm.fileSize}
                     onChange={(e) => setDocForm({ ...docForm, fileSize: e.target.value })}
                     placeholder="e.g. 2.4 MB"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-[#082F24]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-blue-600"
                   />
                 </div>
               </div>
@@ -1052,7 +1054,7 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
                   placeholder="https://..."
                   value={docForm.fileUrl}
                   onChange={(e) => setDocForm({ ...docForm, fileUrl: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-[#082F24]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-blue-600"
                 />
               </div>
 
@@ -1064,12 +1066,12 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
                   <select
                     value={docForm.bookingId}
                     onChange={(e) => setDocForm({ ...docForm, bookingId: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-[#082F24] bg-white"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-blue-600 bg-white"
                   >
                     <option value="">-- General Customer Document --</option>
                     {customer.bookings.map((b) => (
                       <option key={b.id} value={b.id}>
-                        {b.bookingReference} - {b.package?.title || "Custom Itinerary"}
+                        {b.bookingReference} - {b.package?.title || b.customPackageTitle || "Custom Itinerary"}
                       </option>
                     ))}
                   </select>
@@ -1087,7 +1089,7 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
                 <button
                   type="submit"
                   disabled={attachingDoc}
-                  className="px-5 py-2 rounded-xl bg-[#082F24] text-white text-sm font-semibold hover:bg-[#0c4434] transition-all disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-all disabled:opacity-50"
                 >
                   {attachingDoc ? "Attaching..." : "Attach Document"}
                 </button>

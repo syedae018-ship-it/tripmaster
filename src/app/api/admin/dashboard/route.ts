@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getAnalyticsData } from "@/lib/admin/analytics";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
+    const analytics = await getAnalyticsData();
     const totalPackages = await prisma.package.count();
     const activePackages = await prisma.package.count({
       where: { isPublished: true },
@@ -120,17 +122,41 @@ export async function GET() {
       },
     });
 
+    // Package popularity & performance analytics
+    const packageAnalytics = await prisma.package.findMany({
+      select: {
+        id: true,
+        title: true,
+        destination: true,
+        viewsCount: true,
+        basePrice: true,
+        discountedPrice: true,
+        _count: {
+          select: {
+            inquiries: true,
+            bookings: true,
+          },
+        },
+      },
+      orderBy: { viewsCount: "desc" },
+    });
+
     return NextResponse.json({
       success: true,
       kpis: {
         totalPackages,
         activePackages,
-        totalInquiries,
+        totalInquiries: analytics.kpis.totalInquiries,
         inquiriesToday,
-        totalBookings,
-        activeBookings,
-        totalRevenueCollected,
-        totalOutstandingBalance,
+        totalBookings: analytics.kpis.totalBookings,
+        activeBookings: analytics.kpis.activeBookings,
+        totalRevenueCollected: analytics.kpis.totalRevenueCollected,
+        totalOutstandingBalance: analytics.kpis.totalOutstandingBalance,
+        totalGrossMerchandiseValue: analytics.kpis.totalGrossMerchandiseValue,
+        averageBookingValue: analytics.kpis.averageBookingValue,
+        totalQuotations: analytics.kpis.totalQuotations,
+        conversionRate: analytics.kpis.conversionRate,
+        quotationWinRate: analytics.kpis.quotationWinRate,
         overdueCount: overdueFollowUps.length,
         todayFollowUpCount: todayFollowUps.length,
       },
@@ -139,6 +165,11 @@ export async function GET() {
         today: todayFollowUps,
       },
       recentInquiries,
+      packageAnalytics,
+      monthlyRevenue: analytics.monthlyRevenue,
+      pipelineDistribution: analytics.pipelineDistribution,
+      conversionFunnel: analytics.conversionFunnel,
+      topDestinations: analytics.topDestinations,
     });
   } catch (error) {
     console.error("Dashboard KPI fetch error:", error);

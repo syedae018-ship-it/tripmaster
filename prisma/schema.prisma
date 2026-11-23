@@ -33,6 +33,8 @@ model SiteSettings {
   whatsappNumber  String   @default("+91 98765 43210")
   address         String   @default("Luxury Tower, Suite 402, MG Road, Bangalore, India")
   gstNumber       String   @default("29AABCU9603R1ZX")
+  upiId           String?  @default("tripmaster@hdfcbank")
+  upiQrImage      String?
   bankDetails     String?  // JSON: { bankName, accountNumber, ifsc, accountName, upiId }
   socialLinks     String   // JSON: { instagram, facebook, twitter, linkedin }
   stats           String   // JSON: [{ label, value, icon, description }]
@@ -151,8 +153,10 @@ model Booking {
   id                  String               @id @default(cuid())
   bookingReference    String               @unique
   customerId          String
-  packageId           String
+  packageId           String?
   inquiryId           String?              @unique
+  customPackageTitle  String?
+  customDestination   String?
   travelStartDate     DateTime
   travelEndDate       DateTime
   paxCount            Int                  @default(2)
@@ -164,12 +168,20 @@ model Booking {
   balanceAmount       Float                @default(0)
   bookingStatus       String               @default("PENDING") // PENDING, CONFIRMED, PARTIALLY_PAID, COMPLETED, CANCELLED
   documents           String?              // JSON array of document URLs
+  utrNumber           String?
+  paymentProofUrl     String?
+  paymentMethod       String?              // RAZORPAY_ONLINE, UPI_QR, BANK_TRANSFER, CASH
+  isVerified          Boolean              @default(false)
+  taxInvoiceNumber    String?
+  taxInvoiceUrl       String?
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
 
   customer            Customer             @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  package             Package              @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  package             Package?             @relation(fields: [packageId], references: [id], onDelete: SetNull)
   inquiry             Inquiry?             @relation(fields: [inquiryId], references: [id], onDelete: SetNull)
+  quotationId         String?
+  quotation           Quotation?           @relation(fields: [quotationId], references: [id], onDelete: SetNull)
   paymentTransactions PaymentTransaction[]
   customerDocuments   CustomerDocument[]
 }
@@ -253,11 +265,84 @@ model Quotation {
   shareSlug          String    @unique @default(cuid())
   sentViaWhatsAppAt  DateTime?
   sentViaEmailAt     DateTime?
+  paymentAmountDue   Float?
+  paymentStatus      String    @default("UNPAID") // UNPAID, PARTIALLY_PAID, PAID
+  paymentPlan        String?   // FULL, ADVANCE, CUSTOM
+  paymentNote        String?
+  paymentLinkActive  Boolean   @default(false)
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
 
   customer           Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
   package            Package?  @relation(fields: [packageId], references: [id], onDelete: SetNull)
   inquiry            Inquiry?  @relation(fields: [inquiryId], references: [id], onDelete: SetNull)
+  bookings           Booking[]
 }
+
+model MasterCountry {
+  id             String            @id @default(cuid())
+  name           String            @unique
+  slug           String            @unique
+  bannerImage    String
+  overview       String
+  mapCoordinates String?           // JSON array: [{ name, lat, lng }]
+  inclusions     String?           // JSON array of strings: default inclusions
+  exclusions     String?           // JSON array of strings: default exclusions
+  paymentTerms   String?           // JSON array of strings: default payment & cancellation terms
+  order          Int               @default(0)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  places         MasterPlaceItem[]
+  hotels         MasterHotel[]
+  transfers      MasterTransfer[]
+}
+
+model MasterPlaceItem {
+  id               String        @id @default(cuid())
+  countryId        String
+  name             String
+  locationSubtitle String?
+  description      String
+  durationDay      Int?          @default(1)
+  category         String        @default("ATTRACTION") // ATTRACTION, TRANSFER, SHOW, ACTIVITY
+  photos           String        // JSON array of image URLs
+  order            Int           @default(0)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  country          MasterCountry @relation(fields: [countryId], references: [id], onDelete: Cascade)
+}
+
+model MasterHotel {
+  id               String        @id @default(cuid())
+  countryId        String
+  placeName        String?       // optional association to place/city
+  name             String
+  starRating       Float         @default(4)
+  roomCategory     String        @default("Deluxe Room")
+  description      String
+  mealPlans        String        @default("[\"Breakfast Included\"]") // JSON array
+  photos           String        // JSON array of image URLs
+  order            Int           @default(0)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  country          MasterCountry @relation(fields: [countryId], references: [id], onDelete: Cascade)
+}
+
+model MasterTransfer {
+  id               String        @id @default(cuid())
+  countryId        String
+  title            String
+  vehicleType      String        @default("Private AC Coach") // Sedan, SUV, Safari 4x4, Van, Coach, Luxury
+  description      String
+  photo            String
+  order            Int           @default(0)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  country          MasterCountry @relation(fields: [countryId], references: [id], onDelete: Cascade)
+}
+
 

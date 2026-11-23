@@ -288,7 +288,7 @@ export function CmsManager() {
     <div className="max-w-6xl mx-auto space-y-8 pb-20">
       {/* Toast */}
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50 px-5 py-3 rounded-2xl shadow-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 bg-[#082F24] text-[#dfbd75] border border-[#dfbd75]/40 animate-fade-in">
+        <div className="fixed bottom-6 right-6 z-50 px-5 py-3 rounded-2xl shadow-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 bg-blue-600 text-white border border-slate-700 animate-fade-in">
           <CheckCircle2 className="w-4 h-4" />
           <span>{toast}</span>
         </div>
@@ -297,7 +297,7 @@ export function CmsManager() {
       {/* Header & Save Action */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-heading text-3xl font-bold text-[#082F24]">
+          <h1 className="font-heading text-3xl font-bold text-slate-900">
             Website Content & CMS Manager
           </h1>
           <p className="text-sm text-slate-500 mt-1">
@@ -309,7 +309,7 @@ export function CmsManager() {
           type="button"
           onClick={handleSaveSettings}
           disabled={saving}
-          className="inline-flex items-center gap-2 bg-[#082F24] text-[#dfbd75] hover:bg-[#0c4031] hover:text-white px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-md self-start sm:self-center disabled:opacity-50"
+          className="inline-flex items-center gap-2 bg-blue-600 text-white hover:bg-blue-700 px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-md self-start sm:self-center disabled:opacity-50"
         >
           <Save className="w-4 h-4" />
           <span>{saving ? "Saving Updates..." : "Save All CMS Changes"}</span>
@@ -323,7 +323,7 @@ export function CmsManager() {
           onClick={() => setActiveTab("hero")}
           className={`flex-1 min-w-[130px] py-2.5 px-4 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
             activeTab === "hero"
-              ? "bg-[#082F24] text-[#dfbd75] shadow-sm"
+              ? "bg-blue-600 text-white shadow-sm"
               : "text-slate-600 hover:bg-slate-100"
           }`}
         >
@@ -336,7 +336,7 @@ export function CmsManager() {
           onClick={() => setActiveTab("stats")}
           className={`flex-1 min-w-[130px] py-2.5 px-4 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
             activeTab === "stats"
-              ? "bg-[#082F24] text-[#dfbd75] shadow-sm"
+              ? "bg-blue-600 text-white shadow-sm"
               : "text-slate-600 hover:bg-slate-100"
           }`}
         >
@@ -349,7 +349,7 @@ export function CmsManager() {
           onClick={() => setActiveTab("testimonials")}
           className={`flex-1 min-w-[130px] py-2.5 px-4 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
             activeTab === "testimonials"
-              ? "bg-[#082F24] text-[#dfbd75] shadow-sm"
+              ? "bg-blue-600 text-white shadow-sm"
               : "text-slate-600 hover:bg-slate-100"
           }`}
         >
@@ -362,7 +362,7 @@ export function CmsManager() {
           onClick={() => setActiveTab("faqs")}
           className={`flex-1 min-w-[130px] py-2.5 px-4 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
             activeTab === "faqs"
-              ? "bg-[#082F24] text-[#dfbd75] shadow-sm"
+              ? "bg-blue-600 text-white shadow-sm"
               : "text-slate-600 hover:bg-slate-100"
           }`}
         >
@@ -375,7 +375,7 @@ export function CmsManager() {
           onClick={() => setActiveTab("contact")}
           className={`flex-1 min-w-[130px] py-2.5 px-4 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
             activeTab === "contact"
-              ? "bg-[#082F24] text-[#dfbd75] shadow-sm"
+              ? "bg-blue-600 text-white shadow-sm"
               : "text-slate-600 hover:bg-slate-100"
           }`}
         >
@@ -388,7 +388,7 @@ export function CmsManager() {
       {activeTab === "hero" && (
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-6">
           <div className="border-b border-slate-100 pb-4">
-            <h2 className="font-heading text-xl font-bold text-[#082F24]">
+            <h2 className="font-heading text-xl font-bold text-slate-900">
               Homepage Hero Visual & "Why Choose Us" Propositions
             </h2>
             <p className="text-xs text-slate-500 mt-1">
@@ -407,7 +407,7 @@ export function CmsManager() {
                 onChange={(e) =>
                   setSettings({ ...settings, heroTitle: e.target.value })
                 }
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
             </div>
 
@@ -421,7 +421,7 @@ export function CmsManager() {
                 onChange={(e) =>
                   setSettings({ ...settings, heroSubtitle: e.target.value })
                 }
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
             </div>
 
@@ -435,14 +435,14 @@ export function CmsManager() {
                 onChange={(e) =>
                   setSettings({ ...settings, heroImage: e.target.value })
                 }
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
             </div>
 
             {/* Why Choose Us Cards Builder */}
             <div className="pt-4 border-t border-slate-100">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="font-heading text-base font-bold text-[#082F24]">
+                <h3 className="font-heading text-base font-bold text-slate-900">
                   "Why Choose Us" Value Cards
                 </h3>
                 <button
@@ -461,7 +461,7 @@ export function CmsManager() {
                       ],
                     })
                   }
-                  className="text-xs font-bold uppercase text-[#082F24] hover:underline flex items-center gap-1"
+                  className="text-xs font-bold uppercase text-slate-900 hover:underline flex items-center gap-1"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Feature Card</span>
@@ -472,7 +472,7 @@ export function CmsManager() {
                 {settings.features.map((feat, idx) => (
                   <div
                     key={idx}
-                    className="p-4 rounded-2xl bg-[#FAF8F5] border border-slate-200 space-y-2 relative"
+                    className="p-4 rounded-2xl bg-slate-50/50 border border-slate-200 space-y-2 relative"
                   >
                     <button
                       type="button"
@@ -498,7 +498,7 @@ export function CmsManager() {
                         copy[idx].title = e.target.value;
                         setSettings({ ...settings, features: copy });
                       }}
-                      className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+                      className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
                     />
 
                     <label className="block text-[10px] font-bold uppercase text-slate-500">
@@ -512,7 +512,7 @@ export function CmsManager() {
                         copy[idx].description = e.target.value;
                         setSettings({ ...settings, features: copy });
                       }}
-                      className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+                      className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
                     />
                   </div>
                 ))}
@@ -526,7 +526,7 @@ export function CmsManager() {
       {activeTab === "stats" && (
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-6">
           <div className="border-b border-slate-100 pb-4">
-            <h2 className="font-heading text-xl font-bold text-[#082F24]">
+            <h2 className="font-heading text-xl font-bold text-slate-900">
               Company Metrics Counter & "About Us" Narrative
             </h2>
             <p className="text-xs text-slate-500 mt-1">
@@ -544,19 +544,19 @@ export function CmsManager() {
               onChange={(e) =>
                 setSettings({ ...settings, aboutText: e.target.value })
               }
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
             />
           </div>
 
           <div className="pt-4 border-t border-slate-100">
-            <h3 className="font-heading text-base font-bold text-[#082F24] mb-3">
+            <h3 className="font-heading text-base font-bold text-slate-900 mb-3">
               KPI Metrics Counters
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {settings.stats.map((stat, idx) => (
                 <div
                   key={idx}
-                  className="p-4 rounded-2xl bg-[#FAF8F5] border border-slate-200 space-y-2"
+                  className="p-4 rounded-2xl bg-slate-50/50 border border-slate-200 space-y-2"
                 >
                   <label className="block text-[10px] font-bold uppercase text-slate-500">
                     Stat Label
@@ -583,7 +583,7 @@ export function CmsManager() {
                       copy[idx].value = e.target.value;
                       setSettings({ ...settings, stats: copy });
                     }}
-                    className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-[#082F24] bg-white"
+                    className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-900 bg-white"
                   />
 
                   <label className="block text-[10px] font-bold uppercase text-slate-500">
@@ -611,7 +611,7 @@ export function CmsManager() {
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
-              <h2 className="font-heading text-xl font-bold text-[#082F24]">
+              <h2 className="font-heading text-xl font-bold text-slate-900">
                 Customer Testimonials & Verified Reviews
               </h2>
               <p className="text-xs text-slate-500 mt-1">
@@ -622,7 +622,7 @@ export function CmsManager() {
             <button
               type="button"
               onClick={() => setShowTestimonialModal(true)}
-              className="inline-flex items-center gap-1.5 bg-[#082F24] text-[#dfbd75] hover:bg-[#0c4031] hover:text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all"
+              className="inline-flex items-center gap-1.5 bg-blue-600 text-white hover:bg-blue-700 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all"
             >
               <Plus className="w-4 h-4" />
               <span>Add Guest Review</span>
@@ -633,9 +633,9 @@ export function CmsManager() {
           {showTestimonialModal && (
             <form
               onSubmit={handleCreateTestimonial}
-              className="p-6 rounded-2xl bg-[#FAF8F5] border border-[#c5a059]/40 space-y-4"
+              className="p-6 rounded-2xl bg-slate-50/50 border border-slate-200 space-y-4"
             >
-              <h3 className="font-heading text-base font-bold text-[#082F24]">
+              <h3 className="font-heading text-base font-bold text-slate-900">
                 Add New Traveller Testimonial
               </h3>
 
@@ -738,7 +738,7 @@ export function CmsManager() {
               <div className="flex items-center gap-3 pt-2">
                 <button
                   type="submit"
-                  className="bg-[#082F24] text-[#dfbd75] hover:bg-[#0c4031] px-5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider"
+                  className="bg-blue-600 text-white hover:bg-blue-700 px-5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider"
                 >
                   Save Review
                 </button>
@@ -758,7 +758,7 @@ export function CmsManager() {
             {testimonials.map((t) => (
               <div
                 key={t.id}
-                className="p-5 rounded-2xl bg-[#FAF8F5] border border-slate-200/80 flex flex-col justify-between space-y-4"
+                className="p-5 rounded-2xl bg-slate-50/50 border border-slate-200/80 flex flex-col justify-between space-y-4"
               >
                 <div>
                   <div className="flex items-center justify-between mb-2">
@@ -766,7 +766,7 @@ export function CmsManager() {
                       {[...Array(t.rating)].map((_, i) => (
                         <Star
                           key={i}
-                          className="w-3.5 h-3.5 text-[#c5a059] fill-[#c5a059]"
+                          className="w-3.5 h-3.5 text-amber-400 fill-amber-400"
                         />
                       ))}
                     </div>
@@ -797,7 +797,7 @@ export function CmsManager() {
                         className="w-8 h-8 rounded-full object-cover"
                       />
                     ) : (
-                      <div className="w-8 h-8 rounded-full bg-[#082F24] text-[#dfbd75] flex items-center justify-center font-bold text-xs">
+                      <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs">
                         {t.customerName[0]}
                       </div>
                     )}
@@ -831,7 +831,7 @@ export function CmsManager() {
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
-              <h2 className="font-heading text-xl font-bold text-[#082F24]">
+              <h2 className="font-heading text-xl font-bold text-slate-900">
                 Frequently Asked Questions (FAQs)
               </h2>
               <p className="text-xs text-slate-500 mt-1">
@@ -842,7 +842,7 @@ export function CmsManager() {
             <button
               type="button"
               onClick={() => setShowFaqModal(true)}
-              className="inline-flex items-center gap-1.5 bg-[#082F24] text-[#dfbd75] hover:bg-[#0c4031] hover:text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all"
+              className="inline-flex items-center gap-1.5 bg-blue-600 text-white hover:bg-blue-700 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all"
             >
               <Plus className="w-4 h-4" />
               <span>Add FAQ Question</span>
@@ -852,9 +852,9 @@ export function CmsManager() {
           {showFaqModal && (
             <form
               onSubmit={handleCreateFaq}
-              className="p-6 rounded-2xl bg-[#FAF8F5] border border-[#c5a059]/40 space-y-4"
+              className="p-6 rounded-2xl bg-slate-50/50 border border-slate-200 space-y-4"
             >
-              <h3 className="font-heading text-base font-bold text-[#082F24]">
+              <h3 className="font-heading text-base font-bold text-slate-900">
                 Create New FAQ Entry
               </h3>
 
@@ -910,7 +910,7 @@ export function CmsManager() {
               <div className="flex items-center gap-3 pt-2">
                 <button
                   type="submit"
-                  className="bg-[#082F24] text-[#dfbd75] hover:bg-[#0c4031] px-5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider"
+                  className="bg-blue-600 text-white hover:bg-blue-700 px-5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider"
                 >
                   Save Question
                 </button>
@@ -929,7 +929,7 @@ export function CmsManager() {
             {faqs.map((faq) => (
               <div
                 key={faq.id}
-                className="p-5 rounded-2xl bg-[#FAF8F5] border border-slate-200 flex items-start justify-between gap-4"
+                className="p-5 rounded-2xl bg-slate-50/50 border border-slate-200 flex items-start justify-between gap-4"
               >
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
@@ -963,7 +963,7 @@ export function CmsManager() {
       {activeTab === "contact" && (
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-6">
           <div className="border-b border-slate-100 pb-4">
-            <h2 className="font-heading text-xl font-bold text-[#082F24]">
+            <h2 className="font-heading text-xl font-bold text-slate-900">
               Contact Details, GST & Bank Invoicing Information
             </h2>
             <p className="text-xs text-slate-500 mt-1">
@@ -1074,7 +1074,7 @@ export function CmsManager() {
 
           {/* Bank / UPI Invoicing Details */}
           <div className="pt-4 border-t border-slate-100">
-            <h3 className="font-heading text-base font-bold text-[#082F24] mb-3">
+            <h3 className="font-heading text-base font-bold text-slate-900 mb-3">
               Official Bank / UPI Remittance Details (For Guest Quotations)
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

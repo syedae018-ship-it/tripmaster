@@ -10,6 +10,7 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get("search") || "";
     const status = searchParams.get("status") || "ALL";
     const balanceFilter = searchParams.get("balance") || "ALL";
+    const sortBy = searchParams.get("sort") || "newest";
 
     // Build filter query
     const where: any = {};
@@ -34,12 +35,27 @@ export async function GET(req: NextRequest) {
         { customer: { phone: { contains: search } } },
         { customer: { email: { contains: search } } },
         { package: { title: { contains: search } } },
+        { customPackageTitle: { contains: search } },
+        { customDestination: { contains: search } },
       ];
+    }
+
+    let orderBy: any = { createdAt: "desc" };
+    if (sortBy === "oldest") {
+      orderBy = { createdAt: "asc" };
+    } else if (sortBy === "amount_desc") {
+      orderBy = { totalAmount: "desc" };
+    } else if (sortBy === "amount_asc") {
+      orderBy = { totalAmount: "asc" };
+    } else if (sortBy === "balance_desc") {
+      orderBy = { balanceAmount: "desc" };
+    } else if (sortBy === "departure_soon") {
+      orderBy = { travelStartDate: "asc" };
     }
 
     const bookings = await prisma.booking.findMany({
       where,
-      orderBy: { createdAt: "desc" },
+      orderBy,
       include: {
         customer: {
           select: {

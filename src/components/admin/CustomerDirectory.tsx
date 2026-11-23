@@ -120,43 +120,94 @@ export function CustomerDirectory() {
     }
   };
 
+  const totalLifetimeSpend = customers.reduce((sum, c) => sum + (c.lifetimeSpend || 0), 0);
+  const customersWithBookings = customers.filter((c) => c.totalBookings > 0).length;
+  const activeInquirers = customers.filter((c) => c.totalInquiries > 0).length;
+
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-20">
+    <div className="space-y-6 max-w-7xl mx-auto pb-16 font-sans">
       {/* Toast Alert */}
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50 px-4 py-2.5 rounded-xl shadow-xl text-xs font-semibold uppercase tracking-wider flex items-center gap-2 bg-[#0C1116] text-[#dfbd75] border border-slate-700 animate-fade-in">
+        <div className="fixed bottom-6 right-6 z-50 px-4 py-2.5 rounded-xl shadow-xl text-xs font-semibold uppercase tracking-wider flex items-center gap-2 bg-slate-900 text-white border border-slate-700 animate-fade-in">
           <CheckCircle2 className="w-4 h-4 text-emerald-400" />
           <span>{toast}</span>
         </div>
       )}
 
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* 1. Standardized Top Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-1">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-[11px] font-semibold uppercase tracking-wider mb-2">
-            <Users className="w-3.5 h-3.5 text-slate-500" />
+          {/* Breadcrumb Tag / Module Pill */}
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-semibold uppercase tracking-wider mb-1.5 border border-blue-100">
+            <Users className="w-3.5 h-3.5 text-blue-600" />
             <span>Master Guest Directory</span>
           </div>
-          <h1 className="text-2xl font-semibold text-slate-900 tracking-tight font-sans">
+          <h1 className="font-heading text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
             Unified Customer Profiles
           </h1>
-          <p className="text-xs text-slate-500 mt-0.5 font-light">
-            Single view of every traveller with lifetime spend, booking history, and attached documents vault.
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+            Single 360° view of every traveller with lifetime spend, booking history, and attached documents vault.
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center gap-2 bg-[#0C1116] text-white hover:bg-slate-800 px-4 py-2 rounded-lg text-xs font-medium transition-all shadow-sm self-start sm:self-center"
-        >
-          <PlusCircle className="w-3.5 h-3.5 text-[#dfbd75]" />
-          <span>New Customer Profile</span>
-        </button>
+        {/* Top-Right Action Button */}
+        <div className="flex flex-wrap items-center gap-2.5 self-start sm:self-auto shrink-0">
+          <button
+            type="button"
+            onClick={() => setShowAddModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition-all shadow-xs"
+          >
+            <PlusCircle className="w-4 h-4 text-white" />
+            <span>+ New Customer Profile</span>
+          </button>
+        </div>
       </div>
 
-      {/* Search Toolbar */}
-      <div className="bg-white rounded-xl p-3 sm:p-4 border border-slate-200 shadow-xs flex items-center justify-between gap-4">
+      {/* 2. TOP KPI SUMMARY STRIP */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white p-4.5 rounded-2xl border border-slate-200/90 shadow-xs">
+          <span className="text-[11px] uppercase font-bold tracking-wider text-slate-400 block">
+            Total Profiles
+          </span>
+          <div className="text-2xl font-bold text-slate-900 mt-1 font-mono tabular-nums">
+            {customers.length}
+          </div>
+          <span className="text-[11px] text-slate-400 mt-0.5 block">Registered guests & leads</span>
+        </div>
+
+        <div className="bg-white p-4.5 rounded-2xl border border-slate-200/90 shadow-xs">
+          <span className="text-[11px] uppercase font-bold tracking-wider text-blue-600 block">
+            Active Leads
+          </span>
+          <div className="text-2xl font-bold text-blue-700 mt-1 font-mono tabular-nums">
+            {activeInquirers}
+          </div>
+          <span className="text-[11px] text-blue-600/80 mt-0.5 block">Logged travel inquiries</span>
+        </div>
+
+        <div className="bg-white p-4.5 rounded-2xl border border-slate-200/90 shadow-xs">
+          <span className="text-[11px] uppercase font-bold tracking-wider text-emerald-700 block">
+            Confirmed Travellers
+          </span>
+          <div className="text-2xl font-bold text-emerald-700 mt-1 font-mono tabular-nums">
+            {customersWithBookings}
+          </div>
+          <span className="text-[11px] text-emerald-600 mt-0.5 block">Guests with booked trips</span>
+        </div>
+
+        <div className="bg-white p-4.5 rounded-2xl border border-slate-200/90 shadow-xs">
+          <span className="text-[11px] uppercase font-bold tracking-wider text-emerald-700 block">
+            Lifetime Realized Spend
+          </span>
+          <div className="text-2xl font-bold text-emerald-700 mt-1 font-mono tabular-nums">
+            ₹{totalLifetimeSpend.toLocaleString("en-IN")}
+          </div>
+          <span className="text-[11px] text-emerald-600 mt-0.5 block">Aggregated guest transactions</span>
+        </div>
+      </div>
+
+      {/* 3. Search Toolbar */}
+      <div className="bg-white rounded-2xl p-3.5 sm:p-4 border border-slate-200/90 shadow-xs flex items-center justify-between gap-4">
         <form onSubmit={handleSearchSubmit} className="relative w-full max-w-md">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
@@ -164,7 +215,7 @@ export function CustomerDirectory() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name, phone, email, or city..."
-            className="w-full pl-9 pr-4 py-2 rounded-lg border border-slate-200 text-xs focus:outline-none focus:border-slate-400"
+            className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-blue-600"
           />
         </form>
 
@@ -173,8 +224,8 @@ export function CustomerDirectory() {
         </span>
       </div>
 
-      {/* Customers Table */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+      {/* 4. Customers Table */}
+      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
         {loading ? (
           <div className="p-12 text-center text-slate-500 text-xs">
             Loading customer profiles...

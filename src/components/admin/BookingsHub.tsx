@@ -40,22 +40,24 @@ interface BookingItem {
   balanceAmount: number;
   bookingStatus: string;
   createdAt: string;
-  customer: {
+  customPackageTitle?: string | null;
+  customDestination?: string | null;
+  customer?: {
     id: string;
     name: string;
     email: string;
     phone: string;
     whatsappNumber: string | null;
     city: string | null;
-  };
-  package: {
+  } | null;
+  package?: {
     id: string;
     title: string;
     slug: string;
     destination: string;
     basePrice: number;
     discountedPrice: number | null;
-  };
+  } | null;
   paymentTransactions: Array<{
     id: string;
     amount: number;
@@ -96,10 +98,11 @@ export function BookingsHub() {
   });
   const [loading, setLoading] = useState(true);
 
-  // Filters
+  // Filters & Sorting
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [balanceFilter, setBalanceFilter] = useState("ALL");
+  const [sortFilter, setSortFilter] = useState("newest");
 
   // Create Modal
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -154,6 +157,7 @@ export function BookingsHub() {
       if (search) q.set("search", search);
       if (statusFilter !== "ALL") q.set("status", statusFilter);
       if (balanceFilter !== "ALL") q.set("balance", balanceFilter);
+      if (sortFilter !== "newest") q.set("sort", sortFilter);
 
       const res = await fetch(`/api/admin/bookings?${q.toString()}`);
       const data = await res.json();
@@ -187,7 +191,7 @@ export function BookingsHub() {
 
   useEffect(() => {
     fetchBookings();
-  }, [search, statusFilter, balanceFilter]);
+  }, [search, statusFilter, balanceFilter, sortFilter]);
 
   // Check if inquiry conversion was requested via URL query
   useEffect(() => {
@@ -280,42 +284,46 @@ export function BookingsHub() {
   };
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto pb-16">
+    <div className="space-y-6 max-w-7xl mx-auto pb-16 font-sans">
       {/* Toast Notification */}
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#082F24] text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 border border-[#dfbd75]/40 text-sm font-medium animate-in slide-in-from-bottom-5">
-          <CheckCircle2 className="w-5 h-5 text-[#dfbd75]" />
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 border border-slate-700 text-sm font-medium animate-in slide-in-from-bottom-5">
+          <CheckCircle2 className="w-5 h-5 text-sky-400" />
           <span>{toast}</span>
         </div>
       )}
 
-      {/* Header & New Booking Button */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* 1. Standardized Top Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-1">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold uppercase tracking-wider mb-2">
-            <Sparkles className="w-3.5 h-3.5 text-[#dfbd75]" />
-            <span>Phase 4 Bookings & Financial Ledger</span>
+          {/* Breadcrumb Tag / Module Pill */}
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-semibold uppercase tracking-wider mb-1.5 border border-blue-100">
+            <CreditCard className="w-3.5 h-3.5 text-blue-600" />
+            <span>Bookings & Financial Ledger</span>
           </div>
-          <h1 className="font-heading text-3xl font-bold text-[#082F24]">
+          <h1 className="font-heading text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
             Bookings & Financial Ledger
           </h1>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
             Manage confirmed trips, collect balances, verify Razorpay payments, and record offline transactions.
           </p>
         </div>
 
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#082F24] text-white font-medium text-sm hover:bg-[#0c4434] transition-all shadow-sm shrink-0"
-        >
-          <PlusCircle className="w-4 h-4 text-[#dfbd75]" />
-          <span>+ New Booking / Convert Lead</span>
-        </button>
+        {/* Top-Right Action Button */}
+        <div className="flex flex-wrap items-center gap-2.5 self-start sm:self-auto shrink-0">
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 text-white font-semibold text-xs hover:bg-blue-700 transition-all shadow-xs"
+          >
+            <PlusCircle className="w-4 h-4 text-white" />
+            <span>+ New Booking / Convert Lead</span>
+          </button>
+        </div>
       </div>
 
-      {/* TOP KPI SUMMARY STRIP */}
+      {/* 2. TOP KPI SUMMARY STRIP */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-        <div className="bg-white p-4.5 rounded-2xl border border-slate-200/80 shadow-xs">
+        <div className="bg-white p-4.5 rounded-2xl border border-slate-200/90 shadow-xs">
           <span className="text-[11px] uppercase font-bold tracking-wider text-slate-400 block">
             Total Bookings
           </span>
@@ -325,8 +333,8 @@ export function BookingsHub() {
           <span className="text-[11px] text-slate-400 mt-0.5 block">All registered trips</span>
         </div>
 
-        <div className="bg-white p-4.5 rounded-2xl border border-slate-200/80 shadow-xs">
-          <span className="text-[11px] uppercase font-bold tracking-wider text-slate-400 block">
+        <div className="bg-white p-4.5 rounded-2xl border border-slate-200/90 shadow-xs">
+          <span className="text-[11px] uppercase font-bold tracking-wider text-emerald-700 block">
             Confirmed Trips
           </span>
           <div className="text-2xl font-bold text-emerald-700 mt-1 font-mono tabular-nums">
@@ -335,7 +343,7 @@ export function BookingsHub() {
           <span className="text-[11px] text-emerald-600 mt-0.5 block">Ready for departure</span>
         </div>
 
-        <div className="bg-white p-4.5 rounded-2xl border border-slate-200/80 shadow-xs">
+        <div className="bg-white p-4.5 rounded-2xl border border-slate-200/90 shadow-xs">
           <span className="text-[11px] uppercase font-bold tracking-wider text-slate-400 block">
             Total Booking Value
           </span>
@@ -345,8 +353,8 @@ export function BookingsHub() {
           <span className="text-[11px] text-slate-400 mt-0.5 block">Contracted trip tariff</span>
         </div>
 
-        <div className="bg-white p-4.5 rounded-2xl border border-slate-200/80 shadow-xs">
-          <span className="text-[11px] uppercase font-bold tracking-wider text-emerald-800 block">
+        <div className="bg-white p-4.5 rounded-2xl border border-slate-200/90 shadow-xs">
+          <span className="text-[11px] uppercase font-bold tracking-wider text-emerald-700 block">
             Revenue Collected
           </span>
           <div className="text-2xl font-bold text-emerald-700 mt-1 font-mono tabular-nums">
@@ -355,19 +363,19 @@ export function BookingsHub() {
           <span className="text-[11px] text-emerald-600 mt-0.5 block">Captured in bank/Razorpay</span>
         </div>
 
-        <div className="bg-white p-4.5 rounded-2xl border border-slate-200/80 shadow-xs col-span-2 lg:col-span-1">
-          <span className="text-[11px] uppercase font-bold tracking-wider text-amber-800 block">
+        <div className="bg-white p-4.5 rounded-2xl border border-slate-200/90 shadow-xs col-span-2 lg:col-span-1">
+          <span className="text-[11px] uppercase font-bold tracking-wider text-rose-500 block">
             Outstanding Balance
           </span>
-          <div className="text-2xl font-bold text-amber-700 mt-1 font-mono tabular-nums">
+          <div className="text-2xl font-bold text-rose-600 mt-1 font-mono tabular-nums">
             ₹{kpis.totalOutstandingBalance.toLocaleString("en-IN")}
           </div>
-          <span className="text-[11px] text-amber-600 mt-0.5 block">Pending installment</span>
+          <span className="text-[11px] text-rose-500/80 mt-0.5 block">Pending installment</span>
         </div>
       </div>
 
-      {/* FILTER & SEARCH BAR */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs flex flex-col md:flex-row gap-4 items-center justify-between">
+      {/* 3. FILTER & SEARCH BAR */}
+      <div className="bg-white rounded-2xl border border-slate-200/90 p-3.5 sm:p-4 shadow-xs flex flex-col md:flex-row gap-3 items-center justify-between">
         <div className="relative w-full md:w-80">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
@@ -375,7 +383,7 @@ export function BookingsHub() {
             placeholder="Search Reference, Customer, Package..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-[#082F24]"
+            className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-blue-600"
           />
         </div>
 
@@ -385,7 +393,7 @@ export function BookingsHub() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs bg-white text-slate-700 focus:outline-none focus:border-[#082F24]"
+              className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs bg-white text-slate-700 focus:outline-none focus:border-blue-600"
             >
               <option value="ALL">All Statuses</option>
               <option value="CONFIRMED">Confirmed</option>
@@ -401,7 +409,7 @@ export function BookingsHub() {
             <select
               value={balanceFilter}
               onChange={(e) => setBalanceFilter(e.target.value)}
-              className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs bg-white text-slate-700 focus:outline-none focus:border-[#082F24]"
+              className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs bg-white text-slate-700 focus:outline-none focus:border-blue-600"
             >
               <option value="ALL">All Balances</option>
               <option value="HAS_BALANCE">Has Outstanding Balance</option>
@@ -409,11 +417,27 @@ export function BookingsHub() {
               <option value="REFUNDED">Refund Processed</option>
             </select>
           </div>
+
+          <div className="flex items-center gap-2 text-xs">
+            <span className="text-slate-500 font-medium">Sort By:</span>
+            <select
+              value={sortFilter}
+              onChange={(e) => setSortFilter(e.target.value)}
+              className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs bg-white text-slate-700 focus:outline-none focus:border-blue-600 font-medium"
+            >
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="amount_desc">Total Value: High to Low</option>
+              <option value="amount_asc">Total Value: Low to High</option>
+              <option value="balance_desc">Balance Due: High to Low</option>
+              <option value="departure_soon">Departure Date: Earliest First</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      {/* BOOKINGS TABLE */}
-      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden">
+      {/* 4. BOOKINGS TABLE */}
+      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
         {loading ? (
           <div className="p-12 text-center text-slate-400 animate-pulse text-sm">
             Loading bookings and ledger...
@@ -445,13 +469,16 @@ export function BookingsHub() {
                     100,
                     Math.round((b.amountPaid / (b.totalAmount || 1)) * 100)
                   );
+                  const packageTitle =
+                    b.package?.title || b.customPackageTitle || "Bespoke Journey";
+                  const customerName = b.customer?.name || "Direct Guest";
                   const rawPhone = (
-                    b.customer.whatsappNumber ||
-                    b.customer.phone ||
+                    b.customer?.whatsappNumber ||
+                    b.customer?.phone ||
                     ""
                   ).replace(/\D/g, "");
                   const waUrl = `https://wa.me/${rawPhone}?text=${encodeURIComponent(
-                    `Hello ${b.customer.name}, greetings from Trip Master regarding your booking ${b.bookingReference} for ${b.package.title}.`
+                    `Hello ${customerName}, greetings from Trip Master regarding your booking ${b.bookingReference} for ${packageTitle}.`
                   )}`;
 
                   return (
@@ -460,7 +487,7 @@ export function BookingsHub() {
                       <td className="py-3 px-4">
                         <Link
                           href={`/admin/bookings/${b.id}`}
-                          className="font-mono font-bold text-[#0F2E26] hover:text-[#C59B27] hover:underline flex items-center gap-1.5 tabular-nums"
+                          className="font-mono font-bold text-slate-900 hover:text-blue-600 hover:underline flex items-center gap-1.5 tabular-nums"
                         >
                           <span>{b.bookingReference}</span>
                           <ExternalLink className="w-3 h-3 text-slate-400" />
@@ -476,30 +503,43 @@ export function BookingsHub() {
 
                       {/* Customer Contact */}
                       <td className="py-3 px-4">
-                        <Link
-                          href={`/admin/customers/${b.customer.id}`}
-                          className="font-semibold text-slate-900 hover:text-[#0F2E26] hover:underline"
-                        >
-                          {b.customer.name}
-                        </Link>
-                        <div className="text-[11px] text-slate-500 flex items-center gap-2 mt-0.5">
-                          <a
-                            href={waUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-emerald-700 hover:text-emerald-900 inline-flex items-center gap-1 font-mono tabular-nums"
-                            title="Chat on WhatsApp"
-                          >
-                            <Send className="w-3 h-3 text-emerald-600" />
-                            {b.customer.phone}
-                          </a>
-                        </div>
+                        {b.customer ? (
+                          <>
+                            <Link
+                              href={`/admin/customers/${b.customer.id}`}
+                              className="font-semibold text-slate-900 hover:text-slate-900 hover:underline"
+                            >
+                              {b.customer.name}
+                            </Link>
+                            <div className="text-[11px] text-slate-500 flex items-center gap-2 mt-0.5">
+                              {rawPhone ? (
+                                <a
+                                  href={waUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-emerald-700 hover:text-emerald-900 inline-flex items-center gap-1 font-mono tabular-nums"
+                                  title="Chat on WhatsApp"
+                                >
+                                  <Send className="w-3 h-3 text-emerald-600" />
+                                  {b.customer.phone}
+                                </a>
+                              ) : (
+                                <span className="font-mono text-slate-400">{b.customer.phone || b.customer.email}</span>
+                              )}
+                            </div>
+                          </>
+                        ) : (
+                          <div>
+                            <span className="font-semibold text-slate-700">Direct Reservation</span>
+                            <span className="block text-[11px] text-slate-400">Guest account pending</span>
+                          </div>
+                        )}
                       </td>
 
                       {/* Package & Window */}
                       <td className="py-3 px-4">
                         <div className="font-medium text-slate-800 line-clamp-1">
-                          {b.package.title}
+                          {packageTitle}
                         </div>
                         <div className="text-[11px] text-slate-500 flex items-center gap-1.5 mt-0.5">
                           <Calendar className="w-3 h-3 text-slate-400" />
@@ -534,7 +574,7 @@ export function BookingsHub() {
                         <div className="w-32 h-1.5 bg-slate-100 rounded-full overflow-hidden ml-auto mt-1">
                           <div
                             className={`h-full rounded-full ${
-                              b.balanceAmount === 0 ? "bg-emerald-500" : "bg-[#C59B27]"
+                              b.balanceAmount === 0 ? "bg-emerald-500" : "bg-amber-500"
                             }`}
                             style={{ width: `${percentPaid}%` }}
                           />
@@ -602,7 +642,7 @@ export function BookingsHub() {
                         )}
                         <Link
                           href={`/admin/bookings/${b.id}`}
-                          className="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 text-xs font-semibold hover:bg-[#082F24] hover:text-white transition-colors inline-flex items-center gap-1"
+                          className="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 text-xs font-semibold hover:bg-blue-600 hover:text-white transition-colors inline-flex items-center gap-1"
                         >
                           Manage
                           <ChevronRight className="w-3 h-3" />
@@ -623,7 +663,7 @@ export function BookingsHub() {
           <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl animate-in zoom-in-95 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <div>
-                <h3 className="font-heading text-xl font-bold text-[#082F24]">
+                <h3 className="font-heading text-xl font-bold text-slate-900">
                   {form.inquiryId ? "Convert Inquiry to Booking" : "Create New Trip Booking"}
                 </h3>
                 <p className="text-xs text-slate-500">
@@ -647,7 +687,7 @@ export function BookingsHub() {
                 <select
                   value={form.customerId}
                   onChange={(e) => setForm({ ...form, customerId: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-[#082F24] bg-white"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-blue-600 bg-white"
                 >
                   <option value="">-- Choose Existing Customer or Add New Below --</option>
                   {customersList.map((c) => (
@@ -660,7 +700,7 @@ export function BookingsHub() {
 
               {!form.customerId && (
                 <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-slate-200 space-y-3">
-                  <span className="text-xs font-bold uppercase text-[#082F24]">
+                  <span className="text-xs font-bold uppercase text-slate-900">
                     New Customer Details
                   </span>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -724,7 +764,7 @@ export function BookingsHub() {
                       totalAmount: rate ? String(rate * form.adultsCount) : form.totalAmount,
                     });
                   }}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-[#082F24] bg-white"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-blue-600 bg-white"
                 >
                   <option value="">-- Select Travel Package --</option>
                   {packagesList.map((p) => (
@@ -746,7 +786,7 @@ export function BookingsHub() {
                     required
                     value={form.travelStartDate}
                     onChange={(e) => setForm({ ...form, travelStartDate: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-[#082F24]"
+                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-blue-600"
                   />
                 </div>
                 <div>
@@ -757,7 +797,7 @@ export function BookingsHub() {
                     type="date"
                     value={form.travelEndDate}
                     onChange={(e) => setForm({ ...form, travelEndDate: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-[#082F24]"
+                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-blue-600"
                   />
                 </div>
               </div>
@@ -775,7 +815,7 @@ export function BookingsHub() {
                     onChange={(e) =>
                       setForm({ ...form, adultsCount: Number(e.target.value) })
                     }
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-[#082F24]"
+                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-blue-600"
                   />
                 </div>
                 <div>
@@ -789,7 +829,7 @@ export function BookingsHub() {
                     onChange={(e) =>
                       setForm({ ...form, childrenCount: Number(e.target.value) })
                     }
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-[#082F24]"
+                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-blue-600"
                   />
                 </div>
               </div>
@@ -806,7 +846,7 @@ export function BookingsHub() {
                     placeholder="e.g. 196000"
                     value={form.totalAmount}
                     onChange={(e) => setForm({ ...form, totalAmount: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:border-[#082F24]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:border-blue-600"
                   />
                 </div>
                 <div>
@@ -818,7 +858,7 @@ export function BookingsHub() {
                     placeholder="e.g. 50000 (0 if unpaid)"
                     value={form.initialAmountPaid}
                     onChange={(e) => setForm({ ...form, initialAmountPaid: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:border-[#082F24]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:border-blue-600"
                   />
                 </div>
               </div>
@@ -865,7 +905,7 @@ export function BookingsHub() {
                   value={form.specialRequests}
                   onChange={(e) => setForm({ ...form, specialRequests: e.target.value })}
                   placeholder="e.g. Houseboat room upgrade, airport chauffeur pickup requested..."
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-[#082F24]"
+                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-blue-600"
                 />
               </div>
 
@@ -880,7 +920,7 @@ export function BookingsHub() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-5 py-2 rounded-xl bg-[#082F24] text-white text-xs font-semibold hover:bg-[#0c4434] transition-all disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 transition-all disabled:opacity-50"
                 >
                   {submitting ? "Creating..." : "Confirm & Create Booking"}
                 </button>
@@ -896,7 +936,7 @@ export function BookingsHub() {
           <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl animate-in zoom-in-95 space-y-5">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
-                <h3 className="font-heading text-lg font-bold text-[#082F24]">
+                <h3 className="font-heading text-lg font-bold text-slate-900">
                   Record Payment / Installment
                 </h3>
                 <p className="text-xs text-slate-500">
@@ -928,7 +968,7 @@ export function BookingsHub() {
                   required
                   value={quickPayForm.amount}
                   onChange={(e) => setQuickPayForm({ ...quickPayForm, amount: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:border-[#082F24]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:border-blue-600"
                 />
               </div>
 
@@ -941,7 +981,7 @@ export function BookingsHub() {
                   onChange={(e) =>
                     setQuickPayForm({ ...quickPayForm, paymentMethod: e.target.value })
                   }
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs bg-white focus:outline-none focus:border-[#082F24]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs bg-white focus:outline-none focus:border-blue-600"
                 >
                   <option value="UPI">UPI (GooglePay / PhonePe / Paytm)</option>
                   <option value="BANK_TRANSFER">Bank Transfer (NEFT / RTGS / IMPS)</option>
@@ -960,7 +1000,7 @@ export function BookingsHub() {
                   placeholder="e.g. UTR: 592810294 Bank of Baroda"
                   value={quickPayForm.notes}
                   onChange={(e) => setQuickPayForm({ ...quickPayForm, notes: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-[#082F24]"
+                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-blue-600"
                 />
               </div>
 

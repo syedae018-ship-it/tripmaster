@@ -1,7 +1,76 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { X, Send, CheckCircle2, ShieldCheck, Sparkles, Phone } from "lucide-react";
+import { useState, useEffect, useId } from "react";
+import {
+  X,
+  CheckCircle2,
+  ShieldCheck,
+  Phone,
+  MessageCircle,
+  User,
+  Mail,
+  MapPin,
+  Calendar,
+  Users,
+  FileText,
+  ArrowRight,
+  Copy,
+  Check,
+} from "lucide-react";
+
+interface DestinationOption {
+  value: string;
+  label: string;
+}
+
+interface DestinationGroup {
+  category: string;
+  options: DestinationOption[];
+}
+
+const DESTINATION_GROUPS: DestinationGroup[] = [
+  {
+    category: "International Escapes",
+    options: [
+      { value: "Bali, Indonesia", label: "Bali, Indonesia" },
+      { value: "Dubai & Abu Dhabi, UAE", label: "Dubai & Abu Dhabi, UAE" },
+      { value: "Singapore & Sentosa", label: "Singapore & Sentosa" },
+      { value: "Thailand Islands", label: "Thailand & Phuket" },
+      { value: "Europe Highlights", label: "Europe Highlights (Swiss Alps, Paris, Riviera)" },
+      { value: "Maldives Private Atolls", label: "Maldives Private Atolls" },
+      { value: "Vietnam & Cambodia", label: "Vietnam & Cambodia" },
+      { value: "Japan Cultural Journey", label: "Japan Cultural Journey" },
+    ],
+  },
+  {
+    category: "Domestic Sanctuaries",
+    options: [
+      { value: "Kashmir Sanctuaries", label: "Kashmir — Srinagar & Pahalgam" },
+      { value: "Kerala Backwaters", label: "Kerala Backwaters & Vembanad" },
+      { value: "Rajasthan Palaces", label: "Rajasthan — Udaipur & Jaipur Palaces" },
+      { value: "Andaman Islands", label: "Andaman & Nicobar Islands" },
+      { value: "Himachal & Spiti", label: "Himachal & Alpine Sanctuaries" },
+      { value: "Goa Coastal Villas", label: "Goa — South Goa Private Villas" },
+    ],
+  },
+  {
+    category: "Bespoke",
+    options: [
+      { value: "Custom Multi-Destination Journey", label: "Custom Multi-Destination Private Itinerary" },
+      { value: "Private Villa & Yacht Charter", label: "Private Villa & Yacht Charter" },
+      { value: "Executive & Corporate Retreat", label: "Executive Delegation & Corporate Retreat" },
+    ],
+  },
+];
+
+const GUEST_COUNT_OPTIONS = [
+  { value: "1", label: "1 Guest" },
+  { value: "2", label: "2 Guests" },
+  { value: "3", label: "3 Guests" },
+  { value: "4", label: "4 Guests" },
+  { value: "5", label: "5 - 8 Guests" },
+  { value: "9", label: "9+ Guests" },
+];
 
 export function PlanTripModal({
   defaultPackageTitle = "",
@@ -13,8 +82,7 @@ export function PlanTripModal({
     name: "",
     email: "",
     phone: "",
-    whatsappNumber: "",
-    destination: defaultPackageTitle || "Bali, Indonesia",
+    destination: defaultPackageTitle || "",
     travelDate: "",
     paxCount: "2",
     notes: "",
@@ -24,7 +92,12 @@ export function PlanTripModal({
   const [submitted, setSubmitted] = useState(false);
   const [inquiryId, setInquiryId] = useState("");
   const [error, setError] = useState("");
+  const [copiedId, setCopiedId] = useState(false);
 
+  const titleId = useId();
+  const descId = useId();
+
+  // Listen for custom trigger event
   useEffect(() => {
     const handleOpen = (e?: Event) => {
       const customEvent = e as CustomEvent<{ destination?: string }>;
@@ -34,6 +107,8 @@ export function PlanTripModal({
           destination: customEvent.detail.destination || prev.destination,
         }));
       }
+      setSubmitted(false);
+      setError("");
       setIsOpen(true);
     };
 
@@ -41,15 +116,30 @@ export function PlanTripModal({
     return () => window.removeEventListener("open-plan-trip-modal", handleOpen);
   }, []);
 
+  // Sync defaultPackageTitle if updated externally
+  useEffect(() => {
+    if (defaultPackageTitle) {
+      setFormData((prev) => ({ ...prev, destination: defaultPackageTitle }));
+    }
+  }, [defaultPackageTitle]);
+
+  // Lock scroll and handle escape key
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          setIsOpen(false);
+        }
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.body.style.overflow = "";
+        window.removeEventListener("keydown", handleKeyDown);
+      };
     } else {
       document.body.style.overflow = "";
     }
-    return () => {
-      document.body.style.overflow = "";
-    };
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -63,259 +153,443 @@ export function PlanTripModal({
       const res = await fetch("/api/inquiries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          whatsappNumber: formData.phone,
+        }),
       });
 
       const data = await res.json();
       if (!res.ok || !data.success) {
-        throw new Error(data.error || "Failed to submit inquiry");
+        throw new Error(data.error || "Failed to submit consultation request");
       }
 
       setSubmitted(true);
-      setInquiryId(data.inquiryId);
+      setInquiryId(data.inquiryId || `TM-INQ-${Date.now().toString().slice(-6)}`);
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError("An unexpected error occurred.");
+        setError("An unexpected error occurred. Please try again.");
       }
     } finally {
       setLoading(false);
     }
   };
 
+  const handleCopyInquiryId = () => {
+    if (!inquiryId) return;
+    navigator.clipboard.writeText(inquiryId);
+    setCopiedId(true);
+    setTimeout(() => setCopiedId(false), 2200);
+  };
+
+  const isKnownDestination = DESTINATION_GROUPS.some((group) =>
+    group.options.some((opt) => opt.value === formData.destination)
+  );
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 font-sans">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-950/70 backdrop-blur-md transition-opacity duration-200 font-sans"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) setIsOpen(false);
+      }}
+    >
       <div
-        className="relative w-full max-w-xl bg-white rounded-2xl shadow-2xl border border-[#E4E2DD] overflow-hidden animate-in zoom-in-95 duration-200"
+        className="relative w-full max-w-[540px] bg-white rounded-2xl shadow-2xl border border-stone-200/90 overflow-hidden flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-150"
         role="dialog"
         aria-modal="true"
+        aria-labelledby={titleId}
+        aria-describedby={descId}
       >
-        {/* Modal Top Header */}
-        <div className="bg-[#0D2C24] text-white px-6 py-5 flex items-center justify-between border-b border-[#1A453B]">
-          <div className="flex items-center gap-3">
-            <img
-              src="/images/logo-white.png"
-              alt="TripMaster"
-              className="h-9 w-auto object-contain"
-            />
-            <div className="border-l border-white/20 pl-3">
-              <h3 className="font-heading text-base font-bold tracking-tight text-white leading-none">
-                Plan Your Holiday Experience
-              </h3>
-              <span className="text-[10px] text-amber-300 uppercase tracking-widest font-semibold mt-0.5 block">
-                Bespoke Guest Consultation
-              </span>
+        {/* =========================================================
+            HEADER: Luxury British Racing Green
+           ========================================================= */}
+        <div className="relative bg-[#0D2C24] text-white px-5 sm:px-6 py-4 shrink-0 border-b border-white/10">
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#C59B27]/40 to-transparent" />
+
+          <div className="relative flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 min-w-0">
+              <img
+                src="/images/logo-white.png"
+                alt="Trip Master"
+                className="h-7 w-auto object-contain shrink-0"
+              />
+              <div className="border-l border-white/15 pl-3 min-w-0">
+                <h3
+                  id={titleId}
+                  className="font-heading text-base sm:text-lg font-bold tracking-tight text-white leading-tight"
+                >
+                  Plan Your Journey
+                </h3>
+                <p
+                  id={descId}
+                  className="text-[11px] text-stone-300/90 mt-0.5 leading-snug font-normal truncate"
+                >
+                  Curated itineraries by destination specialists
+                </p>
+              </div>
             </div>
+
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 active:scale-95 text-stone-200 hover:text-white flex items-center justify-center transition-all border border-white/10 shrink-0 cursor-pointer"
+              aria-label="Close modal"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => setIsOpen(false)}
-            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white flex items-center justify-center transition-colors"
-            aria-label="Close modal"
-          >
-            <X className="w-4 h-4" />
-          </button>
         </div>
 
-        {/* Modal Body */}
-        <div className="p-6 sm:p-7 max-h-[85vh] overflow-y-auto">
+        {/* =========================================================
+            MINIMAL TRUST BAR
+           ========================================================= */}
+        <div className="bg-[#FAF9F6] border-b border-stone-200/80 px-5 sm:px-6 py-2 flex items-center justify-between text-[11px] text-stone-500 font-medium shrink-0">
+          <div className="flex items-center gap-1.5 text-[#0D2C24]">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#0D2C24] shrink-0" />
+            <span>Direct Concierge Service · Strictly Confidential</span>
+          </div>
+          <span className="hidden sm:inline-block text-stone-400">Response within 24h</span>
+        </div>
+
+        {/* =========================================================
+            MODAL BODY
+           ========================================================= */}
+        <div className="px-5 sm:px-6 py-5 overflow-y-auto flex-1 overscroll-contain bg-white">
           {submitted ? (
-            <div className="text-center py-6 space-y-4">
-              <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mx-auto border border-emerald-200">
-                <CheckCircle2 className="w-8 h-8" />
+            /* =========================================================
+               CONFIRMATION STATE
+               ========================================================= */
+            <div className="text-center py-4 space-y-5 max-w-md mx-auto">
+              <div className="mx-auto w-12 h-12 rounded-full bg-[#0D2C24]/5 text-[#0D2C24] flex items-center justify-center border border-[#0D2C24]/15">
+                <CheckCircle2 className="w-6 h-6 text-[#0D2C24]" />
               </div>
-              <h4 className="font-heading text-2xl font-bold text-[#111111] tracking-tight">
-                Your Holiday Plan Is In Motion!
-              </h4>
-              <p className="text-[#52525B] text-sm max-w-md mx-auto leading-relaxed">
-                Thank you, <strong className="text-[#111111]">{formData.name}</strong>. Reference ID:{" "}
-                <span className="font-semibold text-[#0D2C24] bg-[#F3F1ED] px-2 py-0.5 rounded-md border border-[#E4E2DD] tabular-nums">
-                  {inquiryId}
-                </span>
-                . Our travel specialists will prepare a customized proposal and contact you via WhatsApp / Phone shortly.
-              </p>
-              <div className="pt-4 flex items-center justify-center gap-3">
+
+              <div className="space-y-1.5">
+                <h4 className="font-heading text-lg sm:text-xl font-bold text-stone-900 tracking-tight">
+                  Consultation Request Received
+                </h4>
+                <p className="text-stone-600 text-xs sm:text-sm leading-relaxed">
+                  Thank you, <strong className="text-stone-900">{formData.name}</strong>. Your inquiry has been dispatched to our concierge team.
+                </p>
+              </div>
+
+              {/* Consultation Reference Card */}
+              <div className="p-4 bg-[#FAF9F6] rounded-xl border border-stone-200 text-left space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-stone-500">
+                    Consultation Reference
+                  </span>
+                  <span className="text-[9.5px] font-semibold uppercase tracking-wider text-[#0D2C24] bg-[#0D2C24]/5 border border-[#0D2C24]/15 px-2 py-0.5 rounded">
+                    Active Priority
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between gap-3 bg-white px-3 py-2 rounded-lg border border-stone-200">
+                  <span className="font-mono text-sm sm:text-base font-bold text-[#0D2C24] tracking-wider tabular-nums">
+                    {inquiryId}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleCopyInquiryId}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold rounded-md bg-stone-100 hover:bg-stone-200 text-stone-700 transition-colors cursor-pointer"
+                  >
+                    {copiedId ? (
+                      <>
+                        <Check className="w-3 h-3 text-emerald-700" />
+                        <span className="text-emerald-700 font-bold">Copied</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3 h-3 text-stone-500" />
+                        <span>Copy</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 pt-2 border-t border-stone-200/80 text-xs">
+                  <div>
+                    <span className="text-[10px] uppercase font-semibold text-stone-400 block tracking-wider">
+                      Destination
+                    </span>
+                    <span className="font-semibold text-stone-800 line-clamp-1 mt-0.5">
+                      {formData.destination}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase font-semibold text-stone-400 block tracking-wider">
+                      Party Size
+                    </span>
+                    <span className="font-semibold text-stone-800 line-clamp-1 mt-0.5">
+                      {formData.paxCount} Guests
+                    </span>
+                  </div>
+                  {formData.travelDate && (
+                    <div className="col-span-2 pt-1">
+                      <span className="text-[10px] uppercase font-semibold text-stone-400 block tracking-wider">
+                        Target Date
+                      </span>
+                      <span className="font-semibold text-stone-800 mt-0.5">
+                        {formData.travelDate}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 pt-2">
+                <a
+                  href={`https://wa.me/919876543210?text=${encodeURIComponent(
+                    `Hello Trip Master Concierge. I have submitted consultation request ${inquiryId} for ${formData.destination}. I would like to discuss my itinerary.`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#0D2C24] hover:bg-[#133E33] text-white font-medium text-xs tracking-wide shadow-sm transition-all cursor-pointer"
+                >
+                  <MessageCircle className="w-4 h-4 text-[#C59B27]" />
+                  <span>Connect with Concierge on WhatsApp</span>
+                </a>
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="btn btn-primary px-6 py-2.5 text-xs uppercase tracking-wider font-semibold rounded-xl"
+                  className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold text-xs transition-colors cursor-pointer"
                 >
-                  Close & Continue Exploring
+                  Close
                 </button>
               </div>
             </div>
           ) : (
+            /* =========================================================
+               ULTRA-MINIMAL & EFFORTLESS FORM
+               ========================================================= */
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="flex items-center justify-between text-xs text-[#52525B] pb-2 border-b border-[#E4E2DD]">
-                <span className="flex items-center gap-1.5 font-medium">
-                  <ShieldCheck className="w-4 h-4 text-[#0D2C24]" />
-                  Zero login required · Strict guest privacy
-                </span>
-                <span className="text-amber-800 font-semibold flex items-center gap-1">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                  Free custom quote
-                </span>
-              </div>
-
               {error && (
-                <div className="p-3 bg-red-50 text-red-800 text-xs rounded-xl border border-red-200">
-                  {error}
+                <div className="p-3 bg-rose-50 text-rose-800 text-xs rounded-xl border border-rose-200 flex items-center gap-2.5">
+                  <X className="w-4 h-4 text-rose-600 shrink-0" />
+                  <span>{error}</span>
                 </div>
               )}
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Guest Details: Name & Phone */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Full Name */}
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-[#52525B] mb-1.5">
-                    Your Full Name *
+                  <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                    Full Name <span className="text-[#C59B27]">*</span>
                   </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Priya Sharma"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    className="w-full h-10 px-3.5 rounded-xl border border-[#E4E2DD] text-sm text-[#111111] focus:outline-none focus:border-[#0D2C24]"
-                  />
+                  <div className="relative">
+                    <User className="w-3.5 h-3.5 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type="text"
+                      required
+                      placeholder="Full Name"
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                      className="w-full h-10 pl-9 pr-3 rounded-xl border border-stone-200 bg-white text-xs sm:text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-1 focus:ring-[#0D2C24] focus:border-[#0D2C24] transition-all"
+                    />
+                  </div>
                 </div>
 
+                {/* Phone Number */}
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-[#52525B] mb-1.5">
-                    Phone / WhatsApp *
+                  <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                    Phone Number <span className="text-[#C59B27]">*</span>
                   </label>
-                  <input
-                    type="tel"
-                    required
-                    placeholder="e.g. +91 98765 43210"
-                    value={formData.phone}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        phone: e.target.value,
-                        whatsappNumber: e.target.value,
-                      })
-                    }
-                    className="w-full h-10 px-3.5 rounded-xl border border-[#E4E2DD] text-sm tabular-nums text-[#111111] focus:outline-none focus:border-[#0D2C24]"
-                  />
+                  <div className="relative">
+                    <Phone className="w-3.5 h-3.5 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type="tel"
+                      required
+                      placeholder="Phone Number"
+                      value={formData.phone}
+                      onChange={(e) =>
+                        setFormData({ ...formData, phone: e.target.value })
+                      }
+                      className="w-full h-10 pl-9 pr-3 rounded-xl border border-stone-200 bg-white text-xs sm:text-sm tabular-nums text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-1 focus:ring-[#0D2C24] focus:border-[#0D2C24] transition-all"
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-[#52525B] mb-1.5">
-                    Email Address *
-                  </label>
+              {/* Email Address */}
+              <div>
+                <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                  Email Address <span className="text-[#C59B27]">*</span>
+                </label>
+                <div className="relative">
+                  <Mail className="w-3.5 h-3.5 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                   <input
                     type="email"
                     required
-                    placeholder="e.g. priya@example.com"
+                    placeholder="Email Address"
                     value={formData.email}
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })
                     }
-                    className="w-full h-10 px-3.5 rounded-xl border border-[#E4E2DD] text-sm text-[#111111] focus:outline-none focus:border-[#0D2C24]"
+                    className="w-full h-10 pl-9 pr-3 rounded-xl border border-stone-200 bg-white text-xs sm:text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-1 focus:ring-[#0D2C24] focus:border-[#0D2C24] transition-all"
                   />
                 </div>
+              </div>
 
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-[#52525B] mb-1.5">
-                    Destination *
-                  </label>
+              {/* Destination Dropdown */}
+              <div>
+                <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                  Destination <span className="text-[#C59B27]">*</span>
+                </label>
+                <div className="relative">
+                  <MapPin className="w-3.5 h-3.5 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                   <select
+                    required
                     value={formData.destination}
                     onChange={(e) =>
                       setFormData({ ...formData, destination: e.target.value })
                     }
-                    className="w-full h-10 px-3.5 rounded-xl border border-[#E4E2DD] text-sm text-[#111111] focus:outline-none focus:border-[#0D2C24] bg-white cursor-pointer"
+                    className="w-full h-10 pl-9 pr-8 rounded-xl border border-stone-200 bg-white text-xs sm:text-sm text-stone-900 focus:outline-none focus:ring-1 focus:ring-[#0D2C24] focus:border-[#0D2C24] transition-all cursor-pointer appearance-none font-medium"
                   >
-                    <option value="Bali, Indonesia">Bali, Indonesia (5D / 4N)</option>
-                    <option value="Dubai, UAE">Dubai, UAE (6D / 5N)</option>
-                    <option value="Thailand">Thailand Islands (5D / 4N)</option>
-                    <option value="Europe Highlights">Europe Highlights (10D / 9N)</option>
-                    <option value="Kashmir, India">Kashmir Sanctuaries (6D / 5N)</option>
-                    <option value="Kerala, India">Kerala Backwaters (6D / 5N)</option>
-                    <option value="Andaman Islands">Andaman Islands (6D / 5N)</option>
-                    <option value="Rajasthan, India">Rajasthan Palaces (6D / 5N)</option>
-                    <option value="Custom Multi-City">Custom Multi-City Escape</option>
+                    <option value="" disabled>
+                      Select destination
+                    </option>
+                    {formData.destination && !isKnownDestination && (
+                      <option value={formData.destination}>
+                        {formData.destination}
+                      </option>
+                    )}
+                    {DESTINATION_GROUPS.map((group) => (
+                      <optgroup
+                        key={group.category}
+                        label={group.category}
+                        className="font-bold text-stone-800 bg-stone-50"
+                      >
+                        {group.options.map((opt) => (
+                          <option
+                            key={opt.value}
+                            value={opt.value}
+                            className="font-normal text-stone-800 bg-white py-1"
+                          >
+                            {opt.label}
+                          </option>
+                        ))}
+                      </optgroup>
+                    ))}
                   </select>
+                  <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-xs">
+                    ▼
+                  </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Travel Date & Party Size */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Travel Date */}
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-[#52525B] mb-1.5">
-                    Preferred Travel Date
+                  <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                    Estimated Travel Date
                   </label>
-                  <input
-                    type="date"
-                    value={formData.travelDate}
+                  <div className="relative">
+                    <Calendar className="w-3.5 h-3.5 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type="date"
+                      value={formData.travelDate}
+                      onChange={(e) =>
+                        setFormData({ ...formData, travelDate: e.target.value })
+                      }
+                      className="w-full h-10 pl-9 pr-3 rounded-xl border border-stone-200 bg-white text-xs sm:text-sm tabular-nums text-stone-900 focus:outline-none focus:ring-1 focus:ring-[#0D2C24] focus:border-[#0D2C24] transition-all cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Party Size */}
+                <div>
+                  <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                    Party Size
+                  </label>
+                  <div className="relative">
+                    <Users className="w-3.5 h-3.5 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <select
+                      value={formData.paxCount}
+                      onChange={(e) =>
+                        setFormData({ ...formData, paxCount: e.target.value })
+                      }
+                      className="w-full h-10 pl-9 pr-8 rounded-xl border border-stone-200 bg-white text-xs sm:text-sm text-stone-900 focus:outline-none focus:ring-1 focus:ring-[#0D2C24] focus:border-[#0D2C24] transition-all cursor-pointer appearance-none font-medium"
+                    >
+                      {GUEST_COUNT_OPTIONS.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-xs">
+                      ▼
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Special Requests */}
+              <div>
+                <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                  Special Requests <span className="text-stone-400 font-normal">(Optional)</span>
+                </label>
+                <div className="relative">
+                  <FileText className="w-3.5 h-3.5 text-stone-400 absolute left-3 top-2.5 pointer-events-none" />
+                  <textarea
+                    rows={2}
+                    placeholder="Special requests or preferences..."
+                    value={formData.notes}
                     onChange={(e) =>
-                      setFormData({ ...formData, travelDate: e.target.value })
+                      setFormData({ ...formData, notes: e.target.value })
                     }
-                    className="w-full h-10 px-3.5 rounded-xl border border-[#E4E2DD] text-sm tabular-nums text-[#111111] focus:outline-none focus:border-[#0D2C24]"
+                    className="w-full pl-9 pr-3 py-2 rounded-xl border border-stone-200 bg-white text-xs sm:text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-1 focus:ring-[#0D2C24] focus:border-[#0D2C24] transition-all leading-relaxed"
                   />
                 </div>
-
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-[#52525B] mb-1.5">
-                    Number of Travellers
-                  </label>
-                  <select
-                    value={formData.paxCount}
-                    onChange={(e) =>
-                      setFormData({ ...formData, paxCount: e.target.value })
-                    }
-                    className="w-full h-10 px-3.5 rounded-xl border border-[#E4E2DD] text-sm text-[#111111] focus:outline-none focus:border-[#0D2C24] bg-white cursor-pointer"
-                  >
-                    <option value="1">1 Traveller (Solo)</option>
-                    <option value="2">2 Travellers (Couple)</option>
-                    <option value="3">3 Travellers</option>
-                    <option value="4">4 Travellers (Family)</option>
-                    <option value="5">5+ Travellers (Group)</option>
-                  </select>
-                </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#52525B] mb-1.5">
-                  Trip Notes / Special Requests (Optional)
-                </label>
-                <textarea
-                  rows={2}
-                  placeholder="e.g. Honeymoon suite, private pool villa, vegetarian meals, airport transfers..."
-                  value={formData.notes}
-                  onChange={(e) =>
-                    setFormData({ ...formData, notes: e.target.value })
-                  }
-                  className="w-full p-3 rounded-xl border border-[#E4E2DD] text-sm text-[#111111] focus:outline-none focus:border-[#0D2C24]"
-                />
-              </div>
-
-              <div className="pt-2">
+              {/* Primary CTA */}
+              <div className="pt-2 space-y-2">
                 <button
                   type="submit"
                   disabled={loading}
-                  className="btn btn-primary w-full h-12 text-xs uppercase tracking-wider font-semibold rounded-xl justify-center gap-2 shadow-sm"
+                  className="w-full h-11 rounded-xl bg-[#0D2C24] hover:bg-[#133E33] active:scale-[0.99] text-white font-medium text-xs sm:text-sm tracking-wide flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer disabled:opacity-70"
                 >
                   {loading ? (
-                    <span>Submitting Your Request...</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <span>Transmitting Consultation Request...</span>
+                    </div>
                   ) : (
                     <>
-                      <span>Submit Holiday Enquiry</span>
-                      <Send className="w-3.5 h-3.5" />
+                      <span>Request Bespoke Consultation</span>
+                      <ArrowRight className="w-4 h-4 text-[#C59B27]" />
                     </>
                   )}
                 </button>
+
+                <p className="text-center text-[10.5px] text-stone-400">
+                  Your contact details remain strictly confidential.
+                </p>
               </div>
 
-              <p className="text-center text-[11px] text-[#52525B] pt-1">
-                Prefer to call? Speak directly with our team at{" "}
-                <a href="tel:+919876543210" className="text-[#0D2C24] font-semibold underline">
-                  +91 98765 43210
+              {/* Support / Direct Advisory Footer: Logos + Clean Click Here Button */}
+              <div className="pt-3 border-t border-stone-100 flex items-center justify-between gap-3 text-xs text-stone-500">
+                <div className="flex items-center gap-2">
+                  <MessageCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <Phone className="w-4 h-4 text-[#0D2C24] shrink-0" />
+                </div>
+                <a
+                  href="https://wa.me/919876543210"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-stone-50 hover:bg-[#0D2C24] hover:text-white text-stone-800 font-medium text-xs border border-stone-200 transition-all cursor-pointer"
+                >
+                  <span>Click Here</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-[#C59B27]" />
                 </a>
-              </p>
+              </div>
             </form>
           )}
         </div>
@@ -323,4 +597,3 @@ export function PlanTripModal({
     </div>
   );
 }
-

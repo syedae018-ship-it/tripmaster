@@ -172,6 +172,7 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...bookingForm,
+          startDate: bookingForm.travelStartDate,
           packageId: pkg.id,
         }),
       });
@@ -695,9 +696,9 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                 <button
                   type="button"
                   onClick={() => setActiveTab("inquiry")}
-                  className={`flex-1 py-3.5 text-xs font-semibold uppercase tracking-wider transition-all font-sans ${
+                  className={`flex-1 py-3.5 text-xs font-semibold uppercase tracking-wider transition-all font-sans text-center ${
                     activeTab === "inquiry"
-                      ? "bg-white text-[#0D2C24] border-b-2 border-[#0D2C24]"
+                      ? "bg-white text-[#0D2C24] border-b-2 border-[#0D2C24] font-bold"
                       : "text-[#52525B] hover:text-[#111111]"
                   }`}
                 >
@@ -706,13 +707,13 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                 <button
                   type="button"
                   onClick={() => setActiveTab("book")}
-                  className={`flex-1 py-3.5 text-xs font-semibold uppercase tracking-wider transition-all font-sans ${
+                  className={`flex-1 py-3.5 text-xs font-semibold uppercase tracking-wider transition-all font-sans text-center ${
                     activeTab === "book"
-                      ? "bg-white text-[#0D2C24] border-b-2 border-[#0D2C24]"
+                      ? "bg-white text-[#0D2C24] border-b-2 border-[#0D2C24] font-bold"
                       : "text-[#52525B] hover:text-[#111111]"
                   }`}
                 >
-                  Direct Reserve
+                  Book Directly
                 </button>
               </div>
 
@@ -748,22 +749,33 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                 <div className="p-5 sm:p-6 font-sans">
                   {inquirySuccess ? (
                     <div className="text-center py-6 space-y-3">
-                      <div className="w-12 h-12 rounded-full bg-[#F3F1ED] text-[#0D2C24] flex items-center justify-center mx-auto border border-[#E4E2DD]">
+                      <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center mx-auto border border-emerald-200">
                         <CheckCircle className="w-6 h-6" />
                       </div>
                       <h4 className="font-heading text-lg font-bold text-[#111111]">
-                        Inquiry Received
+                        Custom Quote Requested
                       </h4>
                       <p className="text-xs text-[#52525B] leading-relaxed">
                         Ref ID:{" "}
                         <code className="font-semibold text-[#0D2C24] bg-[#F3F1ED] px-1.5 py-0.5 rounded-md border border-[#E4E2DD] tabular-nums">
                           {inquirySuccess.id}
                         </code>
-                        . Our travel curator will share a personalized proposal shortly.
+                        . Our travel curator will craft a bespoke itinerary and quotation for {inquirySuccess.name || "you"} shortly.
                       </p>
                       <button
                         type="button"
-                        onClick={() => setInquirySuccess(null)}
+                        onClick={() => {
+                          setInquirySuccess(null);
+                          setInquiryForm({
+                            name: "",
+                            email: "",
+                            phone: "",
+                            whatsappNumber: "",
+                            travelDate: "",
+                            paxCount: "2",
+                            notes: "",
+                          });
+                        }}
                         className="text-xs font-semibold text-[#0D2C24] hover:underline pt-2 block mx-auto uppercase tracking-wider"
                       >
                         Send Another Inquiry
@@ -893,7 +905,10 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                         className="btn btn-primary w-full h-11 text-xs uppercase tracking-wider font-semibold rounded-xl justify-center"
                       >
                         {inquiryLoading ? (
-                          <span>Submitting...</span>
+                          <div className="flex items-center gap-2">
+                            <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            <span>Submitting Quote Request...</span>
+                          </div>
                         ) : (
                           <>
                             <span>Request Custom Quote</span>
@@ -929,11 +944,11 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
 
                   {bookingSuccess ? (
                     <div className="text-center py-6 space-y-3">
-                      <div className="w-12 h-12 rounded-full bg-[#F3F1ED] text-[#0D2C24] flex items-center justify-center mx-auto border border-[#E4E2DD]">
+                      <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center mx-auto border border-emerald-200">
                         <CheckCircle className="w-7 h-7" />
                       </div>
                       <h4 className="font-heading text-lg font-bold text-[#111111]">
-                        Booking Reserved!
+                        Booking Slot Reserved!
                       </h4>
                       <p className="text-xs text-[#52525B] leading-relaxed">
                         Booking Ref:{" "}
@@ -945,15 +960,42 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                         Total Est: ₹{bookingSuccess.totalAmount.toLocaleString("en-IN")}
                       </div>
                       <p className="text-[11px] text-[#52525B]">
-                        Our Concierge will send the Razorpay payment link & confirmation voucher to your WhatsApp/Email.
+                        Your slot reservation is recorded. View your confirmed reservation ledger or settle payment online.
                       </p>
-                      <button
-                        type="button"
-                        onClick={() => setBookingSuccess(null)}
-                        className="text-xs font-semibold text-[#0D2C24] hover:underline pt-2 block mx-auto uppercase tracking-wider"
-                      >
-                        New Reservation
-                      </button>
+                      <div className="pt-2 flex flex-col gap-2">
+                        <Link
+                          href={`/booking-success/${bookingSuccess.reference}`}
+                          className="btn btn-primary w-full h-10 text-xs uppercase tracking-wider font-semibold rounded-xl justify-center inline-flex items-center gap-2"
+                        >
+                          <span>View Booking Ledger</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </Link>
+                        <Link
+                          href={`/book/${pkg.slug}`}
+                          className="btn btn-secondary w-full h-10 text-xs uppercase tracking-wider font-semibold rounded-xl justify-center inline-flex items-center gap-2"
+                        >
+                          <CreditCard className="w-3.5 h-3.5" />
+                          <span>Pay Online with Razorpay</span>
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setBookingSuccess(null);
+                            setBookingForm({
+                              name: "",
+                              email: "",
+                              phone: "",
+                              whatsappNumber: "",
+                              travelStartDate: "",
+                              paxCount: "2",
+                              notes: "",
+                            });
+                          }}
+                          className="text-xs font-semibold text-[#52525B] hover:text-[#0D2C24] transition-colors py-1 block mx-auto uppercase tracking-wider"
+                        >
+                          New Reservation
+                        </button>
+                      </div>
                     </div>
                   ) : (
                     <form onSubmit={handleBookingSubmit} className="space-y-3.5">
@@ -1075,11 +1117,14 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                         className="btn btn-primary w-full h-11 rounded-xl text-xs uppercase tracking-wider font-semibold justify-center"
                       >
                         {bookingLoading ? (
-                          <span>Reserving Hold...</span>
+                          <div className="flex items-center gap-2">
+                            <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            <span>Reserving Hold...</span>
+                          </div>
                         ) : (
                           <>
                             <CreditCard className="w-3.5 h-3.5" />
-                            <span>Confirm Provisional Hold</span>
+                            <span>Confirm Slot Reservation</span>
                           </>
                         )}
                       </button>

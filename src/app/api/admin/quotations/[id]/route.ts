@@ -83,7 +83,18 @@ export async function PUT(
     if (childrenCount !== undefined) updateData.childrenCount = Number(childrenCount);
     if (status !== undefined) updateData.status = status;
     if (pdfUrl !== undefined) updateData.pdfUrl = pdfUrl;
-    if (customerId !== undefined) updateData.customerId = customerId || null;
+    if (customerId !== undefined) {
+      if (customerId) {
+        updateData.customer = { connect: { id: customerId } };
+      } else {
+        updateData.customer = { disconnect: true };
+      }
+    }
+    if (body.paymentAmountDue !== undefined) updateData.paymentAmountDue = body.paymentAmountDue ? Number(body.paymentAmountDue) : null;
+    if (body.paymentStatus !== undefined) updateData.paymentStatus = body.paymentStatus;
+    if (body.paymentPlan !== undefined) updateData.paymentPlan = body.paymentPlan;
+    if (body.paymentNote !== undefined) updateData.paymentNote = body.paymentNote;
+    if (body.paymentLinkActive !== undefined) updateData.paymentLinkActive = Boolean(body.paymentLinkActive);
     if (content !== undefined) {
       updateData.content =
         typeof content === "string" ? content : JSON.stringify(content);

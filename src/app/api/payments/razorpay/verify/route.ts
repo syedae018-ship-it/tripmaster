@@ -45,6 +45,281 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Handle existing booking balance payment
+    if (bookingData.existingBookingReference) {
+      const existing = await prisma.booking.findUnique({
+        where: { bookingReference: bookingData.existingBookingReference },
+        include: { customer: true },
+      });
+
+      if (existing) {
+        const finalAmountPaid = Number(bookingData.amountPaid) || existing.balanceAmount;
+        const newPaid = existing.amountPaid + finalAmountPaid;
+        const newBal = Math.max(0, existing.totalAmount - newPaid);
+        const invoiceNumber = `INV-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+        const updated = await prisma.booking.update({
+          where: { bookingReference: existing.bookingReference },
+          data: {
+            amountPaid: newPaid,
+            balanceAmount: newBal,
+            bookingStatus: newBal === 0 ? "CONFIRMED" : "PARTIALLY_PAID",
+            isVerified: true,
+            taxInvoiceNumber: invoiceNumber,
+            paymentMethod: "RAZORPAY_ONLINE",
+          },
+        });
+
+        await prisma.paymentTransaction.create({
+          data: {
+            bookingId: existing.id,
+            razorpayOrderId: razorpay_order_id,
+            razorpayPaymentId: razorpay_payment_id,
+            razorpaySignature: razorpay_signature,
+            amount: finalAmountPaid,
+            paymentMethod: "RAZORPAY_ONLINE",
+            status: "SUCCESS",
+            notes: "Balance payment verified via Razorpay Checkout",
+          },
+        });
+
+        await prisma.customerDocument.create({
+          data: {
+            customerId: existing.customerId,
+            bookingId: existing.id,
+            title: `Official Tax Invoice & Receipt (${invoiceNumber})`,
+            type: "RECEIPT",
+            fileUrl: `/pay/${existing.bookingReference}?invoice=true`,
+            fileSize: "Tax Invoice PDF",
+          },
+        });
+
+        return NextResponse.json({
+          success: true,
+          booking: updated,
+          invoiceNumber,
+        });
+      }
+    }
+
+    // Handle quotation-based payment (Direct payment link from Quotation Builder)
+    if (bookingData.quotationId || bookingData.quotationSlug) {
+      const quotation = await prisma.quotation.findFirst({
+        where: {
+          OR: [
+            bookingData.quotationId ? { id: bookingData.quotationId } : undefined,
+            bookingData.quotationSlug ? { shareSlug: bookingData.quotationSlug } : undefined,
+            bookingData.quotationNumber ? { quotationNumber: bookingData.quotationNumber } : undefined,
+          ].filter(Boolean) as any,
+        },
+        include: { customer: true, package: true },
+      });
+
+      if (!quotation) {
+        return NextResponse.json(
+          { success: false, error: "Referenced client quotation not found" },
+          { status: 404 }
+        );
+      }
+
+      const clientName = bookingData.name || quotation.customer?.name || "Client";
+      const clientEmail = bookingData.email || quotation.customer?.email || "";
+      const clientPhone = bookingData.phone || quotation.customer?.phone || "";
+      const clientWhatsapp = bookingData.whatsappNumber || clientPhone;
+      const clientCity = bookingData.city || quotation.customer?.city || null;
+
+      // 1. Resolve or create Customer
+      let customer = quotation.customer;
+      if (!customer) {
+        customer = await prisma.customer.findFirst({
+          where: {
+            OR: [
+              clientEmail ? { email: clientEmail } : undefined,
+              clientPhone ? { phone: clientPhone } : undefined,
+            ].filter(Boolean) as any,
+          },
+        });
+      }
+
+      if (!customer) {
+        customer = await prisma.customer.create({
+          data: {
+            name: clientName,
+            email: clientEmail,
+            phone: clientPhone,
+            whatsappNumber: clientWhatsapp,
+            city: clientCity,
+          },
+        });
+      } else {
+        await prisma.customer.update({
+          where: { id: customer.id },
+          data: {
+            name: customer.name || clientName,
+            phone: customer.phone || clientPhone,
+            whatsappNumber: customer.whatsappNumber || clientWhatsapp,
+            city: customer.city || clientCity,
+          },
+        });
+      }
+
+      // 2. Financial calculation
+      const totalAmount = Number(bookingData.totalAmount) || quotation.totalAmount || (quotation.pricePerPerson * quotation.paxCount);
+      const finalAmountPaid = Number(bookingData.amountPaid) || quotation.paymentAmountDue || totalAmount;
+      const finalBalanceAmount = Math.max(0, totalAmount - finalAmountPaid);
+      const bookingStatus = finalBalanceAmount === 0 ? "CONFIRMED" : "PARTIALLY_PAID";
+      const invoiceNumber = `INV-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+      // 3. Destination Prefix for Reference
+      let destPrefix = "TM-QT";
+      if (quotation.destination?.toLowerCase().includes("singapore")) destPrefix = "TM-SIN";
+      else if (quotation.destination?.toLowerCase().includes("bali")) destPrefix = "TM-BAL";
+      else if (quotation.destination?.toLowerCase().includes("dubai")) destPrefix = "TM-DXB";
+
+      const bookingReference = generateBookingReference(destPrefix);
+
+      const rawQuotationStartDate =
+        quotation.travelDate ||
+        bookingData.travelStartDate ||
+        bookingData.startDate;
+      const travelStartDate = rawQuotationStartDate
+        ? new Date(rawQuotationStartDate)
+        : new Date();
+      const rawQuotationEndDate =
+        bookingData.travelEndDate || bookingData.endDate;
+      let travelEndDate = rawQuotationEndDate
+        ? new Date(rawQuotationEndDate)
+        : new Date(travelStartDate);
+      if (!rawQuotationEndDate) {
+        travelEndDate = new Date(travelStartDate);
+        travelEndDate.setDate(
+          travelEndDate.getDate() + (quotation.durationDays || 4) - 1
+        );
+      }
+
+      // 4. Create or update confirmed booking linked to this quotation
+      const existingBooking = await prisma.booking.findFirst({
+        where: { quotationId: quotation.id },
+        include: { paymentTransactions: true },
+      });
+
+      let booking: any;
+      if (existingBooking) {
+        const cumulativePaid = existingBooking.amountPaid + finalAmountPaid;
+        const cumulativeBalance = Math.max(0, existingBooking.totalAmount - cumulativePaid);
+        const updatedStatus = cumulativeBalance === 0 ? "CONFIRMED" : "PARTIALLY_PAID";
+
+        booking = await prisma.booking.update({
+          where: { id: existingBooking.id },
+          data: {
+            amountPaid: cumulativePaid,
+            balanceAmount: cumulativeBalance,
+            bookingStatus: updatedStatus,
+            paymentTransactions: {
+              create: [
+                {
+                  razorpayOrderId: razorpay_order_id,
+                  razorpayPaymentId: razorpay_payment_id,
+                  razorpaySignature: razorpay_signature,
+                  amount: finalAmountPaid,
+                  paymentMethod: "RAZORPAY_ONLINE",
+                  status: "SUCCESS",
+                  notes: `Quotation installment payment verified via Razorpay for ${quotation.quotationNumber}`,
+                },
+              ],
+            },
+          },
+          include: {
+            customer: true,
+            paymentTransactions: true,
+          },
+        });
+      } else {
+        booking = await prisma.booking.create({
+          data: {
+            bookingReference,
+            customerId: customer.id,
+            packageId: quotation.packageId || null,
+            quotationId: quotation.id,
+            customPackageTitle: quotation.title,
+            customDestination: quotation.destination,
+            travelStartDate,
+            travelEndDate,
+            paxCount: quotation.paxCount || 2,
+            adultsCount: quotation.adultsCount || 2,
+            childrenCount: quotation.childrenCount || 0,
+            specialRequests:
+              bookingData.specialRequests ||
+              `Quotation Plan Ref: ${quotation.quotationNumber}`,
+            totalAmount,
+            amountPaid: finalAmountPaid,
+            balanceAmount: finalBalanceAmount,
+            bookingStatus,
+            paymentMethod: "RAZORPAY_ONLINE",
+            isVerified: true,
+            taxInvoiceNumber: invoiceNumber,
+            taxInvoiceUrl: `/pay/${bookingReference}?invoice=true`,
+            paymentTransactions: {
+              create: [
+                {
+                  razorpayOrderId: razorpay_order_id,
+                  razorpayPaymentId: razorpay_payment_id,
+                  razorpaySignature: razorpay_signature,
+                  amount: finalAmountPaid,
+                  paymentMethod: "RAZORPAY_ONLINE",
+                  status: "SUCCESS",
+                  notes: `Quotation Payment verified via Razorpay for ${quotation.quotationNumber}`,
+                },
+              ],
+            },
+            customerDocuments: {
+              create: [
+                {
+                  customerId: customer.id,
+                  title: `Tax Invoice & Receipt #${invoiceNumber}`,
+                  type: "RECEIPT",
+                  fileUrl: `/pay/${bookingReference}?invoice=true`,
+                  fileSize: "Tax Invoice PDF",
+                },
+                {
+                  customerId: customer.id,
+                  title: `Client Quotation Dossier - ${quotation.title}`,
+                  type: "QUOTATION",
+                  fileUrl: `/quote/${quotation.shareSlug}`,
+                  fileSize: "Mobile Itinerary PDF",
+                },
+              ],
+            },
+          },
+          include: {
+            customer: true,
+            paymentTransactions: true,
+          },
+        });
+      }
+
+      // 5. Update Quotation Status
+      await prisma.quotation.update({
+        where: { id: quotation.id },
+        data: {
+          status: "CONVERTED",
+          paymentStatus: finalBalanceAmount === 0 ? "PAID" : "PARTIALLY_PAID",
+          paymentAmountDue: finalBalanceAmount,
+          customerId: customer.id,
+        },
+      });
+
+      return NextResponse.json({
+        success: true,
+        message: "Quotation payment verified successfully",
+        bookingReference: booking.bookingReference,
+        bookingId: booking.id,
+        invoiceNumber,
+        booking,
+        quotation,
+      });
+    }
+
     const {
       packageId,
       name,
@@ -52,9 +327,11 @@ export async function POST(req: NextRequest) {
       phone,
       whatsappNumber,
       city,
-      travelStartDate,
-      travelEndDate,
-      paxCount = 2,
+      startDate: inputStartDate,
+      endDate: inputEndDate,
+      travelStartDate: inputTravelStartDate,
+      travelEndDate: inputTravelEndDate,
+      paxCount,
       adultsCount = 2,
       childrenCount = 0,
       specialRequests,
@@ -118,12 +395,16 @@ export async function POST(req: NextRequest) {
     else if (pkg.destination.toLowerCase().includes("rajasthan")) destPrefix = "TM-RAJ";
 
     const bookingReference = generateBookingReference(destPrefix);
+    const invoiceNumber = `INV-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
-    const startDate = new Date(travelStartDate);
-    let endDate = travelEndDate ? new Date(travelEndDate) : new Date(startDate);
-    if (!travelEndDate && pkg.durationDays) {
-      endDate = new Date(startDate);
-      endDate.setDate(endDate.getDate() + (pkg.durationDays - 1));
+    const rawStartDate = inputTravelStartDate || inputStartDate;
+    const rawEndDate = inputTravelEndDate || inputEndDate;
+
+    const travelStartDate = rawStartDate ? new Date(rawStartDate) : new Date();
+    let travelEndDate = rawEndDate ? new Date(rawEndDate) : new Date(travelStartDate);
+    if (!rawEndDate && pkg.durationDays) {
+      travelEndDate = new Date(travelStartDate);
+      travelEndDate.setDate(travelEndDate.getDate() + (pkg.durationDays - 1));
     }
 
     // 5. Create Booking & Transaction atomically
@@ -132,8 +413,8 @@ export async function POST(req: NextRequest) {
         bookingReference,
         customerId: customer.id,
         packageId: pkg.id,
-        travelStartDate: startDate,
-        travelEndDate: endDate,
+        travelStartDate,
+        travelEndDate,
         paxCount: Number(paxCount) || 2,
         adultsCount: Number(adultsCount) || 2,
         childrenCount: Number(childrenCount) || 0,
@@ -142,6 +423,10 @@ export async function POST(req: NextRequest) {
         amountPaid: finalAmountPaid,
         balanceAmount: finalBalanceAmount,
         bookingStatus,
+        paymentMethod: paymentMethod || "RAZORPAY_ONLINE",
+        isVerified: true,
+        taxInvoiceNumber: invoiceNumber,
+        taxInvoiceUrl: `/booking-success/${bookingReference}?invoice=true`,
         paymentTransactions: {
           create: [
             {
@@ -149,7 +434,7 @@ export async function POST(req: NextRequest) {
               razorpayPaymentId: razorpay_payment_id,
               razorpaySignature: razorpay_signature,
               amount: finalAmountPaid,
-              paymentMethod,
+              paymentMethod: paymentMethod || "RAZORPAY_ONLINE",
               status: "SUCCESS",
               notes: verification.isSimulated
                 ? "Simulated online checkout payment verified"
@@ -163,14 +448,14 @@ export async function POST(req: NextRequest) {
               customerId: customer.id,
               title: `Instant Payment Receipt #${razorpay_payment_id.slice(-6).toUpperCase()}`,
               type: "RECEIPT",
-              fileUrl: `https://tripmaster.in/receipts/${bookingReference}.pdf`,
+              fileUrl: `/booking-success/${bookingReference}?invoice=true`,
               fileSize: "410 KB",
             },
             {
               customerId: customer.id,
               title: `Provisional Booking Voucher - ${pkg.title.slice(0, 30)}...`,
               type: "CONFIRMATION",
-              fileUrl: `https://tripmaster.in/vouchers/${bookingReference}.pdf`,
+              fileUrl: `/booking-success/${bookingReference}`,
               fileSize: "920 KB",
             },
           ],
@@ -188,6 +473,7 @@ export async function POST(req: NextRequest) {
       message: "Payment successfully verified and booking created",
       bookingReference: booking.bookingReference,
       bookingId: booking.id,
+      invoiceNumber,
       booking,
     });
   } catch (error: any) {

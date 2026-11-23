@@ -11,17 +11,25 @@ export async function POST(req: NextRequest) {
       whatsappNumber,
       city,
       packageId,
-      travelStartDate,
-      travelEndDate,
+      travelStartDate: inputTravelStartDate,
+      travelEndDate: inputTravelEndDate,
+      startDate: inputStartDate,
+      endDate: inputEndDate,
       paxCount,
+      adultsCount,
+      childrenCount,
       notes,
+      specialRequests,
     } = body;
 
-    if (!name || !email || !phone || !packageId || !travelStartDate) {
+    const travelStartDate = inputTravelStartDate || inputStartDate;
+    const travelEndDate = inputTravelEndDate || inputEndDate;
+
+    if (!name || (!email && !phone) || !packageId || !travelStartDate) {
       return NextResponse.json(
         {
           success: false,
-          error: "Name, email, phone, package, and travel dates are required",
+          error: "Name, contact details (email or phone), package, and travel dates are required",
         },
         { status: 400 }
       );
@@ -39,14 +47,23 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const pax = paxCount ? parseInt(paxCount, 10) : 2;
+    const numAdults = adultsCount
+      ? parseInt(String(adultsCount), 10)
+      : paxCount
+      ? parseInt(String(paxCount), 10)
+      : 2;
+    const numChildren = childrenCount ? parseInt(String(childrenCount), 10) : 0;
+    const pax = paxCount ? parseInt(String(paxCount), 10) : numAdults + numChildren;
     const pricePerPerson = pkg.discountedPrice || pkg.basePrice;
     const totalAmount = pricePerPerson * pax;
 
     // 1. Find or create Customer
     let customer = await prisma.customer.findFirst({
       where: {
-        OR: [{ email }, { phone }],
+        OR: [
+          email ? { email: { equals: email } } : undefined,
+          phone ? { phone: { equals: phone } } : undefined,
+        ].filter(Boolean) as any,
       },
     });
 
@@ -54,11 +71,21 @@ export async function POST(req: NextRequest) {
       customer = await prisma.customer.create({
         data: {
           name,
-          email,
-          phone,
-          whatsappNumber: whatsappNumber || phone,
+          email: email || `${(phone || "").replace(/\D/g, "")}@guest.tripmaster.in`,
+          phone: phone || "",
+          whatsappNumber: whatsappNumber || phone || "",
           city: city || "",
           notes: notes ? `Booking request notes: ${notes}` : undefined,
+        },
+      });
+    } else {
+      await prisma.customer.update({
+        where: { id: customer.id },
+        data: {
+          name: name || customer.name,
+          phone: phone || customer.phone,
+          whatsappNumber: whatsappNumber || customer.whatsappNumber,
+          city: city || customer.city,
         },
       });
     }
@@ -71,7 +98,7 @@ export async function POST(req: NextRequest) {
     const startDate = new Date(travelStartDate);
     const endDate = travelEndDate
       ? new Date(travelEndDate)
-      : new Date(startDate.getTime() + pkg.durationDays * 24 * 60 * 60 * 1000);
+      : new Date(startDate.getTime() + (pkg.durationDays || 4) * 24 * 60 * 60 * 1000);
 
     const booking = await prisma.booking.create({
       data: {
@@ -81,6 +108,9 @@ export async function POST(req: NextRequest) {
         travelStartDate: startDate,
         travelEndDate: endDate,
         paxCount: pax,
+        adultsCount: numAdults,
+        childrenCount: numChildren,
+        specialRequests: specialRequests || notes || null,
         totalAmount,
         amountPaid: 0,
         balanceAmount: totalAmount,

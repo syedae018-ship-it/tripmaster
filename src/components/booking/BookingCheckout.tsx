@@ -22,6 +22,7 @@ import {
   AlertCircle,
   ExternalLink,
 } from "lucide-react";
+import { RazorpayModal } from "@/components/payment/RazorpayModal";
 
 interface PackageData {
   id: string;
@@ -124,14 +125,23 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
   // Calculations
   const unitPrice = pkg.discountedPrice || pkg.basePrice;
   const paxCount = adultsCount + childrenCount;
-  // Children priced at 60% of adult
-  const totalAmount = Math.round(unitPrice * adultsCount + unitPrice * 0.6 * childrenCount);
-  const advanceAmount = Math.max(25000, Math.round(totalAmount * 0.3));
+  // If unitPrice is 1 (test package), total is 1, and advance is 1
+  const isTestOneRupee = unitPrice === 1;
+  const totalAmount = isTestOneRupee
+    ? 1
+    : Math.round(unitPrice * adultsCount + unitPrice * 0.6 * childrenCount);
+  const advanceAmount = isTestOneRupee
+    ? 1
+    : totalAmount <= 100
+    ? totalAmount
+    : Math.min(totalAmount, Math.max(25000, Math.round(totalAmount * 0.3)));
   const amountDueToday = paymentPlan === "FULL" ? totalAmount : advanceAmount;
-  const remainingBalance = totalAmount - amountDueToday;
+  const remainingBalance = Math.max(0, totalAmount - amountDueToday);
 
-  // Calculate return date
-  const startDateObj = new Date(travelStartDate);
+  // Calculate return date safely avoiding timezone day boundary drifts
+  const startDateObj = travelStartDate.includes("T")
+    ? new Date(travelStartDate)
+    : new Date(`${travelStartDate}T00:00:00`);
   const returnDateObj = new Date(startDateObj);
   returnDateObj.setDate(returnDateObj.getDate() + (pkg.durationDays - 1));
   const returnDateStr = returnDateObj.toLocaleDateString("en-IN", {
@@ -272,6 +282,8 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
             city,
             travelStartDate,
             travelEndDate: returnDateObj.toISOString(),
+            startDate: travelStartDate,
+            endDate: returnDateObj.toISOString(),
             paxCount,
             adultsCount,
             childrenCount,
@@ -655,7 +667,7 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
                     <Calendar className="w-3.5 h-3.5 text-[#0D2C24]" /> Travel Starts:
                   </span>
                   <span className="font-semibold text-[#111111]">
-                    {new Date(travelStartDate).toLocaleDateString("en-IN", {
+                    {startDateObj.toLocaleDateString("en-IN", {
                       weekday: "short",
                       day: "numeric",
                       month: "short",
@@ -685,7 +697,7 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
                   Trip Master Signature Inclusions
                 </h4>
                 <div className="space-y-1.5 text-xs text-[#52525B]">
-                  {pkg.inclusions.slice(0, 4).map((inc, i) => (
+                  {(Array.isArray(pkg.inclusions) ? pkg.inclusions : []).slice(0, 4).map((inc, i) => (
                     <div key={i} className="flex items-start gap-2">
                       <CheckCircle2 className="w-3.5 h-3.5 text-[#0D2C24] shrink-0 mt-0.5" />
                       <span className="line-clamp-1">{inc}</span>
@@ -762,68 +774,28 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
         </div>
       </div>
 
-      {/* RAZORPAY DEMO / SIMULATION MODAL */}
-      {simModalOpen && simOrderData && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 font-sans">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-[#E4E2DD] animate-in zoom-in-95 space-y-6">
-            <div className="text-center space-y-2">
-              <div className="w-14 h-14 rounded-2xl bg-[#0D2C24] text-amber-300 mx-auto flex items-center justify-center shadow-md">
-                <CreditCard className="w-7 h-7" />
-              </div>
-              <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 uppercase tracking-wider">
-                Razorpay Simulation Mode
-              </span>
-              <h3 className="font-heading text-2xl font-bold text-[#111111]">
-                Authorize Travel Payment
-              </h3>
-              <p className="text-xs text-[#52525B]">
-                Live Razorpay keys are not yet configured in <code className="bg-[#F3F1ED] px-1 py-0.5 rounded text-[11px]">.env</code>. You can test the verified booking pipeline with our simulated payment engine.
-              </p>
-            </div>
-
-            <div className="p-4 rounded-xl bg-[#F3F1ED] border border-[#E4E2DD] space-y-2 text-xs">
-              <div className="flex justify-between">
-                <span className="text-[#52525B]">Order Reference:</span>
-                <span className="font-semibold text-[#111111] tabular-nums">
-                  {simOrderData.orderId}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[#52525B]">Guest Name:</span>
-                <span className="font-semibold text-[#111111]">{name}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[#52525B]">Amount Due Now:</span>
-                <span className="price-display font-heading font-bold text-base text-[#0D2C24] tabular-nums">
-                  ₹{simOrderData.amountDue.toLocaleString("en-IN")}
-                </span>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <button
-                type="button"
-                onClick={handleSimulateSuccess}
-                className="w-full py-3.5 rounded-xl bg-emerald-700 text-white font-semibold text-xs uppercase tracking-wider hover:bg-emerald-800 transition-colors flex items-center justify-center gap-2 shadow-sm"
-              >
-                <CheckCircle2 className="w-4 h-4 text-amber-300" />
-                Simulate Successful Payment (Instant Confirm)
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setSimModalOpen(false);
-                  setErrorMsg("Simulated payment was cancelled or declined.");
-                }}
-                className="w-full py-2.5 rounded-xl border border-[#E4E2DD] text-[#52525B] text-xs font-medium hover:bg-[#F3F1ED] transition-colors"
-              >
-                Cancel / Simulate Failed
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* AUTHENTIC RAZORPAY CHECKOUT & SIMULATOR MODAL */}
+      <RazorpayModal
+        isOpen={simModalOpen && !!simOrderData}
+        onClose={() => {
+          setSimModalOpen(false);
+          setProcessing(false);
+        }}
+        orderId={simOrderData?.orderId || ""}
+        amount={amountDueToday}
+        customerName={name}
+        customerEmail={email}
+        customerPhone={phone}
+        description={`Booking for ${pkg.title}`}
+        onSuccess={async (paymentAuth) => {
+          setSimModalOpen(false);
+          await completeVerification(paymentAuth);
+        }}
+        onFailure={(msg) => {
+          setErrorMsg(msg);
+          setProcessing(false);
+        }}
+      />
     </div>
   );
 }

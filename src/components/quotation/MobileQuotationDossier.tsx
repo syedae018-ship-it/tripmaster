@@ -83,6 +83,16 @@ export interface QuotationContentData {
     offices: string;
     companyName: string;
   };
+  sectionSettings?: {
+    showInclusionsExclusions?: boolean;
+    showMapIntro?: boolean;
+    showCostBreakdown?: boolean;
+    showStaySummary?: boolean;
+    showQuickSummary?: boolean;
+    showMomentsThatMatter?: boolean;
+    showPaymentPolicy?: boolean;
+    showReviews?: boolean;
+  };
 }
 
 interface MobileQuotationDossierProps {
@@ -114,6 +124,7 @@ export const MobileQuotationDossier = React.forwardRef<
         <img
           src={data.heroImage}
           alt={data.title}
+          crossOrigin="anonymous"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20 flex flex-col justify-between p-5 text-white">
@@ -123,6 +134,7 @@ export const MobileQuotationDossier = React.forwardRef<
               <img
                 src="/images/logo-white.png"
                 alt="TripMaster"
+                crossOrigin="anonymous"
                 className="h-6 w-auto object-contain"
               />
               <span className="text-[10px] text-white/70 font-medium border-l border-white/20 pl-2">
@@ -160,53 +172,55 @@ export const MobileQuotationDossier = React.forwardRef<
         {/* =====================================================================
             2. MAP VIEW & ROUTE STOPS CARD
             ===================================================================== */}
-        <div className="bg-white rounded-2xl p-4 border border-[#E4E2DD] shadow-xs space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Compass className="w-4 h-4 text-[#0D2C24]" />
-              <h3 className="font-heading font-bold text-sm text-[#0D2C24] uppercase tracking-wider">
-                Map View & Route Overview
-              </h3>
+        {data.sectionSettings?.showMapIntro !== false && (
+          <div className="bg-white rounded-2xl p-4 border border-[#E4E2DD] shadow-xs space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Compass className="w-4 h-4 text-[#0D2C24]" />
+                <h3 className="font-heading font-bold text-sm text-[#0D2C24] uppercase tracking-wider">
+                  Map View & Route Overview
+                </h3>
+              </div>
+              <span className="text-[10px] font-bold text-sky-800 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200">
+                {data.summary.destination}
+              </span>
             </div>
-            <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
-              {data.summary.destination}
-            </span>
-          </div>
 
-          {/* Map Preview Graphic with Pinned Stops */}
-          <div className="relative rounded-xl overflow-hidden bg-gradient-to-br from-emerald-900 to-[#0D2C24] p-3.5 text-white">
-            <div className="flex items-center justify-between text-xs font-bold text-amber-300 mb-2 pb-1 border-b border-white/10">
-              <span>Planned Itinerary Stops</span>
-              <span>{data.mapStops?.length || 5} Pinned Locations</span>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              {data.mapStops?.map((stop, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-start gap-1.5 bg-white/10 backdrop-blur-xs rounded-lg p-1.5 text-[10px]"
-                >
-                  <MapPin className="w-3 h-3 text-amber-300 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-bold text-white block leading-tight">
-                      {stop.name}
-                    </span>
-                    {stop.label && (
-                      <span className="text-white/70 text-[9px] block">
-                        {stop.label}
+            {/* Map Preview Graphic with Pinned Stops */}
+            <div className="relative rounded-xl overflow-hidden bg-gradient-to-br from-emerald-900 to-[#0D2C24] p-3.5 text-white">
+              <div className="flex items-center justify-between text-xs font-bold text-sky-300 mb-2 pb-1 border-b border-white/10">
+                <span>Planned Itinerary Stops</span>
+                <span>{data.mapStops?.length || 5} Pinned Locations</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {data.mapStops?.map((stop, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-start gap-1.5 bg-white/10 backdrop-blur-xs rounded-lg p-1.5 text-[10px]"
+                  >
+                    <MapPin className="w-3 h-3 text-sky-300 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-bold text-white block leading-tight">
+                        {stop.name}
                       </span>
-                    )}
+                      {stop.label && (
+                        <span className="text-white/70 text-[9px] block">
+                          {stop.label}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
 
-          {data.mapIntro && (
-            <p className="text-xs text-[#52525B] leading-relaxed font-normal">
-              {data.mapIntro}
-            </p>
-          )}
-        </div>
+            {data.mapIntro && (
+              <p className="text-xs text-[#52525B] leading-relaxed font-normal">
+                {data.mapIntro}
+              </p>
+            )}
+          </div>
+        )}
 
         {/* =====================================================================
             3. SUMMARY CARD
@@ -263,107 +277,112 @@ export const MobileQuotationDossier = React.forwardRef<
         {/* =====================================================================
             4. PACKAGE COST BREAKDOWN & STAY/MEAL OVERVIEW
             ===================================================================== */}
-        <div className="bg-white rounded-2xl p-4 border border-[#E4E2DD] shadow-xs space-y-3.5">
-          <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-[#0D2C24]">
-            Package Cost Breakdown (Per Person)
-          </h3>
+        {data.sectionSettings?.showCostBreakdown !== false && (
+          <div className="bg-white rounded-2xl p-4 border border-[#E4E2DD] shadow-xs space-y-3.5">
+            <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-[#0D2C24]">
+              Package Cost Breakdown (Per Person)
+            </h3>
 
-          <div className="divide-y divide-[#E4E2DD] border border-[#E4E2DD] rounded-xl overflow-hidden text-xs">
-            <div className="grid grid-cols-12 bg-[#F6F5F2] p-2 font-heading font-bold text-zinc-600 text-[10px] uppercase tracking-wider">
-              <span className="col-span-8">Category</span>
-              <span className="col-span-4 text-right">Cost</span>
-            </div>
-            {data.costBreakdown.map((item, idx) => (
-              <div
-                key={idx}
-                className="grid grid-cols-12 p-2.5 items-center font-medium text-zinc-800"
-              >
-                <span className="col-span-8 text-xs">{item.category}</span>
-                <span className="col-span-4 text-right font-heading font-bold text-[#0D2C24]">
-                  {item.cost}
-                </span>
+            <div className="divide-y divide-[#E4E2DD] border border-[#E4E2DD] rounded-xl overflow-hidden text-xs">
+              <div className="grid grid-cols-12 bg-[#F6F5F2] p-2 font-heading font-bold text-zinc-600 text-[10px] uppercase tracking-wider">
+                <span className="col-span-8">Category</span>
+                <span className="col-span-4 text-right">Cost</span>
               </div>
-            ))}
-          </div>
-
-          {/* Featured Stay Summary Card */}
-          {data.staySummary && (
-            <div className="border border-[#E4E2DD] rounded-xl p-2.5 bg-[#FAF9F6] flex gap-3 items-center">
-              <img
-                src={data.staySummary.photo}
-                alt={data.staySummary.hotelName}
-                className="w-16 h-16 rounded-lg object-cover shrink-0 shadow-xs"
-              />
-              <div className="flex-1 min-w-0 text-xs">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[9px] uppercase font-bold text-emerald-800 bg-emerald-100 px-1.5 py-0.5 rounded">
-                    Stay • {data.staySummary.city}
+              {data.costBreakdown.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="grid grid-cols-12 p-2.5 items-center font-medium text-zinc-800"
+                >
+                  <span className="col-span-8 text-xs">{item.category}</span>
+                  <span className="col-span-4 text-right font-heading font-bold text-[#0D2C24]">
+                    {item.cost}
                   </span>
-                  <div className="flex items-center text-amber-500 text-[10px]">
-                    <Star className="w-3 h-3 fill-amber-400 stroke-amber-400" />
-                    <span className="ml-0.5 font-bold">
-                      {data.staySummary.rating}
-                    </span>
-                  </div>
                 </div>
-                <h4 className="font-heading font-bold text-zinc-900 truncate mt-0.5">
-                  {data.staySummary.hotelName}
-                </h4>
-                <p className="text-[10px] text-zinc-500 truncate">
-                  {data.staySummary.roomType}
-                </p>
-              </div>
+              ))}
             </div>
-          )}
 
-          {/* Meals Included Banner */}
-          {data.mealsBanner && (
-            <div className="border border-amber-200 bg-amber-50/70 rounded-xl p-3 text-xs">
-              <div className="flex items-center gap-1.5 text-amber-900 font-heading font-bold text-xs uppercase tracking-wider mb-1">
-                <Utensils className="w-3.5 h-3.5 text-amber-700" />
-                <span>{data.mealsBanner.title}</span>
+            {/* Featured Stay Summary Card */}
+            {data.sectionSettings?.showStaySummary !== false && data.staySummary && (
+              <div className="border border-[#E4E2DD] rounded-xl p-2.5 bg-[#FAF9F6] flex gap-3 items-center">
+                <img
+                  src={data.staySummary.photo}
+                  alt={data.staySummary.hotelName}
+                  crossOrigin="anonymous"
+                  className="w-16 h-16 rounded-lg object-cover shrink-0 shadow-xs"
+                />
+                <div className="flex-1 min-w-0 text-xs">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[9px] uppercase font-bold text-emerald-800 bg-emerald-100 px-1.5 py-0.5 rounded">
+                      Stay • {data.staySummary.city}
+                    </span>
+                    <div className="flex items-center text-sky-600 text-[10px]">
+                      <Star className="w-3 h-3 fill-sky-500 stroke-sky-500" />
+                      <span className="ml-0.5 font-bold">
+                        {data.staySummary.rating}
+                      </span>
+                    </div>
+                  </div>
+                  <h4 className="font-heading font-bold text-zinc-900 truncate mt-0.5">
+                    {data.staySummary.hotelName}
+                  </h4>
+                  <p className="text-[10px] text-zinc-500 truncate">
+                    {data.staySummary.roomType}
+                  </p>
+                </div>
               </div>
-              <p className="text-[11px] text-amber-950 font-normal leading-relaxed mb-2">
-                {data.mealsBanner.description}
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {data.mealsBanner.tags.map((t, idx) => (
-                  <span
-                    key={idx}
-                    className="text-[9px] bg-white border border-amber-300 text-amber-900 font-semibold px-2 py-0.5 rounded-full"
-                  >
-                    ✓ {t}
-                  </span>
-                ))}
+            )}
+
+            {/* Meals Included Banner */}
+            {data.sectionSettings?.showStaySummary !== false && data.mealsBanner && (
+              <div className="border border-sky-200 bg-sky-50/70 rounded-xl p-3 text-xs">
+                <div className="flex items-center gap-1.5 text-sky-900 font-heading font-bold text-xs uppercase tracking-wider mb-1">
+                  <Utensils className="w-3.5 h-3.5 text-sky-700" />
+                  <span>{data.mealsBanner.title}</span>
+                </div>
+                <p className="text-[11px] text-sky-950 font-normal leading-relaxed mb-2">
+                  {data.mealsBanner.description}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {data.mealsBanner.tags.map((t, idx) => (
+                    <span
+                      key={idx}
+                      className="text-[9px] bg-white border border-sky-300 text-sky-900 font-semibold px-2 py-0.5 rounded-full"
+                    >
+                      ✓ {t}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
 
         {/* =====================================================================
             5. QUICK DAY-WISE SUMMARY
             ===================================================================== */}
-        <div className="bg-white rounded-2xl p-4 border border-[#E4E2DD] shadow-xs space-y-2.5">
-          <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-[#0D2C24]">
-            Quick Day-wise Summary
-          </h3>
+        {data.sectionSettings?.showQuickSummary !== false && data.quickDayWiseSummary && (
+          <div className="bg-white rounded-2xl p-4 border border-[#E4E2DD] shadow-xs space-y-2.5">
+            <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-[#0D2C24]">
+              Quick Day-wise Summary
+            </h3>
 
-          <div className="space-y-2">
-            {data.quickDayWiseSummary.map((item, idx) => (
-              <div
-                key={idx}
-                className="flex items-start gap-2.5 p-2 rounded-xl bg-[#F6F5F2] border border-[#E4E2DD]/70 text-xs"
-              >
-                <span className="font-heading font-bold text-xs text-white bg-[#0D2C24] px-2 py-0.5 rounded-md shrink-0">
-                  {item.day}
-                </span>
-                <span className="text-zinc-800 font-medium leading-relaxed self-center">
-                  {item.summary}
-                </span>
-              </div>
-            ))}
+            <div className="space-y-2">
+              {data.quickDayWiseSummary.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-start gap-2.5 p-2 rounded-xl bg-[#F6F5F2] border border-[#E4E2DD]/70 text-xs"
+                >
+                  <span className="font-heading font-bold text-xs text-white bg-[#0D2C24] px-2 py-0.5 rounded-md shrink-0">
+                    {item.day}
+                  </span>
+                  <span className="text-zinc-800 font-medium leading-relaxed self-center">
+                    {item.summary}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* =====================================================================
             6. DETAILED DAY-BY-DAY ITINERARY (DAYS 1 TO 4)
@@ -437,6 +456,7 @@ export const MobileQuotationDossier = React.forwardRef<
                             <img
                               src={photoUrl}
                               alt={place.title}
+                              crossOrigin="anonymous"
                               className="w-full h-full object-cover"
                             />
                           </div>
@@ -474,6 +494,7 @@ export const MobileQuotationDossier = React.forwardRef<
                         <img
                           src={day.hotel.photo}
                           alt={day.hotel.name}
+                          crossOrigin="anonymous"
                           className="w-16 h-16 rounded-lg object-cover shrink-0 border border-emerald-200 shadow-xs"
                         />
                         <div className="text-xs flex-1 min-w-0">
@@ -499,10 +520,10 @@ export const MobileQuotationDossier = React.forwardRef<
         {/* =====================================================================
             7. MOMENTS THAT MATTER (PHOTO COLLAGE)
             ===================================================================== */}
-        {data.momentsThatMatter && data.momentsThatMatter.length > 0 && (
+        {data.sectionSettings?.showMomentsThatMatter !== false && data.momentsThatMatter && data.momentsThatMatter.length > 0 && (
           <div className="bg-white rounded-2xl p-4 border border-[#E4E2DD] shadow-xs space-y-3">
             <div className="flex items-center gap-1.5">
-              <Sparkles className="w-4 h-4 text-amber-600" />
+              <Sparkles className="w-4 h-4 text-sky-600" />
               <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-[#0D2C24]">
                 Moments That Matter
               </h3>
@@ -517,6 +538,7 @@ export const MobileQuotationDossier = React.forwardRef<
                   <img
                     src={moment.url}
                     alt={moment.caption}
+                    crossOrigin="anonymous"
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-2 text-white">
@@ -533,71 +555,75 @@ export const MobileQuotationDossier = React.forwardRef<
         {/* =====================================================================
             8. WHAT'S INCLUDED & EXCLUDED
             ===================================================================== */}
-        <div className="bg-white rounded-2xl p-4 border border-[#E4E2DD] shadow-xs space-y-3.5">
-          {/* Inclusions */}
-          <div>
-            <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-emerald-800 flex items-center gap-1.5 mb-2">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-              <span>What's Included</span>
-            </h3>
-            <ul className="space-y-1.5">
-              {data.inclusions.map((item, idx) => (
-                <li
-                  key={idx}
-                  className="flex items-start gap-2 text-xs text-zinc-700 leading-relaxed"
-                >
-                  <span className="text-emerald-600 font-bold shrink-0">✓</span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+        {data.sectionSettings?.showInclusionsExclusions !== false && (
+          <div className="bg-white rounded-2xl p-4 border border-[#E4E2DD] shadow-xs space-y-3.5">
+            {/* Inclusions */}
+            <div>
+              <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-emerald-800 flex items-center gap-1.5 mb-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                <span>What's Included</span>
+              </h3>
+              <ul className="space-y-1.5">
+                {data.inclusions.map((item, idx) => (
+                  <li
+                    key={idx}
+                    className="flex items-start gap-2 text-xs text-zinc-700 leading-relaxed"
+                  >
+                    <span className="text-emerald-600 font-bold shrink-0">✓</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Exclusions */}
-          <div className="pt-2 border-t border-[#E4E2DD]">
-            <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-rose-800 flex items-center gap-1.5 mb-2">
-              <XCircle className="w-3.5 h-3.5 text-rose-600" />
-              <span>What's Excluded</span>
-            </h3>
-            <ul className="space-y-1.5">
-              {data.exclusions.map((item, idx) => (
-                <li
-                  key={idx}
-                  className="flex items-start gap-2 text-xs text-zinc-600 leading-relaxed"
-                >
-                  <span className="text-rose-600 font-bold shrink-0">✕</span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
+            {/* Exclusions */}
+            <div className="pt-2 border-t border-[#E4E2DD]">
+              <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-rose-800 flex items-center gap-1.5 mb-2">
+                <XCircle className="w-3.5 h-3.5 text-rose-600" />
+                <span>What's Excluded</span>
+              </h3>
+              <ul className="space-y-1.5">
+                {data.exclusions.map((item, idx) => (
+                  <li
+                    key={idx}
+                    className="flex items-start gap-2 text-xs text-zinc-600 leading-relaxed"
+                  >
+                    <span className="text-rose-600 font-bold shrink-0">✕</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* =====================================================================
             9. PAYMENT POLICY & TERMS
             ===================================================================== */}
-        <div className="bg-white rounded-2xl p-4 border border-[#E4E2DD] shadow-xs space-y-2.5">
-          <div className="flex items-center gap-1.5">
-            <ShieldCheck className="w-4 h-4 text-[#0D2C24]" />
-            <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-[#0D2C24]">
-              Payment Policy & Cancellation Terms
-            </h3>
-          </div>
+        {data.sectionSettings?.showPaymentPolicy !== false && data.paymentPolicy && data.paymentPolicy.length > 0 && (
+          <div className="bg-white rounded-2xl p-4 border border-[#E4E2DD] shadow-xs space-y-2.5">
+            <div className="flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-[#0D2C24]" />
+              <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-[#0D2C24]">
+                Payment Policy & Cancellation Terms
+              </h3>
+            </div>
 
-          <div className="space-y-1.5 text-xs text-zinc-700">
-            {data.paymentPolicy.map((policy, idx) => (
-              <div key={idx} className="flex items-start gap-2">
-                <span className="text-amber-600 font-bold">•</span>
-                <span className="leading-relaxed">{policy}</span>
-              </div>
-            ))}
+            <div className="space-y-1.5 text-xs text-zinc-700">
+              {data.paymentPolicy.map((policy, idx) => (
+                <div key={idx} className="flex items-start gap-2">
+                  <span className="text-sky-600 font-bold">•</span>
+                  <span className="leading-relaxed">{policy}</span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* =====================================================================
             10. VERIFIED TRAVELLER REVIEWS
             ===================================================================== */}
-        {data.reviews && data.reviews.length > 0 && (
+        {data.sectionSettings?.showReviews !== false && data.reviews && data.reviews.length > 0 && (
           <div className="bg-white rounded-2xl p-4 border border-[#E4E2DD] shadow-xs space-y-3">
             <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-[#0D2C24]">
               Verified Traveller Experiences
@@ -639,6 +665,7 @@ export const MobileQuotationDossier = React.forwardRef<
             <img
               src="/images/logo-white.png"
               alt="TripMaster - Experience Neighbourhood"
+              crossOrigin="anonymous"
               className="h-9 w-auto object-contain"
             />
             <p className="text-xs text-white/80 font-normal leading-relaxed">

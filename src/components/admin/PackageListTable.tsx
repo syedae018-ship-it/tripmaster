@@ -167,7 +167,7 @@ export function PackageListTable() {
         <div
           className={`fixed bottom-6 right-6 z-50 px-5 py-3 rounded-2xl shadow-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 border transition-all ${
             actionMessage.type === "success"
-              ? "bg-[#082F24] text-[#dfbd75] border-[#dfbd75]/40"
+              ? "bg-blue-600 text-white border-slate-700"
               : "bg-rose-900 text-rose-100 border-rose-700"
           }`}
         >
@@ -179,7 +179,7 @@ export function PackageListTable() {
       {/* Header and Add Action */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-heading text-3xl font-bold text-[#082F24]">
+          <h1 className="font-heading text-3xl font-bold text-slate-900">
             Packages & Reusable Asset Library
           </h1>
           <p className="text-sm text-slate-500 mt-1">
@@ -189,7 +189,7 @@ export function PackageListTable() {
 
         <Link
           href="/admin/packages/new"
-          className="inline-flex items-center gap-2 bg-[#082F24] text-[#dfbd75] hover:bg-[#0c4031] hover:text-white px-5 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-md self-start sm:self-center"
+          className="inline-flex items-center gap-2 bg-blue-600 text-white hover:bg-blue-700 px-5 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-md self-start sm:self-center"
         >
           <PlusCircle className="w-4 h-4" />
           <span>Build New Package</span>
@@ -205,7 +205,7 @@ export function PackageListTable() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by title or destination..."
-            className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+            className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600"
           />
         </div>
 
@@ -214,7 +214,7 @@ export function PackageListTable() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 bg-[#FAF8F5] focus:outline-none focus:ring-2 focus:ring-[#082F24] cursor-pointer"
+            className="px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 bg-slate-50/50 focus:outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer"
           >
             <option value="all">All Statuses</option>
             <option value="published">Published Only</option>
@@ -225,7 +225,7 @@ export function PackageListTable() {
           <select
             value={destinationFilter}
             onChange={(e) => setDestinationFilter(e.target.value)}
-            className="px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 bg-[#FAF8F5] focus:outline-none focus:ring-2 focus:ring-[#082F24] cursor-pointer"
+            className="px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 bg-slate-50/50 focus:outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer"
           >
             <option value="all">All Destinations</option>
             <option value="Kashmir">Kashmir</option>
@@ -252,7 +252,7 @@ export function PackageListTable() {
                 setStatusFilter("all");
                 setDestinationFilter("all");
               }}
-              className="text-xs font-bold uppercase text-[#082F24] underline"
+              className="text-xs font-bold uppercase text-slate-900 underline"
             >
               Reset Filters
             </button>
@@ -382,7 +382,7 @@ export function PackageListTable() {
                           <Link
                             href={`/packages/${pkg.slug}`}
                             target="_blank"
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-[#082F24] hover:bg-slate-100 transition-colors"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-colors"
                             title="View Public Page"
                           >
                             <ExternalLink className="w-4 h-4" />
@@ -391,7 +391,7 @@ export function PackageListTable() {
                           {/* Edit Studio */}
                           <Link
                             href={`/admin/packages/${pkg.id}/edit`}
-                            className="p-1.5 rounded-lg text-slate-600 hover:text-[#082F24] hover:bg-slate-100 transition-colors"
+                            className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
                             title="Edit Package & Itinerary"
                           >
                             <Edit3 className="w-4 h-4" />
@@ -401,7 +401,7 @@ export function PackageListTable() {
                           <button
                             type="button"
                             onClick={() => handleDuplicate(pkg.id)}
-                            className="p-1.5 rounded-lg text-slate-600 hover:text-[#c5a059] hover:bg-amber-50 transition-colors"
+                            className="p-1.5 rounded-lg text-slate-600 hover:text-blue-600 hover:bg-amber-50 transition-colors"
                             title="Duplicate Package"
                           >
                             <Copy className="w-4 h-4" />

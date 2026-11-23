@@ -2,7 +2,7 @@
 
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Compass, Lock, Mail, ArrowRight, ShieldCheck, Key } from "lucide-react";
+import { Lock, Mail, ArrowRight, ShieldCheck, Key } from "lucide-react";
 
 function LoginForm() {
   const router = useRouter();
@@ -45,13 +45,13 @@ function LoginForm() {
   };
 
   return (
-    <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-2xl border border-[#dfbd75]/30">
+    <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-xl border border-slate-200">
       <div className="mb-6">
-        <h2 className="font-heading text-2xl font-bold text-[#082F24]">
+        <h2 className="font-heading text-2xl font-bold text-slate-900 tracking-tight">
           Staff Authentication
         </h2>
-        <p className="text-xs text-slate-500 mt-1">
-          Enter your credentials to access the CMS & booking engine.
+        <p className="text-xs text-slate-500 mt-1 font-sans">
+          Enter your credentials to access the CRM & quotation workstation.
         </p>
       </div>
 
@@ -74,7 +74,7 @@ function LoginForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="admin@tripmaster.in"
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-slate-900"
             />
           </div>
         </div>
@@ -91,7 +91,7 @@ function LoginForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#082F24]"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-slate-900"
             />
           </div>
         </div>
@@ -99,13 +99,13 @@ function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2 bg-[#082F24] hover:bg-[#0c4031] text-[#dfbd75] hover:text-white font-bold py-3.5 px-6 rounded-xl transition-all duration-300 shadow-md text-xs uppercase tracking-wider disabled:opacity-50 mt-2"
+          className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-6 rounded-xl transition-all shadow-sm text-xs uppercase tracking-wider disabled:opacity-50 mt-2"
         >
           {loading ? (
             <span>Authenticating...</span>
           ) : (
             <>
-              <span>Sign In To Portal</span>
+              <span>Sign In To Workstation</span>
               <ArrowRight className="w-4 h-4" />
             </>
           )}
@@ -113,17 +113,17 @@ function LoginForm() {
       </form>
 
       {/* Quick-fill credentials hint */}
-      <div className="mt-6 pt-5 border-t border-slate-100 bg-[#FAF8F5] -mx-8 -mb-8 p-6 rounded-b-3xl">
-        <div className="flex items-center gap-2 text-xs font-bold text-[#082F24] mb-2">
-          <Key className="w-3.5 h-3.5 text-[#c5a059]" />
+      <div className="mt-6 pt-5 border-t border-slate-100 bg-[#F8FAFC] -mx-8 -mb-8 p-6 rounded-b-3xl">
+        <div className="flex items-center gap-2 text-xs font-bold text-slate-800 mb-2">
+          <Key className="w-3.5 h-3.5 text-blue-600" />
           <span>Default Master Credentials:</span>
         </div>
         <div className="text-[11px] text-slate-600 space-y-1 font-mono">
           <div>
-            Email: <span className="text-[#082F24] font-semibold">admin@tripmaster.in</span>
+            Email: <span className="text-slate-900 font-semibold">admin@tripmaster.in</span>
           </div>
           <div>
-            Pass: <span className="text-[#082F24] font-semibold">admin123</span>
+            Pass: <span className="text-slate-900 font-semibold">admin123</span>
           </div>
         </div>
       </div>
@@ -133,38 +133,42 @@ function LoginForm() {
 
 export default function AdminLoginPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#06241C] relative px-4 py-12">
-      {/* Background visual overlay */}
-      <div
-        className="absolute inset-0 bg-cover bg-center opacity-25 mix-blend-overlay"
-        style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1800&q=80')",
-        }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#06241C] via-[#06241C]/80 to-transparent" />
+    <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] relative px-4 py-12">
+      {/* Subtle grid pattern background */}
+      <div className="absolute inset-0 bg-[radial-gradient(#CBD5E1_1px,transparent_1px)] [background-size:16px_16px] opacity-40 pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-md">
-        {/* Brand emblem */}
+        {/* Brand logo banner */}
         <div className="text-center mb-8">
-          <img
-            src="/images/logo-white.png"
-            alt="TripMaster - Experience Neighbourhood"
-            className="h-14 mx-auto object-contain mb-3 drop-shadow-md"
-          />
-          <p className="text-xs uppercase tracking-[0.25em] text-[#dfbd75] font-semibold mt-1">
+          <div className="w-16 h-16 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-center p-2.5 mx-auto mb-3">
+            <img
+              src="/logo.png"
+              alt="TripMaster - Experience Neighbourhood"
+              className="w-full h-full object-contain"
+            />
+          </div>
+          <h1 className="font-heading font-bold text-xl text-slate-900 tracking-tight">
+            TRIP MASTER
+          </h1>
+          <p className="text-[11px] uppercase tracking-[0.2em] text-sky-600 font-semibold mt-1">
             Concierge Management Portal
           </p>
         </div>
 
         {/* Suspense wrapped login form */}
-        <Suspense fallback={<div className="bg-white p-8 rounded-3xl text-center text-sm text-slate-500">Loading portal...</div>}>
+        <Suspense
+          fallback={
+            <div className="bg-white p-8 rounded-3xl text-center text-sm text-slate-500">
+              Loading portal...
+            </div>
+          }
+        >
           <LoginForm />
         </Suspense>
 
         {/* Security badge */}
-        <div className="flex items-center justify-center gap-2 text-xs text-emerald-300/60 mt-6">
-          <ShieldCheck className="w-4 h-4 text-[#dfbd75]" />
+        <div className="flex items-center justify-center gap-2 text-xs text-slate-400 mt-6">
+          <ShieldCheck className="w-4 h-4 text-emerald-600" />
           <span>Encrypted Session • Trip Master Internal Systems</span>
         </div>
       </div>
