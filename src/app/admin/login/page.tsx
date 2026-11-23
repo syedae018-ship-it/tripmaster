@@ -2,15 +2,15 @@
 
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Lock, Mail, ArrowRight, ShieldCheck, Key } from "lucide-react";
+import { Lock, Mail, ArrowRight, ShieldCheck } from "lucide-react";
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") || "/admin";
 
-  const [email, setEmail] = useState("admin@tripmaster.in");
-  const [password, setPassword] = useState("admin123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -111,22 +111,6 @@ function LoginForm() {
           )}
         </button>
       </form>
-
-      {/* Quick-fill credentials hint */}
-      <div className="mt-6 pt-5 border-t border-slate-100 bg-[#F8FAFC] -mx-8 -mb-8 p-6 rounded-b-3xl">
-        <div className="flex items-center gap-2 text-xs font-bold text-slate-800 mb-2">
-          <Key className="w-3.5 h-3.5 text-blue-600" />
-          <span>Default Master Credentials:</span>
-        </div>
-        <div className="text-[11px] text-slate-600 space-y-1 font-mono">
-          <div>
-            Email: <span className="text-slate-900 font-semibold">admin@tripmaster.in</span>
-          </div>
-          <div>
-            Pass: <span className="text-slate-900 font-semibold">admin123</span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

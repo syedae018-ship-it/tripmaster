@@ -89,7 +89,13 @@ export function Navbar() {
             {/* Centered / Flowing Primary Navigation */}
             <nav className="hidden md:flex items-center gap-8 font-sans" aria-label="Main Navigation">
               {navLinks.map((link) => {
-                const isActive = pathname === link.href;
+                const isDestinations =
+                  (link.href === "/packages" || link.href === "/destinations") &&
+                  (pathname === "/packages" ||
+                    pathname === "/destinations" ||
+                    Boolean(pathname?.startsWith("/packages/")) ||
+                    Boolean(pathname?.startsWith("/destinations/")));
+                const isActive = pathname === link.href || isDestinations;
                 return (
                   <Link
                     key={link.href}
@@ -146,16 +152,28 @@ export function Navbar() {
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-[#E4E2DD] bg-[#FAF9F6] px-5 py-6 space-y-5 animate-in slide-in-from-top-2 duration-150 shadow-lg">
             <nav className="flex flex-col space-y-3 font-sans">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-sm text-[#111111] hover:text-[#0D2C24] font-medium py-2.5 border-b border-[#E4E2DD]/60"
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {navLinks.map((link) => {
+                const isDestinations =
+                  (link.href === "/packages" || link.href === "/destinations") &&
+                  (pathname === "/packages" ||
+                    pathname === "/destinations" ||
+                    Boolean(pathname?.startsWith("/packages/")) ||
+                    Boolean(pathname?.startsWith("/destinations/")));
+                const isActive = pathname === link.href || isDestinations;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    aria-current={isActive ? "page" : undefined}
+                    className={`text-sm py-2.5 border-b border-[#E4E2DD]/60 font-medium ${
+                      isActive ? "text-[#0D2C24] font-semibold" : "text-[#111111] hover:text-[#0D2C24]"
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
             </nav>
 
             <div className="pt-2 flex flex-col gap-3 font-sans">

@@ -3,6 +3,9 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   // Disable intrusive development compiler indicators in the UI
   devIndicators: false,
+  outputFileTracingIncludes: {
+    "/**": ["./prisma/dev.db"],
+  },
   images: {
     remotePatterns: [
       {

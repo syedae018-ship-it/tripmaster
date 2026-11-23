@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { getFallbackPackages } from "@/lib/fallbackPackages";
 import { HeroBannerWireframe } from "@/components/home/HeroBannerWireframe";
 import { TrustStatsStrip } from "@/components/home/TrustStatsStrip";
 import { SocialProofReviews } from "@/components/home/SocialProofReviews";
@@ -13,42 +14,64 @@ import { PlanTripModal } from "@/components/modals/PlanTripModal";
 import { VideoModal } from "@/components/modals/VideoModal";
 
 export default async function HomePage() {
-  // Fetch site settings from Prisma
-  const siteSettings = await prisma.siteSettings.findUnique({
-    where: { id: "default" },
-  });
+  let siteSettings: any = null;
+  let packages: any[] = [];
+  let testimonials: any[] = [];
+  let faqs: any[] = [];
 
-  // Fetch published holiday packages
-  const rawPackages = await prisma.package.findMany({
-    where: { isPublished: true },
-    orderBy: [{ isFeatured: "desc" }, { viewsCount: "desc" }],
-    take: 8,
-  });
+  try {
+    siteSettings = await prisma.siteSettings.findUnique({
+      where: { id: "default" },
+    });
+  } catch (err) {
+    console.error("[HomePage] Error fetching site settings:", err);
+  }
 
-  const packages = rawPackages.map((pkg) => ({
-    id: pkg.id,
-    title: pkg.title,
-    slug: pkg.slug,
-    destination: pkg.destination,
-    durationDays: pkg.durationDays,
-    durationNights: pkg.durationNights,
-    basePrice: pkg.basePrice,
-    discountedPrice: pkg.discountedPrice,
-    featuredImage: pkg.featuredImage,
-  }));
+  try {
+    const rawPackages = await prisma.package.findMany({
+      where: { isPublished: true },
+      orderBy: [{ isFeatured: "desc" }, { viewsCount: "desc" }],
+      take: 8,
+    });
 
-  // Fetch verified reviews & testimonials
-  const testimonials = await prisma.testimonial.findMany({
-    where: { isPublished: true },
-    orderBy: { createdAt: "desc" },
-    take: 6,
-  });
+    if (rawPackages && rawPackages.length > 0) {
+      packages = rawPackages.map((pkg) => ({
+        id: pkg.id,
+        title: pkg.title,
+        slug: pkg.slug,
+        destination: pkg.destination,
+        durationDays: pkg.durationDays,
+        durationNights: pkg.durationNights,
+        basePrice: pkg.basePrice,
+        discountedPrice: pkg.discountedPrice,
+        featuredImage: pkg.featuredImage,
+      }));
+    } else {
+      packages = getFallbackPackages();
+    }
+  } catch (err) {
+    console.error("[HomePage] Error fetching packages:", err);
+    packages = getFallbackPackages();
+  }
 
-  // Fetch FAQs in order
-  const faqs = await prisma.fAQ.findMany({
-    where: { isPublished: true },
-    orderBy: { order: "asc" },
-  });
+  try {
+    testimonials = await prisma.testimonial.findMany({
+      where: { isPublished: true },
+      orderBy: { createdAt: "desc" },
+      take: 6,
+    });
+  } catch (err) {
+    console.error("[HomePage] Error fetching testimonials:", err);
+  }
+
+  try {
+    faqs = await prisma.fAQ.findMany({
+      where: { isPublished: true },
+      orderBy: { order: "asc" },
+    });
+  } catch (err) {
+    console.error("[HomePage] Error fetching faqs:", err);
+  }
 
   return (
     <main id="main-content" className="bg-[#FAF9F6] min-h-screen">

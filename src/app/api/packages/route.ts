@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { FALLBACK_PACKAGES, safeParseJson } from "@/lib/fallbackPackages";
 
 export const dynamic = "force-dynamic";
 
@@ -78,22 +79,24 @@ export async function GET(req: NextRequest) {
     // Parse JSON fields safely
     const formattedPackages = packages.map((pkg) => ({
       ...pkg,
-      galleryImages: JSON.parse(pkg.galleryImages || "[]"),
-      mapCoordinates: JSON.parse(pkg.mapCoordinates || "[]"),
-      inclusions: JSON.parse(pkg.inclusions || "[]"),
-      exclusions: JSON.parse(pkg.exclusions || "[]"),
+      galleryImages: safeParseJson<string[]>(pkg.galleryImages, []),
+      mapCoordinates: safeParseJson<{ name: string; lat: number; lng: number }[]>(pkg.mapCoordinates, []),
+      inclusions: safeParseJson<string[]>(pkg.inclusions, []),
+      exclusions: safeParseJson<string[]>(pkg.exclusions, []),
     }));
 
     return NextResponse.json({
       success: true,
       count: formattedPackages.length,
-      packages: formattedPackages,
+      packages: formattedPackages.length > 0 ? formattedPackages : FALLBACK_PACKAGES,
     });
   } catch (error) {
-    console.error("Error fetching packages:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch packages" },
-      { status: 500 }
-    );
+    console.error("Error fetching packages, returning fallback packages:", error);
+    return NextResponse.json({
+      success: true,
+      count: FALLBACK_PACKAGES.length,
+      packages: FALLBACK_PACKAGES,
+      isFallback: true,
+    });
   }
 }

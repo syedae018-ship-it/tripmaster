@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { PackageDetailClient } from "@/components/packages/PackageDetailClient";
+import { getFallbackPackageBySlug, safeParseJson } from "@/lib/fallbackPackages";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -9,10 +10,22 @@ interface PageProps {
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
   const { slug } = await props.params;
-  const pkg = await prisma.package.findUnique({
-    where: { slug },
-    select: { title: true, overview: true, destination: true },
-  });
+  let pkg = null;
+  try {
+    pkg = await prisma.package.findUnique({
+      where: { slug },
+      select: { title: true, overview: true, destination: true },
+    });
+  } catch (err) {
+    console.error("[generateMetadata] Database query error:", err);
+  }
+
+  if (!pkg) {
+    const fallback = getFallbackPackageBySlug(slug);
+    if (fallback) {
+      pkg = { title: fallback.title, overview: fallback.overview, destination: fallback.destination };
+    }
+  }
 
   if (!pkg) {
     return {
@@ -33,18 +46,27 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 export default async function PackageDetailPage(props: PageProps) {
   const { slug } = await props.params;
 
-  const pkg = await prisma.package.findUnique({
-    where: { slug },
-    include: {
-      itinerary: {
-        orderBy: {
-          dayNumber: "asc",
+  let pkg = null;
+  try {
+    pkg = await prisma.package.findUnique({
+      where: { slug },
+      include: {
+        itinerary: {
+          orderBy: {
+            dayNumber: "asc",
+          },
         },
       },
-    },
-  });
+    });
+  } catch (err) {
+    console.error("[PackageDetailPage] Database query error:", err);
+  }
 
   if (!pkg) {
+    const fallback = getFallbackPackageBySlug(slug);
+    if (fallback) {
+      return <PackageDetailClient pkg={fallback} />;
+    }
     notFound();
   }
 
@@ -58,18 +80,14 @@ export default async function PackageDetailPage(props: PageProps) {
 
   const formattedPackage = {
     ...pkg,
-    galleryImages: JSON.parse(pkg.galleryImages || "[]") as string[],
-    mapCoordinates: JSON.parse(pkg.mapCoordinates || "[]") as {
-      name: string;
-      lat: number;
-      lng: number;
-    }[],
-    inclusions: JSON.parse(pkg.inclusions || "[]") as string[],
-    exclusions: JSON.parse(pkg.exclusions || "[]") as string[],
+    galleryImages: safeParseJson<string[]>(pkg.galleryImages, []),
+    mapCoordinates: safeParseJson<{ name: string; lat: number; lng: number }[]>(pkg.mapCoordinates, []),
+    inclusions: safeParseJson<string[]>(pkg.inclusions, []),
+    exclusions: safeParseJson<string[]>(pkg.exclusions, []),
     itinerary: pkg.itinerary.map((day) => ({
       ...day,
-      mealsIncluded: JSON.parse(day.mealsIncluded || "[]") as string[],
-      activityPhotos: JSON.parse(day.activityPhotos || "[]") as string[],
+      mealsIncluded: safeParseJson<string[]>(day.mealsIncluded, []),
+      activityPhotos: safeParseJson<string[]>(day.activityPhotos, []),
     })),
   };
 

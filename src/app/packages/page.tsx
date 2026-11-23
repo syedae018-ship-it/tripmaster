@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { PackageCatalog } from "@/components/packages/PackageCatalog";
+import { getFallbackPackages, safeParseJson } from "@/lib/fallbackPackages";
 
 export const metadata: Metadata = {
   title: "Curated Luxury Packages & Escapes | Trip Master",
@@ -12,31 +13,45 @@ export default async function PackagesPage(props: {
   searchParams: Promise<{
     destination?: string;
     duration?: string;
+    maxPrice?: string;
+    minPrice?: string;
   }>;
 }) {
   const searchParams = await props.searchParams;
   const initialDestination = searchParams?.destination || "";
   const initialDuration = searchParams?.duration || "";
+  const initialMaxBudget = searchParams?.maxPrice ? Number(searchParams.maxPrice) : undefined;
 
-  const rawPackages = await prisma.package.findMany({
-    where: { isPublished: true },
-    orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
-  });
+  let packages = [];
 
-  const packages = rawPackages.map((pkg) => ({
-    id: pkg.id,
-    title: pkg.title,
-    slug: pkg.slug,
-    destination: pkg.destination,
-    durationDays: pkg.durationDays,
-    durationNights: pkg.durationNights,
-    basePrice: pkg.basePrice,
-    discountedPrice: pkg.discountedPrice,
-    featuredImage: pkg.featuredImage,
-    overview: pkg.overview,
-    inclusions: JSON.parse(pkg.inclusions || "[]"),
-    viewsCount: pkg.viewsCount,
-  }));
+  try {
+    const rawPackages = await prisma.package.findMany({
+      where: { isPublished: true },
+      orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
+    });
+
+    if (rawPackages && rawPackages.length > 0) {
+      packages = rawPackages.map((pkg) => ({
+        id: pkg.id,
+        title: pkg.title,
+        slug: pkg.slug,
+        destination: pkg.destination,
+        durationDays: pkg.durationDays,
+        durationNights: pkg.durationNights,
+        basePrice: pkg.basePrice,
+        discountedPrice: pkg.discountedPrice,
+        featuredImage: pkg.featuredImage,
+        overview: pkg.overview,
+        inclusions: safeParseJson<string[]>(pkg.inclusions, []),
+        viewsCount: pkg.viewsCount,
+      }));
+    } else {
+      packages = getFallbackPackages();
+    }
+  } catch (error) {
+    console.error("[PackagesPage] Database query failed, using fallback curated packages:", error);
+    packages = getFallbackPackages();
+  }
 
   return (
     <main className="bg-[#FAF9F6] min-h-screen">
@@ -67,6 +82,7 @@ export default async function PackagesPage(props: {
         initialPackages={packages}
         initialDestination={initialDestination}
         initialDuration={initialDuration}
+        initialMaxBudget={initialMaxBudget}
       />
     </main>
   );

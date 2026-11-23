@@ -25,19 +25,60 @@ export interface PackageItem {
   viewsCount: number;
 }
 
+function normalizeDuration(d: string): string {
+  const val = (d || "").toLowerCase().trim();
+  if (val === "short" || val === "1-5") return "1-5";
+  if (val === "medium" || val === "6-8" || val === "6-7") return "6-8";
+  if (val === "long" || val === "9+" || val === "8+") return "9+";
+  return val;
+}
+
 export function PackageCatalog({
   initialPackages,
   initialDestination = "",
   initialDuration = "",
+  initialMaxBudget,
 }: {
   initialPackages: PackageItem[];
   initialDestination?: string;
   initialDuration?: string;
+  initialMaxBudget?: number;
 }) {
-  const [selectedDestination, setSelectedDestination] = useState(initialDestination);
-  const [selectedDuration, setSelectedDuration] = useState(initialDuration);
-  const [maxBudget, setMaxBudget] = useState<number>(200000);
+  const [selectedDestination, setSelectedDestination] = useState<string>(
+    initialDestination.toLowerCase() === "all" ? "" : initialDestination
+  );
+  const [selectedDuration, setSelectedDuration] = useState<string>(
+    normalizeDuration(initialDuration)
+  );
+  const [maxBudget, setMaxBudget] = useState<number>(
+    initialMaxBudget ?? 200000
+  );
   const [sortBy, setSortBy] = useState<string>("featured");
+
+  // Dynamically resolve all destination options from packages
+  const destinations = useMemo(() => {
+    const list = [
+      { label: "All Regions", value: "" },
+      { label: "Kashmir", value: "Kashmir" },
+      { label: "Kerala", value: "Kerala" },
+      { label: "Andaman", value: "Andaman" },
+      { label: "Rajasthan", value: "Rajasthan" },
+    ];
+
+    const known = new Set(list.map((d) => d.value.toLowerCase()).filter(Boolean));
+
+    initialPackages.forEach((pkg) => {
+      if (!pkg.destination) return;
+      const primary = pkg.destination.split(",")[0].trim();
+      const lower = primary.toLowerCase();
+      if (!known.has(lower)) {
+        known.add(lower);
+        list.push({ label: primary, value: primary });
+      }
+    });
+
+    return list;
+  }, [initialPackages]);
 
   // Filtering & Sorting logic
   const filteredPackages = useMemo(() => {
@@ -46,20 +87,21 @@ export function PackageCatalog({
         // Destination filter
         if (
           selectedDestination &&
-          selectedDestination !== "all" &&
+          selectedDestination.toLowerCase() !== "all" &&
           !pkg.destination.toLowerCase().includes(selectedDestination.toLowerCase())
         ) {
           return false;
         }
 
         // Duration filter
-        if (selectedDuration === "1-5" && pkg.durationDays > 5) return false;
+        const normDuration = normalizeDuration(selectedDuration);
+        if (normDuration === "1-5" && pkg.durationDays > 5) return false;
         if (
-          selectedDuration === "6-8" &&
+          normDuration === "6-8" &&
           (pkg.durationDays < 6 || pkg.durationDays > 8)
         )
           return false;
-        if (selectedDuration === "9+" && pkg.durationDays < 9) return false;
+        if (normDuration === "9+" && pkg.durationDays < 9) return false;
 
         // Price filter
         const price = pkg.discountedPrice || pkg.basePrice;
@@ -92,13 +134,17 @@ export function PackageCatalog({
     setSortBy("featured");
   };
 
-  const destinations = [
-    { label: "All Regions", value: "" },
-    { label: "Kashmir", value: "Kashmir" },
-    { label: "Kerala", value: "Kerala" },
-    { label: "Andaman", value: "Andaman" },
-    { label: "Rajasthan", value: "Rajasthan" },
-  ];
+  const isDestinationSelected = (destValue: string) => {
+    if (!selectedDestination || selectedDestination.toLowerCase() === "all") {
+      return !destValue;
+    }
+    if (!destValue) return false;
+    return (
+      selectedDestination.toLowerCase() === destValue.toLowerCase() ||
+      selectedDestination.toLowerCase().includes(destValue.toLowerCase()) ||
+      destValue.toLowerCase().includes(selectedDestination.toLowerCase())
+    );
+  };
 
   return (
     <div className="py-12 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 font-sans">
@@ -116,20 +162,23 @@ export function PackageCatalog({
 
           {/* Destination Segment Buttons */}
           <div className="flex flex-wrap items-center gap-1.5">
-            {destinations.map((dest) => (
-              <button
-                key={dest.value}
-                type="button"
-                onClick={() => setSelectedDestination(dest.value)}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-colors ${
-                  selectedDestination === dest.value
-                    ? "bg-[#0D2C24] text-white shadow-xs"
-                    : "bg-[#F3F1ED] text-[#52525B] hover:text-[#111111] hover:bg-[#EBE7DF]"
-                }`}
-              >
-                {dest.label}
-              </button>
-            ))}
+            {destinations.map((dest) => {
+              const active = isDestinationSelected(dest.value);
+              return (
+                <button
+                  key={dest.value || "all"}
+                  type="button"
+                  onClick={() => setSelectedDestination(dest.value)}
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-colors ${
+                    active
+                      ? "bg-[#0D2C24] text-white shadow-xs"
+                      : "bg-[#F3F1ED] text-[#52525B] hover:text-[#111111] hover:bg-[#EBE7DF]"
+                  }`}
+                >
+                  {dest.label}
+                </button>
+              );
+            })}
           </div>
 
           {/* Reset Action */}
@@ -176,8 +225,8 @@ export function PackageCatalog({
             </div>
             <input
               type="range"
-              min="80000"
-              max="200000"
+              min="50000"
+              max="250000"
               step="5000"
               value={maxBudget}
               onChange={(e) => setMaxBudget(Number(e.target.value))}
@@ -240,6 +289,10 @@ export function PackageCatalog({
                   <img
                     src={pkg.featuredImage}
                     alt={pkg.title}
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src =
+                        "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=1200&q=80";
+                    }}
                     className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
                   />
                   <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 text-[11px] font-medium text-white flex items-center gap-1.5 shadow-sm">
@@ -266,16 +319,18 @@ export function PackageCatalog({
                     </p>
 
                     {/* Inclusions Row */}
-                    <div className="mt-4 pt-3 border-t border-[#F3F1ED] flex flex-wrap gap-1.5">
-                      {pkg.inclusions.slice(0, 3).map((item, idx) => (
-                        <span
-                          key={idx}
-                          className="bg-[#F3F1ED] text-[#52525B] px-2.5 py-1 rounded-md text-[11px] font-medium border border-[#E4E2DD]/60"
-                        >
-                          {item}
-                        </span>
-                      ))}
-                    </div>
+                    {Array.isArray(pkg.inclusions) && pkg.inclusions.length > 0 && (
+                      <div className="mt-4 pt-3 border-t border-[#F3F1ED] flex flex-wrap gap-1.5">
+                        {pkg.inclusions.slice(0, 3).map((item, idx) => (
+                          <span
+                            key={idx}
+                            className="bg-[#F3F1ED] text-[#52525B] px-2.5 py-1 rounded-md text-[11px] font-medium border border-[#E4E2DD]/60"
+                          >
+                            {item}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   {/* Pricing Strip & Action Button */}
@@ -288,6 +343,11 @@ export function PackageCatalog({
                         <span className="price-display text-2xl sm:text-3xl font-bold text-[#111111] tabular-nums">
                           ₹{price.toLocaleString("en-IN")}
                         </span>
+                        {pkg.discountedPrice && pkg.discountedPrice < pkg.basePrice && (
+                          <span className="text-xs text-[#71717A] line-through tabular-nums">
+                            ₹{pkg.basePrice.toLocaleString("en-IN")}
+                          </span>
+                        )}
                         <span className="text-xs text-[#52525B]">/ guest</span>
                       </div>
                     </div>

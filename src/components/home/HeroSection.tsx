@@ -91,9 +91,9 @@ export function HeroSection() {
                   className="w-full bg-transparent text-xs sm:text-sm font-medium text-[#111111] focus:outline-none cursor-pointer mt-0.5"
                 >
                   <option value="">Any Length</option>
-                  <option value="short">4 to 5 Days (Escape)</option>
-                  <option value="medium">6 to 7 Days (Grand)</option>
-                  <option value="long">8+ Days (Full Circuit)</option>
+                  <option value="1-5">1 to 5 Days (Escape)</option>
+                  <option value="6-8">6 to 8 Days (Signature)</option>
+                  <option value="9+">9+ Days (Grand Circuit)</option>
                 </select>
               </div>
             </div>
