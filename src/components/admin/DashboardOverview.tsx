@@ -208,7 +208,7 @@ export function DashboardOverview() {
       </div>
 
       {/* View Switcher Tabs: Live Operations vs Analytics & Reports */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-2.5">
+      <div className="flex items-center gap-2 border-b border-slate-200 pb-2.5 overflow-x-auto no-scrollbar">
         <button
           onClick={() => setDashboardTab("operations")}
           className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
