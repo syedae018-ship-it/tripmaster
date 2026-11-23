@@ -190,6 +190,13 @@ export function SocialProofReviews({
                 <img
                   src={currentReview.customerPhoto}
                   alt={currentReview.customerName}
+                  onError={(e) => {
+                    const target = e.currentTarget as HTMLImageElement;
+                    if (!target.src.includes("1534528741775")) {
+                      target.src =
+                        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80";
+                    }
+                  }}
                   className="w-full h-full object-cover rounded-full"
                 />
               ) : (

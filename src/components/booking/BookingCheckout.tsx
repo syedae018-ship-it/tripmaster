@@ -113,7 +113,7 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
           </p>
           <Link
             href="/packages"
-            className="btn btn-primary inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider font-semibold"
+            className="btn btn-primary min-h-[44px] inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider font-semibold active:scale-[0.98] transition-transform"
           >
             Explore Other Journeys
           </Link>
@@ -329,7 +329,7 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
         <div className="mb-6 flex items-center justify-between">
           <Link
             href={`/packages/${pkg.slug}`}
-            className="inline-flex items-center gap-2 text-xs font-semibold text-[#52525B] hover:text-[#0D2C24] transition-colors"
+            className="inline-flex items-center gap-2 text-xs font-semibold text-[#52525B] hover:text-[#0D2C24] transition-colors min-h-[44px] py-2 px-1"
           >
             <ArrowLeft className="w-4 h-4" /> Return to Package Overview
           </Link>
@@ -511,7 +511,7 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
                   {/* Plan Option 1: Full Payment */}
                   <div
                     onClick={() => setPaymentPlan("FULL")}
-                    className={`cursor-pointer rounded-xl p-5 border-2 transition-all flex items-start justify-between gap-4 ${
+                    className={`cursor-pointer rounded-xl p-5 border-2 active:scale-[0.99] transition-[background-color,border-color,transform] duration-150 flex items-start justify-between gap-4 ${
                       paymentPlan === "FULL"
                         ? "border-[#0D2C24] bg-[#0D2C24]/5"
                         : "border-[#E4E2DD] hover:border-slate-300"
@@ -554,7 +554,7 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
                   {/* Plan Option 2: Advance Deposit */}
                   <div
                     onClick={() => setPaymentPlan("ADVANCE")}
-                    className={`cursor-pointer rounded-xl p-5 border-2 transition-all flex items-start justify-between gap-4 ${
+                    className={`cursor-pointer rounded-xl p-5 border-2 active:scale-[0.99] transition-[background-color,border-color,transform] duration-150 flex items-start justify-between gap-4 ${
                       paymentPlan === "ADVANCE"
                         ? "border-[#0D2C24] bg-[#0D2C24]/5"
                         : "border-[#E4E2DD] hover:border-slate-300"
@@ -582,8 +582,11 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
                           </span>
                         </div>
                         <p className="text-xs text-[#52525B] mt-1">
-                          Lock your luxury retreat slots today. Balance of ₹
-                          {remainingBalance.toLocaleString("en-IN")} payable 15 days before arrival.
+                          Lock your luxury retreat slots today. Balance of{" "}
+                          <span className="tabular-nums font-semibold">
+                            ₹{remainingBalance.toLocaleString("en-IN")}
+                          </span>{" "}
+                          payable 15 days before arrival.
                         </p>
                       </div>
                     </div>
@@ -614,7 +617,7 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
               <button
                 type="submit"
                 disabled={processing}
-                className="btn btn-primary w-full py-4 rounded-xl text-sm font-semibold uppercase tracking-wider justify-center gap-3 shadow-md"
+                className="btn btn-primary w-full min-h-[48px] py-4 rounded-xl text-sm font-semibold uppercase tracking-wider justify-center gap-3 shadow-md active:scale-[0.98] transition-[background-color,transform,box-shadow] duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none cursor-pointer"
               >
                 {processing ? (
                   <>
@@ -623,7 +626,7 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
                   </>
                 ) : (
                   <>
-                    <span>Proceed to Pay ₹{amountDueToday.toLocaleString("en-IN")}</span>
+                    <span>Proceed to Pay <span className="tabular-nums">₹{amountDueToday.toLocaleString("en-IN")}</span></span>
                     <ArrowRight className="w-4 h-4 text-amber-300" />
                   </>
                 )}
@@ -641,6 +644,14 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
                     src={pkg.featuredImage}
                     alt={pkg.title}
                     fill
+                    onError={(e) => {
+                      const target = e.currentTarget as HTMLImageElement;
+                      if (!target.src.includes("1598091383021")) {
+                        target.srcset = "";
+                        target.src =
+                          "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=1200&q=80";
+                      }
+                    }}
                     className="object-cover"
                   />
                 </div>
@@ -747,7 +758,7 @@ export function BookingCheckout({ packageSlug }: { packageSlug: string }) {
                     </span>
                     {paymentPlan === "ADVANCE" && (
                       <p className="text-[10px] text-amber-800">
-                        Remaining ₹{remainingBalance.toLocaleString("en-IN")} due before travel
+                        Remaining <span className="tabular-nums font-semibold">₹{remainingBalance.toLocaleString("en-IN")}</span> due before travel
                       </p>
                     )}
                   </div>

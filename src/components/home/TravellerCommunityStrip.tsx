@@ -1,3 +1,5 @@
+"use client";
+
 import { ArrowRight, Camera } from "lucide-react";
 
 export function TravellerCommunityStrip() {
@@ -76,6 +78,13 @@ export function TravellerCommunityStrip() {
             <img
               src={photo.url}
               alt={photo.location}
+              onError={(e) => {
+                const target = e.currentTarget as HTMLImageElement;
+                if (!target.src.includes("1598091383021")) {
+                  target.src =
+                    "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=800&q=80";
+                }
+              }}
               className="w-full h-full object-cover scale-100 group-hover:scale-110 transition-transform duration-700 ease-out"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 text-white" />

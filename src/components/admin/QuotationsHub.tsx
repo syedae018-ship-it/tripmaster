@@ -27,6 +27,7 @@ import {
   ArrowRight,
   ShieldCheck,
   CheckCircle2,
+  RotateCcw,
 } from "lucide-react";
 
 export function QuotationsHub() {
@@ -543,19 +544,44 @@ export function QuotationsHub() {
             <span className="text-xs">Loading quotations...</span>
           </div>
         ) : quotations.length === 0 ? (
-          <div className="py-20 text-center text-slate-400">
-            <FileText className="w-10 h-10 mx-auto text-slate-300 mb-2" />
-            <p className="text-sm font-medium text-slate-700">No quotations created yet</p>
-            <p className="text-xs text-slate-400 mt-1 mb-4">
-              Click below to build your first luxury customized mobile plan.
-            </p>
-            <Link
-              href="/admin/quotations/new"
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-colors shadow-xs"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              Build First Quotation
-            </Link>
+          <div className="py-20 text-center space-y-4">
+            <div className="w-14 h-14 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center mx-auto border border-slate-200/80">
+              <FileText className="w-6 h-6 text-slate-400" />
+            </div>
+            <div className="space-y-1">
+              <p className="text-base font-heading font-bold text-slate-800">
+                {searchQuery || statusFilter !== "ALL"
+                  ? "No Matching Quotations Found"
+                  : "No Quotations Created Yet"}
+              </p>
+              <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
+                {searchQuery || statusFilter !== "ALL"
+                  ? "No client proposal records match your current search terms or status criteria."
+                  : "Click below to build your first luxury customized mobile proposal."}
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+              {(searchQuery || statusFilter !== "ALL") && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setStatusFilter("ALL");
+                  }}
+                  className="min-h-[44px] px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 active:scale-[0.98] text-white text-xs font-semibold uppercase tracking-wider inline-flex items-center gap-2 transition-[background-color,transform] duration-150 cursor-pointer shadow-xs"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Reset Filters</span>
+                </button>
+              )}
+              <Link
+                href="/admin/quotations/new"
+                className="min-h-[44px] inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white rounded-xl transition-[background-color,transform] duration-150 shadow-xs"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>{searchQuery || statusFilter !== "ALL" ? "Build New Quotation" : "Build First Quotation"}</span>
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -773,9 +799,10 @@ export function QuotationsHub() {
               <button
                 type="button"
                 onClick={() => setShowQuickPayModal(false)}
-                className="text-slate-400 hover:text-slate-600 p-2 rounded-xl hover:bg-slate-100 transition-colors"
+                className="w-11 h-11 min-w-[44px] min-h-[44px] text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 active:scale-95 flex items-center justify-center transition-[background-color,transform,color] duration-150 cursor-pointer"
+                aria-label="Close modal"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 

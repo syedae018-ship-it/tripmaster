@@ -7,6 +7,7 @@ import {
   BarChart3,
   MessageSquareText,
   Users,
+  Compass,
   MapPin,
   FileText,
   CreditCard,
@@ -34,14 +35,19 @@ export function AdminSidebar() {
     },
     {
       name: "Leads & Inquiries",
-      href: "/admin/leads",
+      href: "/admin/inquiries",
       icon: MessageSquareText,
-      aliases: ["/admin/inquiries"],
+      aliases: ["/admin/leads"],
     },
     {
       name: "Customer Profiles",
       href: "/admin/customers",
       icon: Users,
+    },
+    {
+      name: "Holiday Packages",
+      href: "/admin/packages",
+      icon: Compass,
     },
     {
       name: "Destinations & Presets",
@@ -81,6 +87,12 @@ export function AdminSidebar() {
               <img
                 src="/logo.png"
                 alt="TripMaster"
+                onError={(e) => {
+                  const target = e.currentTarget as HTMLImageElement;
+                  if (!target.src.includes("/images/logo.png")) {
+                    target.src = "/images/logo.png";
+                  }
+                }}
                 className="w-full h-full object-contain"
               />
             </div>

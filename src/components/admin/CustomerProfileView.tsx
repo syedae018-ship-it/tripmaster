@@ -872,8 +872,10 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
                 Edit Customer Profile
               </h3>
               <button
+                type="button"
                 onClick={() => setShowEditModal(false)}
-                className="p-1 rounded-full text-slate-400 hover:text-slate-700"
+                className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 flex items-center justify-center transition-[background-color,transform,color] duration-150 cursor-pointer"
+                aria-label="Close edit modal"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -990,8 +992,10 @@ export function CustomerProfileView({ customerId }: { customerId: string }) {
                 Attach Document to Vault
               </h3>
               <button
+                type="button"
                 onClick={() => setShowDocModal(false)}
-                className="p-1 rounded-full text-slate-400 hover:text-slate-700"
+                className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 flex items-center justify-center transition-[background-color,transform,color] duration-150 cursor-pointer"
+                aria-label="Close document modal"
               >
                 <X className="w-5 h-5" />
               </button>

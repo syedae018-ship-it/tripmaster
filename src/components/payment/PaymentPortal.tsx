@@ -260,7 +260,7 @@ export function PaymentPortal({ bookingRef }: PaymentPortalProps) {
           </p>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800"
+            className="min-h-[44px] inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 active:scale-[0.98] transition-[background-color,transform] duration-150"
           >
             <span>Return to Homepage</span>
           </Link>
@@ -283,7 +283,17 @@ export function PaymentPortal({ bookingRef }: PaymentPortalProps) {
         <div className="bg-white rounded-2xl p-5 border border-[#E4E4E7] shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
             <div className="w-12 h-12 rounded-xl bg-emerald-950 flex items-center justify-center p-2 shrink-0">
-              <img src="/logo.png" alt="TripMaster" className="w-full h-full object-contain" />
+              <img
+                src="/logo.png"
+                alt="TripMaster"
+                onError={(e) => {
+                  const target = e.currentTarget as HTMLImageElement;
+                  if (!target.src.includes("/images/logo.png")) {
+                    target.src = "/images/logo.png";
+                  }
+                }}
+                className="w-full h-full object-contain"
+              />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -478,7 +488,7 @@ export function PaymentPortal({ bookingRef }: PaymentPortalProps) {
             <div className="p-5 border-b border-slate-200 bg-slate-50/70 flex items-center justify-between">
               <div>
                 <h2 className="font-heading font-bold text-base text-slate-900 tracking-tight">
-                  Settle Pending Balance (₹{booking.balanceAmount.toLocaleString("en-IN")})
+                  Settle Pending Balance (<span className="tabular-nums">₹{booking.balanceAmount.toLocaleString("en-IN")}</span>)
                 </h2>
                 <p className="text-xs text-slate-500 mt-0.5">
                   Choose your preferred payment route below for instant automated confirmation.
@@ -534,14 +544,14 @@ export function PaymentPortal({ bookingRef }: PaymentPortalProps) {
                     <button
                       onClick={handleRazorpayBalancePayment}
                       disabled={processingRazorpay}
-                      className="px-6 py-3 rounded-xl bg-emerald-950 text-white font-heading font-bold text-xs uppercase tracking-wider hover:bg-emerald-900 shadow-sm transition-all flex items-center gap-2 shrink-0 disabled:opacity-50"
+                      className="min-h-[44px] px-6 py-3 rounded-xl bg-emerald-950 text-white font-heading font-bold text-xs uppercase tracking-wider hover:bg-emerald-900 active:scale-[0.98] shadow-sm transition-[background-color,transform,box-shadow] duration-150 flex items-center gap-2 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none cursor-pointer"
                     >
                       {processingRazorpay ? (
                         <RefreshCw className="w-4 h-4 animate-spin" />
                       ) : (
                         <CreditCard className="w-4 h-4 text-emerald-400" />
                       )}
-                      <span>Pay ₹{booking.balanceAmount.toLocaleString("en-IN")} via Razorpay</span>
+                      <span>Pay <span className="tabular-nums">₹{booking.balanceAmount.toLocaleString("en-IN")}</span> via Razorpay</span>
                     </button>
                   </div>
 

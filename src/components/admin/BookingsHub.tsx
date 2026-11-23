@@ -24,6 +24,7 @@ import {
   ChevronRight,
   ShieldCheck,
   DollarSign,
+  RotateCcw,
 } from "lucide-react";
 
 interface BookingItem {
@@ -443,12 +444,39 @@ export function BookingsHub() {
             Loading bookings and ledger...
           </div>
         ) : bookings.length === 0 ? (
-          <div className="p-16 text-center space-y-3">
-            <CreditCard className="w-12 h-12 text-slate-300 mx-auto" />
-            <h3 className="font-heading text-lg font-bold text-slate-700">No Bookings Found</h3>
-            <p className="text-xs text-slate-400 max-w-sm mx-auto">
-              No reservation records match the current filters. Create a new booking or clear search criteria.
-            </p>
+          <div className="p-16 text-center space-y-4">
+            <div className="w-14 h-14 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center mx-auto border border-slate-200/80">
+              <CreditCard className="w-6 h-6 text-slate-400" />
+            </div>
+            <div className="space-y-1">
+              <h3 className="font-heading text-lg font-bold text-slate-900">No Bookings Found</h3>
+              <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
+                No reservation records match the active search criteria or filters.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setSearch("");
+                  setStatusFilter("ALL");
+                  setBalanceFilter("ALL");
+                  setSortFilter("newest");
+                }}
+                className="min-h-[44px] px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 active:scale-[0.98] text-white text-xs font-semibold uppercase tracking-wider inline-flex items-center gap-2 transition-[background-color,transform] duration-150 cursor-pointer shadow-xs"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Reset Filters</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowCreateModal(true)}
+                className="min-h-[44px] px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white text-xs font-semibold uppercase tracking-wider inline-flex items-center gap-2 transition-[background-color,transform] duration-150 cursor-pointer shadow-xs"
+              >
+                <PlusCircle className="w-3.5 h-3.5" />
+                <span>New Reservation</span>
+              </button>
+            </div>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -671,8 +699,10 @@ export function BookingsHub() {
                 </p>
               </div>
               <button
+                type="button"
                 onClick={() => setShowCreateModal(false)}
-                className="p-1 rounded-full text-slate-400 hover:text-slate-700"
+                className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 flex items-center justify-center transition-[background-color,transform,color] duration-150 cursor-pointer"
+                aria-label="Close booking modal"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -944,8 +974,10 @@ export function BookingsHub() {
                 </p>
               </div>
               <button
+                type="button"
                 onClick={() => setQuickPayBooking(null)}
-                className="p-1 rounded-full text-slate-400 hover:text-slate-700"
+                className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 flex items-center justify-center transition-[background-color,transform,color] duration-150 cursor-pointer"
+                aria-label="Close payment modal"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -953,7 +985,7 @@ export function BookingsHub() {
 
             <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 flex justify-between items-center text-xs">
               <span className="text-amber-800 font-semibold">Current Outstanding:</span>
-              <span className="font-heading font-bold text-amber-900 text-base">
+              <span className="font-heading font-bold text-amber-900 text-base tabular-nums">
                 ₹{quickPayBooking.balanceAmount.toLocaleString("en-IN")}
               </span>
             </div>

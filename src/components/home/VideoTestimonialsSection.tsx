@@ -74,6 +74,13 @@ export function VideoTestimonialsSection() {
             <img
               src={featuredVideo.posterUrl}
               alt={featuredVideo.title}
+              onError={(e) => {
+                const target = e.currentTarget as HTMLImageElement;
+                if (!target.src.includes("1598091383021")) {
+                  target.src =
+                    "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=1200&q=80";
+                }
+              }}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out opacity-85"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
@@ -138,6 +145,13 @@ export function VideoTestimonialsSection() {
                 <img
                   src={video.posterUrl}
                   alt={video.title}
+                  onError={(e) => {
+                    const target = e.currentTarget as HTMLImageElement;
+                    if (!target.src.includes("1598091383021")) {
+                      target.src =
+                        "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=800&q=80";
+                    }
+                  }}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-85"
                 />
                 <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors" />

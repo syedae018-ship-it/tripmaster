@@ -51,7 +51,7 @@ export function VideoModal() {
         <button
           type="button"
           onClick={() => setVideoData(null)}
-          className="absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-black/60 hover:bg-black text-white/90 hover:text-white flex items-center justify-center transition-colors border border-white/20"
+          className="absolute top-4 right-4 z-20 w-11 h-11 min-w-[44px] min-h-[44px] rounded-full bg-black/60 hover:bg-black active:scale-95 text-white/90 hover:text-white flex items-center justify-center transition-[background-color,transform] duration-150 border border-white/20 cursor-pointer"
           aria-label="Close video"
         >
           <X className="w-5 h-5" />
@@ -62,6 +62,13 @@ export function VideoModal() {
           <img
             src={videoData.posterUrl}
             alt={videoData.title}
+            onError={(e) => {
+              const target = e.currentTarget as HTMLImageElement;
+              if (!target.src.includes("1598091383021")) {
+                target.src =
+                  "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=1200&q=80";
+              }
+            }}
             className="w-full h-full object-cover opacity-80"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/40" />

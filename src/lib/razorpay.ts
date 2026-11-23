@@ -59,6 +59,15 @@ export async function createRazorpayOrder(
       const keySecret = process.env.RAZORPAY_KEY_SECRET!;
       const authHeader = `Basic ${Buffer.from(`${keyId}:${keySecret}`).toString("base64")}`;
 
+      const sanitizedNotes: Record<string, string> = {};
+      if (notes && typeof notes === "object") {
+        for (const [k, v] of Object.entries(notes)) {
+          if (v !== undefined && v !== null) {
+            sanitizedNotes[k] = String(v).slice(0, 255);
+          }
+        }
+      }
+
       const res = await fetch("https://api.razorpay.com/v1/orders", {
         method: "POST",
         headers: {
@@ -69,7 +78,7 @@ export async function createRazorpayOrder(
           amount: amountPaise,
           currency,
           receipt: receipt || `rcpt_${Date.now()}`,
-          notes: notes || {},
+          notes: sanitizedNotes,
         }),
       });
 

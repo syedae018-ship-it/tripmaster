@@ -19,6 +19,28 @@ export async function GET(
         package: {
           select: { title: true, slug: true, featuredImage: true },
         },
+        bookings: {
+          select: {
+            id: true,
+            bookingReference: true,
+            totalAmount: true,
+            amountPaid: true,
+            balanceAmount: true,
+            bookingStatus: true,
+            taxInvoiceNumber: true,
+            taxInvoiceUrl: true,
+            paymentTransactions: {
+              select: {
+                id: true,
+                razorpayPaymentId: true,
+                amount: true,
+                status: true,
+                createdAt: true,
+              },
+            },
+          },
+          orderBy: { createdAt: "desc" },
+        },
       },
     });
 

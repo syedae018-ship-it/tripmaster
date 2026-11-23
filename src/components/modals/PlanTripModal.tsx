@@ -213,6 +213,12 @@ export function PlanTripModal({
               <img
                 src="/images/logo-white.png"
                 alt="Trip Master"
+                onError={(e) => {
+                  const target = e.currentTarget as HTMLImageElement;
+                  if (!target.src.includes("/logo.png")) {
+                    target.src = "/logo.png";
+                  }
+                }}
                 className="h-7 w-auto object-contain shrink-0"
               />
               <div className="border-l border-white/15 pl-3 min-w-0">
@@ -234,10 +240,10 @@ export function PlanTripModal({
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 active:scale-95 text-stone-200 hover:text-white flex items-center justify-center transition-all border border-white/10 shrink-0 cursor-pointer"
+              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 text-stone-200 hover:text-white flex items-center justify-center transition-[background-color,transform,color] duration-150 border border-white/10 shrink-0 cursor-pointer"
               aria-label="Close modal"
             >
-              <X className="w-4 h-4" />
+              <X className="w-5 h-5" />
             </button>
           </div>
         </div>
@@ -347,7 +353,7 @@ export function PlanTripModal({
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#0D2C24] hover:bg-[#133E33] text-white font-medium text-xs tracking-wide shadow-sm transition-all cursor-pointer"
+                  className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#0D2C24] hover:bg-[#133E33] active:scale-[0.98] text-white font-medium text-xs tracking-wide shadow-sm transition-[background-color,transform] duration-150 cursor-pointer"
                 >
                   <MessageCircle className="w-4 h-4 text-[#C59B27]" />
                   <span>Connect with Concierge on WhatsApp</span>
@@ -355,7 +361,7 @@ export function PlanTripModal({
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold text-xs transition-colors cursor-pointer"
+                  className="w-full sm:w-auto min-h-[44px] px-5 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 active:scale-[0.98] text-stone-700 font-semibold text-xs transition-[background-color,transform] duration-150 cursor-pointer"
                 >
                   Close
                 </button>
@@ -554,11 +560,11 @@ export function PlanTripModal({
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full h-11 rounded-xl bg-[#0D2C24] hover:bg-[#133E33] active:scale-[0.99] text-white font-medium text-xs sm:text-sm tracking-wide flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer disabled:opacity-70"
+                  className="w-full min-h-[44px] h-11 rounded-xl bg-[#0D2C24] hover:bg-[#133E33] active:scale-[0.98] text-white font-medium text-xs sm:text-sm tracking-wide flex items-center justify-center gap-2 shadow-sm transition-[background-color,transform,box-shadow] duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
                 >
                   {loading ? (
                     <div className="flex items-center gap-2">
-                      <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       <span>Transmitting Consultation Request...</span>
                     </div>
                   ) : (
@@ -584,9 +590,9 @@ export function PlanTripModal({
                   href="https://wa.me/919876543210"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-stone-50 hover:bg-[#0D2C24] hover:text-white text-stone-800 font-medium text-xs border border-stone-200 transition-all cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 min-h-[44px] rounded-lg bg-stone-50 hover:bg-[#0D2C24] hover:text-white active:scale-[0.98] text-stone-800 font-medium text-xs border border-stone-200 transition-[background-color,color,transform] duration-150 cursor-pointer"
                 >
-                  <span>Click Here</span>
+                  <span>Chat with Concierge</span>
                   <ArrowRight className="w-3.5 h-3.5 text-[#C59B27]" />
                 </a>
               </div>

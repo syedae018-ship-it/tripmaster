@@ -256,22 +256,25 @@ export function PackageCatalog({
 
       {/* Packages Grid */}
       {filteredPackages.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-2xl border border-[#E4E2DD] p-8 shadow-card">
-          <div className="w-12 h-12 rounded-xl bg-[#F3F1ED] text-[#0D2C24] flex items-center justify-center mx-auto mb-3">
-            <Filter className="w-5 h-5" />
+        <div className="text-center py-16 bg-white rounded-2xl border border-[#E4E2DD] p-8 shadow-card space-y-4">
+          <div className="w-14 h-14 rounded-2xl bg-[#0D2C24]/5 text-[#0D2C24] flex items-center justify-center mx-auto border border-[#0D2C24]/10">
+            <Filter className="w-6 h-6 text-[#0D2C24]" />
           </div>
-          <h3 className="font-heading text-xl font-bold text-[#111111]">
-            No Journeys Match Selected Criteria
-          </h3>
-          <p className="mt-1 text-xs text-[#52525B] max-w-sm mx-auto">
-            Try adjusting your budget or selecting a different destination.
-          </p>
+          <div>
+            <h3 className="font-heading text-xl font-bold text-[#111111]">
+              No Matching Itineraries Found
+            </h3>
+            <p className="mt-1.5 text-xs text-[#52525B] max-w-sm mx-auto leading-relaxed">
+              We couldn&apos;t find any journeys matching your current filter selections. Try broadening your budget or choosing another destination.
+            </p>
+          </div>
           <button
             type="button"
             onClick={resetFilters}
-            className="btn btn-secondary text-xs uppercase tracking-wider font-semibold rounded-xl mt-5 px-5 py-2"
+            className="btn btn-secondary min-h-[44px] text-xs uppercase tracking-wider font-semibold rounded-xl px-6 py-2.5 inline-flex items-center gap-2 active:scale-[0.98] transition-transform cursor-pointer"
           >
-            Clear Filters
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Reset Filters</span>
           </button>
         </div>
       ) : (
@@ -354,7 +357,7 @@ export function PackageCatalog({
 
                     <Link
                       href={`/packages/${pkg.slug}`}
-                      className="btn btn-secondary text-xs uppercase tracking-wider font-semibold rounded-xl px-4 py-2"
+                      className="btn btn-secondary min-h-[44px] text-xs uppercase tracking-wider font-semibold rounded-xl px-4 py-2 inline-flex items-center gap-2 active:scale-[0.98] transition-transform"
                     >
                       <span>View Itinerary</span>
                       <ArrowRight className="w-3.5 h-3.5" />

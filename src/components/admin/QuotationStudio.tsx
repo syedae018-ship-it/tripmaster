@@ -1245,10 +1245,12 @@ export function QuotationStudio({ initialQuotationId }: QuotationStudioProps) {
                 </span>
               </div>
               <button
+                type="button"
                 onClick={() => setShowVisibilityPanel(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+                className="w-11 h-11 min-w-[44px] min-h-[44px] text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 active:scale-95 flex items-center justify-center transition-[background-color,transform,color] duration-150 cursor-pointer"
+                aria-label="Close visibility settings"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mt-4 text-xs">
@@ -1798,6 +1800,13 @@ export function QuotationStudio({ initialQuotationId }: QuotationStudioProps) {
                 <img
                   src={content.heroImage}
                   alt="Hero"
+                  onError={(e) => {
+                    const target = e.currentTarget as HTMLImageElement;
+                    if (!target.src.includes("1598091383021")) {
+                      target.src =
+                        "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=1200&q=80";
+                    }
+                  }}
                   className="w-14 h-10 rounded-lg object-cover border border-slate-200"
                 />
                 <span className="text-xs text-slate-600">
@@ -2004,6 +2013,13 @@ export function QuotationStudio({ initialQuotationId }: QuotationStudioProps) {
                               <img
                                 src={photoUrl}
                                 alt="place"
+                                onError={(e) => {
+                                  const target = e.currentTarget as HTMLImageElement;
+                                  if (!target.src.includes("1598091383021")) {
+                                    target.src =
+                                      "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=1200&q=80";
+                                  }
+                                }}
                                 className="w-full h-full object-cover group-hover:opacity-75"
                               />
                             </div>
@@ -2381,9 +2397,10 @@ export function QuotationStudio({ initialQuotationId }: QuotationStudioProps) {
               <button
                 type="button"
                 onClick={() => setShowPaymentLinkModal(false)}
-                className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+                className="w-11 h-11 min-w-[44px] min-h-[44px] text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 active:scale-95 flex items-center justify-center transition-[background-color,transform,color] duration-150 cursor-pointer"
+                aria-label="Close payment modal"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 

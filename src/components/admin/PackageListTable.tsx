@@ -16,6 +16,7 @@ import {
   Eye,
   Sparkles,
   MapPin,
+  RotateCcw,
 } from "lucide-react";
 
 interface AdminPackageItem {
@@ -243,19 +244,39 @@ export function PackageListTable() {
             Loading luxury package catalog...
           </div>
         ) : filtered.length === 0 ? (
-          <div className="p-12 text-center text-slate-500 text-sm space-y-3">
-            <p>No packages match your search or filter criteria.</p>
-            <button
-              type="button"
-              onClick={() => {
-                setSearch("");
-                setStatusFilter("all");
-                setDestinationFilter("all");
-              }}
-              className="text-xs font-bold uppercase text-slate-900 underline"
-            >
-              Reset Filters
-            </button>
+          <div className="p-16 text-center space-y-4">
+            <div className="w-14 h-14 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center mx-auto border border-slate-200/80">
+              <Filter className="w-6 h-6 text-slate-400" />
+            </div>
+            <div className="space-y-1">
+              <h3 className="font-heading text-lg font-bold text-slate-900">
+                No Matching Packages Found
+              </h3>
+              <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
+                No itineraries match your current search criteria or status and destination filters.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setSearch("");
+                  setStatusFilter("all");
+                  setDestinationFilter("all");
+                }}
+                className="min-h-[44px] px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 active:scale-[0.98] text-white text-xs font-semibold uppercase tracking-wider inline-flex items-center gap-2 transition-[background-color,transform] duration-150 cursor-pointer shadow-xs"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Reset Filters</span>
+              </button>
+              <Link
+                href="/admin/packages/new"
+                className="min-h-[44px] px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white text-xs font-semibold uppercase tracking-wider inline-flex items-center gap-2 transition-[background-color,transform] duration-150 shadow-xs"
+              >
+                <PlusCircle className="w-3.5 h-3.5" />
+                <span>Create New Package</span>
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -286,6 +307,13 @@ export function PackageListTable() {
                           <img
                             src={pkg.featuredImage}
                             alt={pkg.title}
+                            onError={(e) => {
+                              const target = e.currentTarget as HTMLImageElement;
+                              if (!target.src.includes("1598091383021")) {
+                                target.src =
+                                  "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=800&q=80";
+                              }
+                            }}
                             className="w-12 h-10 rounded-lg object-cover shrink-0 border border-slate-200"
                           />
                           <div className="max-w-xs">

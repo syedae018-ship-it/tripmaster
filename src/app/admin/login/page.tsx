@@ -2,7 +2,7 @@
 
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Lock, Mail, ArrowRight, ShieldCheck } from "lucide-react";
+import { Lock, Mail, ArrowRight, ShieldCheck, Loader2 } from "lucide-react";
 
 function LoginForm() {
   const router = useRouter();
@@ -99,10 +99,13 @@ function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-6 rounded-xl transition-all shadow-sm text-xs uppercase tracking-wider disabled:opacity-50 mt-2"
+          className="w-full min-h-[44px] flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold py-3 px-6 rounded-xl transition-[background-color,transform,box-shadow] duration-150 shadow-sm text-xs uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none mt-2 cursor-pointer"
         >
           {loading ? (
-            <span>Authenticating...</span>
+            <div className="flex items-center gap-2">
+              <Loader2 className="w-4 h-4 animate-spin text-white" />
+              <span>Authenticating...</span>
+            </div>
           ) : (
             <>
               <span>Sign In To Workstation</span>
@@ -128,6 +131,12 @@ export default function AdminLoginPage() {
             <img
               src="/logo.png"
               alt="TripMaster - Experience Neighbourhood"
+              onError={(e) => {
+                const target = e.currentTarget as HTMLImageElement;
+                if (!target.src.includes("/images/logo.png")) {
+                  target.src = "/images/logo.png";
+                }
+              }}
               className="w-full h-full object-contain"
             />
           </div>

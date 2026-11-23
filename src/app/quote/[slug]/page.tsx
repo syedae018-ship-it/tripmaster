@@ -1,175 +1,91 @@
-"use client";
+import { Metadata } from "next";
+import { prisma } from "@/lib/prisma";
+import { ClientQuotationView } from "@/components/quotation/ClientQuotationView";
 
-import { useState, useEffect, useRef } from "react";
-import { useParams } from "next/navigation";
-import {
-  Download,
-  MessageSquare,
-  Phone,
-  Share2,
-  CheckCircle2,
-  Loader2,
-  Sparkles,
-} from "lucide-react";
-import {
-  MobileQuotationDossier,
-  QuotationContentData,
-} from "@/components/quotation/MobileQuotationDossier";
-import { generateMobilePdf, printVectorMobileDossier } from "@/lib/pdfGenerator";
+export const dynamic = "force-dynamic";
 
-export default function ClientQuotationPage() {
-  const params = useParams();
-  const slug = params?.slug as string;
-  const dossierRef = useRef<HTMLDivElement>(null);
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
 
-  const [loading, setLoading] = useState(true);
-  const [quotation, setQuotation] = useState<any | null>(null);
-  const [downloading, setDownloading] = useState(false);
-  const [toast, setToast] = useState<string | null>(null);
+  try {
+    const quotation = await prisma.quotation.findFirst({
+      where: {
+        OR: [{ shareSlug: slug }, { id: slug }, { quotationNumber: slug }],
+      },
+      select: {
+        title: true,
+        destination: true,
+        durationDays: true,
+        durationNights: true,
+      },
+    });
 
-  useEffect(() => {
-    if (slug) {
-      fetchQuotation(slug);
+    if (quotation) {
+      return {
+        title: `${quotation.title} | Trip Master Luxury Itinerary Dossier`,
+        description: `Bespoke ${quotation.durationNights}N / ${quotation.durationDays}D luxury holiday plan for ${quotation.destination}.`,
+      };
     }
-  }, [slug]);
-
-  const fetchQuotation = async (s: string) => {
-    try {
-      setLoading(true);
-      const res = await fetch(`/api/quotations/${s}`);
-      const data = await res.json();
-      if (data.success && data.quotation) {
-        setQuotation(data.quotation);
-      }
-    } catch (e) {
-      console.error("Failed to load quotation:", e);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDownloadPdf = async () => {
-    if (!dossierRef.current || !quotation) return;
-    try {
-      setDownloading(true);
-      const fileName = `${quotation.title.replace(/[^a-zA-Z0-9]/g, "_")}_Mobile_Plan.pdf`;
-      const res = await generateMobilePdf(dossierRef.current, {
-        fileName,
-        scale: 3.5,
-      });
-      if (res.success) {
-        setToast("PDF downloaded! You can now view it or share via WhatsApp.");
-        setTimeout(() => setToast(null), 4000);
-      }
-    } catch (e) {
-      alert("Failed to download PDF");
-    } finally {
-      setDownloading(false);
-    }
-  };
-
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: quotation?.title || "Trip Master Itinerary",
-        text: `Here is the mobile itinerary & quotation for ${quotation?.title}`,
-        url: window.location.href,
-      });
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      setToast("Link copied to clipboard!");
-      setTimeout(() => setToast(null), 3000);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#F4F2EE] flex flex-col items-center justify-center p-4">
-        <Loader2 className="w-8 h-8 animate-spin text-[#0D2C24] mb-2" />
-        <p className="text-xs text-zinc-600 font-medium">
-          Loading your bespoke itinerary dossier...
-        </p>
-      </div>
-    );
+  } catch (e) {
+    console.error("Error generating quotation metadata:", e);
   }
 
-  if (!quotation) {
-    return (
-      <div className="min-h-screen bg-[#F4F2EE] flex flex-col items-center justify-center p-4 text-center">
-        <h2 className="font-heading text-xl font-bold text-zinc-900 mb-1">
-          Quotation Not Found
-        </h2>
-        <p className="text-xs text-zinc-600 mb-4">
-          This itinerary link may have expired or is unavailable.
-        </p>
-        <a
-          href="/"
-          className="px-4 py-2 text-xs font-heading font-bold uppercase tracking-wider bg-[#0D2C24] text-white rounded-xl"
-        >
-          Return to Trip Master
-        </a>
-      </div>
-    );
-  }
-
-  const content: QuotationContentData = quotation.content;
-
-  return (
-    <div className="min-h-screen bg-[#EDEAE3] font-sans text-zinc-900 pb-20">
-      {/* Toast */}
-      {toast && (
-        <div className="fixed bottom-6 inset-x-4 max-w-sm mx-auto z-50 bg-[#0D2C24] text-white px-4 py-3 rounded-2xl shadow-elevation border border-emerald-800 text-xs font-medium flex items-center gap-2 text-center justify-center">
-          <CheckCircle2 className="w-4 h-4 text-amber-300 shrink-0" />
-          <span>{toast}</span>
-        </div>
-      )}
-
-      {/* Floating Client Action Bar */}
-      <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#E4E2DD] shadow-xs px-4 py-3">
-        <div className="max-w-[430px] mx-auto flex items-center justify-between gap-2">
-          <a href="/" className="inline-block">
-            <img
-              src="/images/logo.png"
-              alt="TripMaster - Experience Neighbourhood"
-              className="h-8 w-auto object-contain"
-            />
-          </a>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleDownloadPdf}
-              disabled={downloading}
-              className="px-3 py-1.5 text-[11px] font-heading font-bold uppercase tracking-wider bg-[#0D2C24] hover:bg-[#133E33] text-white rounded-xl transition-colors shadow-xs flex items-center gap-1.5"
-            >
-              {downloading ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <Download className="w-3.5 h-3.5" />
-              )}
-              <span>Download PDF</span>
-            </button>
-
-            <button
-              onClick={handleShare}
-              className="p-1.5 text-zinc-600 hover:text-black border border-[#E4E2DD] rounded-xl hover:bg-zinc-100 transition-colors"
-              title="Share Dossier"
-            >
-              <Share2 className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Central Mobile Container */}
-      <div className="max-w-[430px] mx-auto px-2 sm:px-0 mt-4 sm:mt-6">
-        <MobileQuotationDossier
-          ref={dossierRef}
-          data={content}
-          quotationNumber={quotation.quotationNumber}
-          clientName={quotation.customer?.name}
-        />
-      </div>
-    </div>
-  );
+  return {
+    title: "Luxury Itinerary & Bespoke Quotation Dossier | Trip Master",
+    description: "Curated bespoke holiday experiences with handpicked luxury properties, private transfers, and dedicated concierge support.",
+  };
 }
 
+export default async function ClientQuotationPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+
+  let initialQuotation: any = null;
+  try {
+    const q = await prisma.quotation.findFirst({
+      where: {
+        OR: [{ shareSlug: slug }, { id: slug }, { quotationNumber: slug }],
+      },
+      include: {
+        customer: {
+          select: { name: true, phone: true, email: true },
+        },
+        package: {
+          select: { title: true, slug: true, featuredImage: true },
+        },
+        bookings: {
+          select: {
+            id: true,
+            bookingReference: true,
+            totalAmount: true,
+            amountPaid: true,
+            balanceAmount: true,
+            bookingStatus: true,
+            taxInvoiceNumber: true,
+            taxInvoiceUrl: true,
+          },
+          orderBy: { createdAt: "desc" },
+        },
+      },
+    });
+
+    if (q) {
+      initialQuotation = {
+        ...q,
+        content:
+          typeof q.content === "string" ? JSON.parse(q.content) : q.content,
+      };
+    }
+  } catch (e) {
+    console.error("Failed to load quotation on server:", e);
+  }
+
+  return <ClientQuotationView initialQuotation={initialQuotation} slug={slug} />;
+}

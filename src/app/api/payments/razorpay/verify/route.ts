@@ -175,6 +175,7 @@ export async function POST(req: NextRequest) {
       if (quotation.destination?.toLowerCase().includes("singapore")) destPrefix = "TM-SIN";
       else if (quotation.destination?.toLowerCase().includes("bali")) destPrefix = "TM-BAL";
       else if (quotation.destination?.toLowerCase().includes("dubai")) destPrefix = "TM-DXB";
+      else if (quotation.destination?.toLowerCase().includes("kashmir")) destPrefix = "TM-KAS";
 
       const bookingReference = generateBookingReference(destPrefix);
 
@@ -204,10 +205,13 @@ export async function POST(req: NextRequest) {
       });
 
       let booking: any;
+      let trueBalance = finalBalanceAmount;
+
       if (existingBooking) {
         const cumulativePaid = existingBooking.amountPaid + finalAmountPaid;
         const cumulativeBalance = Math.max(0, existingBooking.totalAmount - cumulativePaid);
         const updatedStatus = cumulativeBalance === 0 ? "CONFIRMED" : "PARTIALLY_PAID";
+        trueBalance = cumulativeBalance;
 
         booking = await prisma.booking.update({
           where: { id: existingBooking.id },
@@ -232,6 +236,17 @@ export async function POST(req: NextRequest) {
           include: {
             customer: true,
             paymentTransactions: true,
+          },
+        });
+
+        await prisma.customerDocument.create({
+          data: {
+            customerId: customer.id,
+            bookingId: existingBooking.id,
+            title: `Tax Invoice & Receipt #${invoiceNumber}`,
+            type: "RECEIPT",
+            fileUrl: `/pay/${existingBooking.bookingReference}?invoice=true`,
+            fileSize: "Tax Invoice PDF",
           },
         });
       } else {
@@ -303,8 +318,8 @@ export async function POST(req: NextRequest) {
         where: { id: quotation.id },
         data: {
           status: "CONVERTED",
-          paymentStatus: finalBalanceAmount === 0 ? "PAID" : "PARTIALLY_PAID",
-          paymentAmountDue: finalBalanceAmount,
+          paymentStatus: trueBalance === 0 ? "PAID" : "PARTIALLY_PAID",
+          paymentAmountDue: trueBalance,
           customerId: customer.id,
         },
       });

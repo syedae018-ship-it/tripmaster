@@ -178,8 +178,10 @@ export function ImagePickerModal({
             </div>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="p-1.5 text-zinc-400 hover:text-zinc-600 rounded-lg hover:bg-zinc-100 transition-colors"
+            className="w-11 h-11 min-w-[44px] min-h-[44px] text-zinc-400 hover:text-zinc-700 rounded-xl hover:bg-zinc-100 active:scale-95 flex items-center justify-center transition-[background-color,transform,color] duration-150 cursor-pointer"
+            aria-label="Close image picker"
           >
             <X className="w-5 h-5" />
           </button>
@@ -292,6 +294,13 @@ export function ImagePickerModal({
                         <img
                           src={item.url}
                           alt={item.title}
+                          onError={(e) => {
+                            const target = e.currentTarget as HTMLImageElement;
+                            if (!target.src.includes("1598091383021")) {
+                              target.src =
+                                "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=800&q=80";
+                            }
+                          }}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent flex flex-col justify-end p-2 text-white">
@@ -326,6 +335,13 @@ export function ImagePickerModal({
                     <img
                       src={previewUrl}
                       alt="Upload preview"
+                      onError={(e) => {
+                        const target = e.currentTarget as HTMLImageElement;
+                        if (!target.src.includes("1598091383021")) {
+                          target.src =
+                            "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=800&q=80";
+                        }
+                      }}
                       className="max-h-48 mx-auto rounded-xl object-cover shadow-sm"
                     />
                     <button

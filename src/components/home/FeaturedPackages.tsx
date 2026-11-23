@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowRight, Clock, MapPin } from "lucide-react";
 
@@ -54,6 +56,13 @@ export function FeaturedPackages({ packages }: { packages: PackageCardProps[] })
                   <img
                     src={pkg.featuredImage}
                     alt={pkg.title}
+                    onError={(e) => {
+                      const target = e.currentTarget as HTMLImageElement;
+                      if (!target.src.includes("1598091383021")) {
+                        target.src =
+                          "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=1200&q=80";
+                      }
+                    }}
                     className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
                   />
                   <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 text-[11px] font-medium text-white flex items-center gap-1.5 shadow-sm">

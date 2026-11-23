@@ -264,6 +264,13 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                   <img
                     src={selectedPhoto}
                     alt={pkg.title}
+                    onError={(e) => {
+                      const target = e.currentTarget as HTMLImageElement;
+                      if (!target.src.includes("1598091383021")) {
+                        target.src =
+                          "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=1600&q=85";
+                      }
+                    }}
                     className="w-full h-full object-cover scale-100 group-hover:scale-[1.02] transition-transform duration-700 ease-out"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
@@ -290,6 +297,13 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                       <img
                         src={img}
                         alt={`Preview ${idx + 2}`}
+                        onError={(e) => {
+                          const target = e.currentTarget as HTMLImageElement;
+                          if (!target.src.includes("1566837945700")) {
+                            target.src =
+                              "https://images.unsplash.com/photo-1566837945700-30057527ade0?auto=format&fit=crop&w=1200&q=85";
+                          }
+                        }}
                         className="w-full h-full object-cover scale-100 group-hover:scale-105 transition-transform duration-500"
                       />
                       <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
@@ -305,6 +319,13 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                       <img
                         src={allPhotos[3]}
                         alt="More captures"
+                        onError={(e) => {
+                          const target = e.currentTarget as HTMLImageElement;
+                          if (!target.src.includes("1507525428034")) {
+                            target.src =
+                              "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=85";
+                          }
+                        }}
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center text-center p-2 group-hover:bg-black/50 transition-colors">
@@ -322,6 +343,13 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                       <img
                         src={allPhotos[0]}
                         alt="Hero view"
+                        onError={(e) => {
+                          const target = e.currentTarget as HTMLImageElement;
+                          if (!target.src.includes("1598091383021")) {
+                            target.src =
+                              "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=1200&q=85";
+                          }
+                        }}
                         className="w-full h-full object-cover"
                       />
                     </div>
@@ -346,6 +374,13 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                       <img
                         src={img}
                         alt={`Photo ${idx + 1}`}
+                        onError={(e) => {
+                          const target = e.currentTarget as HTMLImageElement;
+                          if (!target.src.includes("1598091383021")) {
+                            target.src =
+                              "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=800&q=80";
+                          }
+                        }}
                         className="w-full h-full object-cover"
                       />
                     </button>
@@ -494,6 +529,13 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                                     <img
                                       src={photo}
                                       alt={`${day.title} activity`}
+                                      onError={(e) => {
+                                        const target = e.currentTarget as HTMLImageElement;
+                                        if (!target.src.includes("1598091383021")) {
+                                          target.src =
+                                            "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=800&q=80";
+                                        }
+                                      }}
                                       className="w-full h-full object-cover scale-100 hover:scale-105 transition-transform duration-700 ease-out"
                                     />
                                   </div>
@@ -525,6 +567,13 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                                       <img
                                         src={day.accommodationPhoto}
                                         alt={day.accommodationName}
+                                        onError={(e) => {
+                                          const target = e.currentTarget as HTMLImageElement;
+                                          if (!target.src.includes("1566837945700")) {
+                                            target.src =
+                                              "https://images.unsplash.com/photo-1566837945700-30057527ade0?auto=format&fit=crop&w=800&q=80";
+                                          }
+                                        }}
                                         className="w-full h-full object-cover"
                                       />
                                     </div>
@@ -902,7 +951,7 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                       <button
                         type="submit"
                         disabled={inquiryLoading}
-                        className="btn btn-primary w-full h-11 text-xs uppercase tracking-wider font-semibold rounded-xl justify-center"
+                        className="btn btn-primary w-full h-11 text-xs uppercase tracking-wider font-semibold rounded-xl justify-center active:scale-[0.98] transition-[background-color,transform,box-shadow] duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none cursor-pointer"
                       >
                         {inquiryLoading ? (
                           <div className="flex items-center gap-2">
@@ -927,7 +976,7 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                   {/* Instant Checkout Shortcut Button */}
                   <Link
                     href={`/book/${pkg.slug}`}
-                    className="btn btn-primary w-full h-11 text-xs uppercase tracking-wider font-semibold rounded-xl mb-4 justify-center"
+                    className="btn btn-primary w-full h-11 text-xs uppercase tracking-wider font-semibold rounded-xl mb-4 justify-center active:scale-[0.98] transition-[background-color,transform,box-shadow] duration-150"
                   >
                     <CreditCard className="w-4 h-4" />
                     <span>Instant Razorpay Checkout</span>
@@ -957,7 +1006,7 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                         </strong>
                       </p>
                       <div className="p-3 bg-[#F3F1ED] rounded-xl text-xs font-bold text-[#0D2C24] border border-[#E4E2DD]">
-                        Total Est: ₹{bookingSuccess.totalAmount.toLocaleString("en-IN")}
+                        Total Est: <span className="tabular-nums">₹{bookingSuccess.totalAmount.toLocaleString("en-IN")}</span>
                       </div>
                       <p className="text-[11px] text-[#52525B]">
                         Your slot reservation is recorded. View your confirmed reservation ledger or settle payment online.
@@ -1008,7 +1057,7 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                       {/* Real-time Calculation Summary */}
                       <div className="p-3 rounded-xl bg-[#F3F1ED] border border-[#E4E2DD] flex items-center justify-between text-xs">
                         <span className="text-[#52525B]">
-                          ₹{effectivePrice.toLocaleString("en-IN")} × {paxBookingCount} Guests
+                          <span className="tabular-nums font-medium">₹{effectivePrice.toLocaleString("en-IN")}</span> × {paxBookingCount} Guests
                         </span>
                         <span className="font-heading font-bold text-[#0D2C24] text-sm tabular-nums">
                           ₹{calculatedTotal.toLocaleString("en-IN")}
@@ -1114,7 +1163,7 @@ export function PackageDetailClient({ pkg }: { pkg: PackageDetailData }) {
                       <button
                         type="submit"
                         disabled={bookingLoading}
-                        className="btn btn-primary w-full h-11 rounded-xl text-xs uppercase tracking-wider font-semibold justify-center"
+                        className="btn btn-primary w-full h-11 rounded-xl text-xs uppercase tracking-wider font-semibold justify-center active:scale-[0.98] transition-[background-color,transform,box-shadow] duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none cursor-pointer"
                       >
                         {bookingLoading ? (
                           <div className="flex items-center gap-2">

@@ -136,9 +136,10 @@ export function RazorpayModal({
             <button
               onClick={onClose}
               disabled={processing}
-              className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white flex items-center justify-center transition-colors disabled:opacity-50"
+              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 text-slate-300 hover:text-white flex items-center justify-center transition-[background-color,transform,color] duration-150 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              aria-label="Close modal"
             >
-              <X className="w-4 h-4" />
+              <X className="w-5 h-5" />
             </button>
           </div>
         </div>

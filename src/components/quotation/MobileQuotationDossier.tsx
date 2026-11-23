@@ -107,6 +107,24 @@ export const MobileQuotationDossier = React.forwardRef<
   HTMLDivElement,
   MobileQuotationDossierProps
 >(({ data, quotationNumber, clientName, id = "mobile-quotation-dossier" }, ref) => {
+  if (!data) return null;
+
+  const summary = data.summary || {
+    duration: "4 Days / 3 Nights",
+    destination: "Luxury Itinerary",
+    pricePerPersonFormatted: "₹0",
+    pricePerPerson: 0,
+  };
+
+  const advisor = data.advisor || {
+    name: "Holiday Concierge",
+    phone: "+91 98765 43210",
+    whatsappNumber: "+91 98765 43210",
+    email: "concierge@tripmaster.in",
+    offices: "Bangalore • Srinagar • Delhi",
+    companyName: "Trip Master",
+  };
+
   return (
     <div
       ref={ref}
@@ -122,9 +140,16 @@ export const MobileQuotationDossier = React.forwardRef<
           ===================================================================== */}
       <div className="relative w-full aspect-[4/3] bg-zinc-900 overflow-hidden">
         <img
-          src={data.heroImage}
-          alt={data.title}
+          src={data.heroImage || "/images/banner.jpg"}
+          alt={data.title || "Quotation"}
           crossOrigin="anonymous"
+          onError={(e) => {
+            const target = e.currentTarget as HTMLImageElement;
+            if (!target.src.includes("1598091383021")) {
+              target.src =
+                "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=1200&q=80";
+            }
+          }}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20 flex flex-col justify-between p-5 text-white">
@@ -182,7 +207,7 @@ export const MobileQuotationDossier = React.forwardRef<
                 </h3>
               </div>
               <span className="text-[10px] font-bold text-sky-800 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200">
-                {data.summary.destination}
+                {summary.destination}
               </span>
             </div>
 
@@ -238,7 +263,7 @@ export const MobileQuotationDossier = React.forwardRef<
                   Duration
                 </span>
                 <span className="font-heading font-bold text-zinc-900">
-                  {data.summary.duration}
+                  {summary.duration}
                 </span>
               </div>
             </div>
@@ -250,7 +275,7 @@ export const MobileQuotationDossier = React.forwardRef<
                   Destination
                 </span>
                 <span className="font-heading font-bold text-zinc-900">
-                  {data.summary.destination}
+                  {summary.destination}
                 </span>
               </div>
             </div>
@@ -262,13 +287,13 @@ export const MobileQuotationDossier = React.forwardRef<
               <span className="text-[10px] uppercase font-bold tracking-wider text-amber-300 block">
                 Total Quotation Value
               </span>
-              <span className="font-heading text-lg font-bold text-white tracking-tight">
-                {data.summary.pricePerPersonFormatted}
+              <span className="font-heading text-lg font-bold text-white tracking-tight tabular-nums">
+                {summary.pricePerPersonFormatted}
               </span>
             </div>
-            {data.summary.totalCostFormatted && (
+            {summary.totalCostFormatted && (
               <span className="text-[10px] text-white/80 bg-white/10 px-2 py-1 rounded-lg">
-                {data.summary.totalCostFormatted}
+                {summary.totalCostFormatted}
               </span>
             )}
           </div>
@@ -288,7 +313,7 @@ export const MobileQuotationDossier = React.forwardRef<
                 <span className="col-span-8">Category</span>
                 <span className="col-span-4 text-right">Cost</span>
               </div>
-              {data.costBreakdown.map((item, idx) => (
+              {(data.costBreakdown || []).map((item, idx) => (
                 <div
                   key={idx}
                   className="grid grid-cols-12 p-2.5 items-center font-medium text-zinc-800"
@@ -305,7 +330,7 @@ export const MobileQuotationDossier = React.forwardRef<
             {data.sectionSettings?.showStaySummary !== false && data.staySummary && (
               <div className="border border-[#E4E2DD] rounded-xl p-2.5 bg-[#FAF9F6] flex gap-3 items-center">
                 <img
-                  src={data.staySummary.photo}
+                  src={data.staySummary.photo || "/images/banner.jpg"}
                   alt={data.staySummary.hotelName}
                   crossOrigin="anonymous"
                   className="w-16 h-16 rounded-lg object-cover shrink-0 shadow-xs"
@@ -343,7 +368,7 @@ export const MobileQuotationDossier = React.forwardRef<
                   {data.mealsBanner.description}
                 </p>
                 <div className="flex flex-wrap gap-1.5">
-                  {data.mealsBanner.tags.map((t, idx) => (
+                  {(data.mealsBanner.tags || []).map((t, idx) => (
                     <span
                       key={idx}
                       className="text-[9px] bg-white border border-sky-300 text-sky-900 font-semibold px-2 py-0.5 rounded-full"
@@ -395,7 +420,7 @@ export const MobileQuotationDossier = React.forwardRef<
             </h3>
           </div>
 
-          {data.days.map((day) => (
+          {(data.days || []).map((day) => (
             <div
               key={day.dayNumber}
               className="bg-white rounded-2xl border border-[#E4E2DD] shadow-xs overflow-hidden"
@@ -419,7 +444,7 @@ export const MobileQuotationDossier = React.forwardRef<
 
               {/* Stacked Place Cards */}
               <div className="p-3.5 space-y-4 divide-y divide-[#E4E2DD]">
-                {day.places.map((place, pIdx) => (
+                {(day.places || []).map((place, pIdx) => (
                   <div key={pIdx} className={`${pIdx > 0 ? "pt-4" : ""} space-y-2`}>
                     {/* Place Header */}
                     <div>
@@ -457,6 +482,13 @@ export const MobileQuotationDossier = React.forwardRef<
                               src={photoUrl}
                               alt={place.title}
                               crossOrigin="anonymous"
+                              onError={(e) => {
+                                const target = e.currentTarget as HTMLImageElement;
+                                if (!target.src.includes("1598091383021")) {
+                                  target.src =
+                                    "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=1200&q=80";
+                                }
+                              }}
                               className="w-full h-full object-cover"
                             />
                           </div>
@@ -495,6 +527,13 @@ export const MobileQuotationDossier = React.forwardRef<
                           src={day.hotel.photo}
                           alt={day.hotel.name}
                           crossOrigin="anonymous"
+                          onError={(e) => {
+                            const target = e.currentTarget as HTMLImageElement;
+                            if (!target.src.includes("1598091383021")) {
+                              target.src =
+                                "https://images.unsplash.com/photo-1566837945700-30057527ade0?auto=format&fit=crop&w=1200&q=80";
+                            }
+                          }}
                           className="w-16 h-16 rounded-lg object-cover shrink-0 border border-emerald-200 shadow-xs"
                         />
                         <div className="text-xs flex-1 min-w-0">
@@ -539,6 +578,13 @@ export const MobileQuotationDossier = React.forwardRef<
                     src={moment.url}
                     alt={moment.caption}
                     crossOrigin="anonymous"
+                    onError={(e) => {
+                      const target = e.currentTarget as HTMLImageElement;
+                      if (!target.src.includes("1598091383021")) {
+                        target.src =
+                          "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=1200&q=80";
+                      }
+                    }}
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-2 text-white">
@@ -561,10 +607,10 @@ export const MobileQuotationDossier = React.forwardRef<
             <div>
               <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-emerald-800 flex items-center gap-1.5 mb-2">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                <span>What's Included</span>
+                <span>What&apos;s Included</span>
               </h3>
               <ul className="space-y-1.5">
-                {data.inclusions.map((item, idx) => (
+                {(data.inclusions || []).map((item, idx) => (
                   <li
                     key={idx}
                     className="flex items-start gap-2 text-xs text-zinc-700 leading-relaxed"
@@ -580,10 +626,10 @@ export const MobileQuotationDossier = React.forwardRef<
             <div className="pt-2 border-t border-[#E4E2DD]">
               <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-rose-800 flex items-center gap-1.5 mb-2">
                 <XCircle className="w-3.5 h-3.5 text-rose-600" />
-                <span>What's Excluded</span>
+                <span>What&apos;s Excluded</span>
               </h3>
               <ul className="space-y-1.5">
-                {data.exclusions.map((item, idx) => (
+                {(data.exclusions || []).map((item, idx) => (
                   <li
                     key={idx}
                     className="flex items-start gap-2 text-xs text-zinc-600 leading-relaxed"
@@ -649,7 +695,7 @@ export const MobileQuotationDossier = React.forwardRef<
                     </div>
                   </div>
                   <p className="text-[11px] text-zinc-600 italic leading-relaxed">
-                    "{rev.reviewText}"
+                    &ldquo;{rev.reviewText}&rdquo;
                   </p>
                 </div>
               ))}
@@ -681,25 +727,25 @@ export const MobileQuotationDossier = React.forwardRef<
             <div className="flex items-center justify-between text-xs mb-3">
               <div>
                 <span className="font-heading font-bold text-sm text-white block">
-                  {data.advisor.name}
+                  {advisor.name}
                 </span>
                 <span className="text-[10px] text-white/60 block">
-                  {data.advisor.offices}
+                  {advisor.offices}
                 </span>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-2 text-xs">
               <a
-                href={`tel:${data.advisor.phone}`}
+                href={`tel:${advisor.phone || "+919876543210"}`}
                 className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium transition-colors"
               >
                 <Phone className="w-3.5 h-3.5 text-amber-300" />
                 <span>Call Advisor</span>
               </a>
               <a
-                href={`https://wa.me/${data.advisor.whatsappNumber.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
-                  `Hi, I have questions regarding my ${data.title} quotation.`
+                href={`https://wa.me/${(advisor.whatsappNumber || "+919876543210").replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
+                  `Hi, I have questions regarding my ${data.title || "trip"} quotation.`
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -712,7 +758,7 @@ export const MobileQuotationDossier = React.forwardRef<
           </div>
 
           <div className="text-[9px] text-white/50 text-center border-t border-white/10 pt-2.5">
-            © 2026 {data.advisor.companyName}. All rights reserved.
+            © 2026 {advisor.companyName || "Trip Master"}. All rights reserved.
           </div>
         </div>
       </div>

@@ -245,8 +245,11 @@ export function MediaGalleryManager() {
                   alt={item.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   onError={(e) => {
-                    // Graceful fallback for broken image URLs
-                    (e.target as HTMLElement).style.display = "none";
+                    const target = e.currentTarget as HTMLImageElement;
+                    if (!target.src.includes("1598091383021")) {
+                      target.src =
+                        "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=800&q=80";
+                    }
                   }}
                 />
                 <span className="absolute top-2 left-2 text-[9px] uppercase font-bold text-white bg-black/60 backdrop-blur-xs px-2 py-0.5 rounded">
@@ -331,8 +334,10 @@ export function MediaGalleryManager() {
                 </span>
               </div>
               <button
+                type="button"
                 onClick={() => setPreviewItem(null)}
-                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-200 transition-colors"
+                className="w-11 h-11 min-w-[44px] min-h-[44px] text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-200 active:scale-95 flex items-center justify-center transition-[background-color,transform,color] duration-150 cursor-pointer"
+                aria-label="Close preview"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -342,6 +347,13 @@ export function MediaGalleryManager() {
               <img
                 src={previewItem.url}
                 alt={previewItem.title}
+                onError={(e) => {
+                  const target = e.currentTarget as HTMLImageElement;
+                  if (!target.src.includes("1598091383021")) {
+                    target.src =
+                      "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=1200&q=80";
+                  }
+                }}
                 className="max-h-[60vh] w-auto max-w-full object-contain"
               />
             </div>

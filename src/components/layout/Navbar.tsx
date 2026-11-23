@@ -42,7 +42,7 @@ export function Navbar() {
 
   const navLinks = [
     { label: "Home", href: "/" },
-    { label: "Destinations", href: "/packages" },
+    { label: "Destinations", href: "/destinations" },
     { label: "About", href: "/#about" },
     { label: "Reviews", href: "/#reviews" },
     { label: "Contact", href: "/#contact" },
@@ -82,6 +82,12 @@ export function Navbar() {
               <img
                 src="/images/logo.png"
                 alt="TripMaster - Experience Neighbourhood"
+                onError={(e) => {
+                  const target = e.currentTarget as HTMLImageElement;
+                  if (!target.src.includes("/logo.png")) {
+                    target.src = "/logo.png";
+                  }
+                }}
                 className="h-10 sm:h-11 w-auto object-contain transition-transform duration-200 group-hover:scale-102"
               />
             </Link>

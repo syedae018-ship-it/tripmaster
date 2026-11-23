@@ -502,6 +502,13 @@ export function PackageStudio({
                   <img
                     src={formData.featuredImage}
                     alt="Cover preview"
+                    onError={(e) => {
+                      const target = e.currentTarget as HTMLImageElement;
+                      if (!target.src.includes("1598091383021")) {
+                        target.src =
+                          "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=1200&q=80";
+                      }
+                    }}
                     className="w-full h-full object-cover"
                   />
                 </div>

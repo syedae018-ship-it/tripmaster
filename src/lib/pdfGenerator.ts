@@ -42,6 +42,8 @@ export async function generateMobilePdf(
         skipFonts: true, // Prevents cross-origin @font-face CSS parsing issues
         fontEmbedCSS: "",
         imagePlaceholder: PLACEHOLDER_SVG,
+        width: elementWidth,
+        height: elementHeight,
         filter: (node) => {
           if (node instanceof HTMLElement && node.classList.contains("no-pdf-export")) {
             return false;
@@ -63,6 +65,8 @@ export async function generateMobilePdf(
           skipFonts: true,
           fontEmbedCSS: "",
           imagePlaceholder: PLACEHOLDER_SVG,
+          width: elementWidth,
+          height: elementHeight,
           filter: (node) => {
             if (node instanceof HTMLElement && node.classList.contains("no-pdf-export")) {
               return false;
@@ -123,6 +127,8 @@ export async function generateMobilePdf(
  */
 export function printVectorMobileDossier(element: HTMLElement, title: string = "TripMaster Mobile Dossier") {
   try {
+    if (typeof window === "undefined" || typeof document === "undefined") return;
+
     const printWindow = window.open("", "_blank", "width=480,height=900");
     if (!printWindow) {
       alert("Please allow popups to open the Vector PDF print dialog.");
@@ -130,6 +136,11 @@ export function printVectorMobileDossier(element: HTMLElement, title: string = "
     }
 
     const htmlContent = element.outerHTML;
+
+    // Collect all stylesheets from parent document so Tailwind styles are fully rendered
+    const parentStyles = Array.from(document.querySelectorAll("style, link[rel='stylesheet']"))
+      .map((el) => el.outerHTML)
+      .join("\n");
 
     printWindow.document.write(`
       <!DOCTYPE html>
@@ -140,6 +151,7 @@ export function printVectorMobileDossier(element: HTMLElement, title: string = "
           <link rel="preconnect" href="https://fonts.googleapis.com">
           <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
           <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+          ${parentStyles}
           <style>
             @page {
               size: 430px auto;

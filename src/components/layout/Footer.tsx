@@ -23,6 +23,12 @@ export function Footer() {
               <img
                 src="/images/logo-white.png"
                 alt="TripMaster - Experience Neighbourhood"
+                onError={(e) => {
+                  const target = e.currentTarget as HTMLImageElement;
+                  if (!target.src.includes("/logo.png")) {
+                    target.src = "/logo.png";
+                  }
+                }}
                 className="h-12 w-auto object-contain"
               />
             </Link>
@@ -39,7 +45,7 @@ export function Footer() {
             </h4>
             <ul className="space-y-2.5 text-xs text-white/80 font-medium">
               <li>
-                <Link href="/packages" className="hover:text-white transition-colors">
+                <Link href="/destinations" className="hover:text-white transition-colors">
                   Destinations
                 </Link>
               </li>

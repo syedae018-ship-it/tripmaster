@@ -1,3 +1,5 @@
+"use client";
+
 import { Star } from "lucide-react";
 
 interface TestimonialItem {
@@ -54,6 +56,13 @@ export function TestimonialsSection({
                   <img
                     src={item.customerPhoto}
                     alt={item.customerName}
+                    onError={(e) => {
+                      const target = e.currentTarget as HTMLImageElement;
+                      if (!target.src.includes("1534528741775")) {
+                        target.src =
+                          "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80";
+                      }
+                    }}
                     className="w-9 h-9 rounded-full object-cover border border-[#E4E2DD]"
                   />
                 ) : (

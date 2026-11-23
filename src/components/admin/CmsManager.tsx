@@ -794,6 +794,13 @@ export function CmsManager() {
                       <img
                         src={t.customerPhoto}
                         alt={t.customerName}
+                        onError={(e) => {
+                          const target = e.currentTarget as HTMLImageElement;
+                          if (!target.src.includes("1534528741775")) {
+                            target.src =
+                              "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80";
+                          }
+                        }}
                         className="w-8 h-8 rounded-full object-cover"
                       />
                     ) : (

@@ -34,6 +34,13 @@ export function AboutTeamSection({
             <img
               src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=85"
               alt="Trip Master Travel Specialists and Curators Team"
+              onError={(e) => {
+                const target = e.currentTarget as HTMLImageElement;
+                if (!target.src.includes("1598091383021")) {
+                  target.src =
+                    "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=1200&q=80";
+                }
+              }}
               className="w-full h-full object-cover scale-100 group-hover:scale-105 transition-transform duration-700 ease-out"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none" />
@@ -132,6 +139,12 @@ export function AboutTeamSection({
                 <img
                   src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80"
                   alt="Ananya Sharma"
+                  onError={(e) => {
+                    const target = e.currentTarget as HTMLImageElement;
+                    if (!target.src.includes("1534528741775")) {
+                      target.src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80";
+                    }
+                  }}
                   className="w-20 h-20 rounded-full mx-auto object-cover mb-3 border-2 border-[#0D2C24]"
                 />
                 <h4 className="font-heading font-bold text-sm text-[#111111]">Ananya Sharma</h4>
@@ -143,6 +156,12 @@ export function AboutTeamSection({
                 <img
                   src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80"
                   alt="Devansh Patel"
+                  onError={(e) => {
+                    const target = e.currentTarget as HTMLImageElement;
+                    if (!target.src.includes("1507003211169")) {
+                      target.src = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80";
+                    }
+                  }}
                   className="w-20 h-20 rounded-full mx-auto object-cover mb-3 border-2 border-[#0D2C24]"
                 />
                 <h4 className="font-heading font-bold text-sm text-[#111111]">Devansh Patel</h4>
@@ -154,6 +173,12 @@ export function AboutTeamSection({
                 <img
                   src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80"
                   alt="Meera Nambiar"
+                  onError={(e) => {
+                    const target = e.currentTarget as HTMLImageElement;
+                    if (!target.src.includes("1573496359142")) {
+                      target.src = "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80";
+                    }
+                  }}
                   className="w-20 h-20 rounded-full mx-auto object-cover mb-3 border-2 border-[#0D2C24]"
                 />
                 <h4 className="font-heading font-bold text-sm text-[#111111]">Meera Nambiar</h4>

@@ -815,8 +815,10 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
                 Adjust Agreed Package Tariff
               </h3>
               <button
+                type="button"
                 onClick={() => setShowTariffModal(false)}
-                className="p-1 rounded-full text-slate-400 hover:text-slate-700"
+                className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 flex items-center justify-center transition-[background-color,transform,color] duration-150 cursor-pointer"
+                aria-label="Close tariff modal"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -870,8 +872,10 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
                 Record Offline / Installment Payment
               </h3>
               <button
+                type="button"
                 onClick={() => setShowPaymentModal(false)}
-                className="p-1 rounded-full text-slate-400 hover:text-slate-700"
+                className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 flex items-center justify-center transition-[background-color,transform,color] duration-150 cursor-pointer"
+                aria-label="Close payment modal"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -879,7 +883,7 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
 
             <div className="p-3 bg-amber-50 rounded-xl text-xs text-amber-900 flex justify-between">
               <span>Outstanding Balance Due:</span>
-              <span className="font-bold">₹{booking.balanceAmount.toLocaleString("en-IN")}</span>
+              <span className="font-bold tabular-nums">₹{booking.balanceAmount.toLocaleString("en-IN")}</span>
             </div>
 
             <form onSubmit={handleRecordPayment} className="space-y-4">
@@ -977,8 +981,10 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
                 Process Transaction Refund
               </h3>
               <button
+                type="button"
                 onClick={() => setRefundTargetTx(null)}
-                className="p-1 rounded-full text-slate-400 hover:text-slate-700"
+                className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 flex items-center justify-center transition-[background-color,transform,color] duration-150 cursor-pointer"
+                aria-label="Close refund modal"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -986,7 +992,7 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
 
             <div className="p-3 bg-red-50 rounded-xl text-xs text-red-900 flex justify-between">
               <span>Original Transaction Amount:</span>
-              <span className="font-bold">₹{refundTargetTx.amount.toLocaleString("en-IN")}</span>
+              <span className="font-bold tabular-nums">₹{refundTargetTx.amount.toLocaleString("en-IN")}</span>
             </div>
 
             <form onSubmit={handleProcessRefund} className="space-y-4">
@@ -1068,8 +1074,10 @@ export function BookingDetailView({ bookingId }: { bookingId: string }) {
                 Attach Document to Booking
               </h3>
               <button
+                type="button"
                 onClick={() => setShowDocModal(false)}
-                className="p-1 rounded-full text-slate-400 hover:text-slate-700"
+                className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 flex items-center justify-center transition-[background-color,transform,color] duration-150 cursor-pointer"
+                aria-label="Close document modal"
               >
                 <X className="w-5 h-5" />
               </button>

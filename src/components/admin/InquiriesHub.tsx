@@ -25,6 +25,7 @@ import {
   CreditCard,
   FileText,
   MapPin,
+  RotateCcw,
 } from "lucide-react";
 
 export interface InquiryItem {
@@ -475,8 +476,18 @@ export function InquiriesHub() {
               Loading inquiries pipeline...
             </div>
           ) : inquiries.length === 0 ? (
-            <div className="p-12 text-center text-slate-500 text-sm space-y-2">
-              <p>No inquiries found matching the filters.</p>
+            <div className="p-16 text-center space-y-4">
+              <div className="w-14 h-14 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center mx-auto border border-slate-200/80">
+                <Filter className="w-6 h-6 text-slate-400" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="font-heading text-lg font-bold text-slate-900">
+                  No Matching Inquiries Found
+                </h3>
+                <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
+                  No guest inquiry records match your active search terms or status filters.
+                </p>
+              </div>
               <button
                 type="button"
                 onClick={() => {
@@ -485,9 +496,10 @@ export function InquiriesHub() {
                   setFollowUpFilter("all");
                   fetchInquiries();
                 }}
-                className="text-xs font-bold text-slate-900 underline"
+                className="min-h-[44px] px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 active:scale-[0.98] text-white text-xs font-semibold uppercase tracking-wider inline-flex items-center gap-2 transition-[background-color,transform] duration-150 cursor-pointer shadow-xs"
               >
-                Clear all filters
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Reset Filters</span>
               </button>
             </div>
           ) : (
@@ -690,22 +702,29 @@ export function InquiriesHub() {
                 </div>
 
                 {/* Cards List */}
-                <div className="space-y-3 flex-1 overflow-y-auto">
-                  {columnInquiries.map((inq) => {
-                    const followUpInfo = getFollowUpStatus(inq.followUpDate);
+                <div className="space-y-3 flex-1 overflow-y-auto min-h-[140px]">
+                  {columnInquiries.length === 0 ? (
+                    <div className="h-28 border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center p-3 text-center">
+                      <span className="text-[11px] font-medium text-slate-400">
+                        No inquiries in {st.toLowerCase()}
+                      </span>
+                    </div>
+                  ) : (
+                    columnInquiries.map((inq) => {
+                      const followUpInfo = getFollowUpStatus(inq.followUpDate);
 
-                    return (
-                      <div
-                        key={inq.id}
-                        onClick={() => {
-                          setSelectedInquiry(inq);
-                          setEditFollowUpDate(
-                            inq.followUpDate ? inq.followUpDate.slice(0, 16) : ""
-                          );
-                          setEditFollowUpNote(inq.followUpNote || "");
-                        }}
-                        className="bg-white rounded-xl p-3.5 border border-slate-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer space-y-2.5 group"
-                      >
+                      return (
+                        <div
+                          key={inq.id}
+                          onClick={() => {
+                            setSelectedInquiry(inq);
+                            setEditFollowUpDate(
+                              inq.followUpDate ? inq.followUpDate.slice(0, 16) : ""
+                            );
+                            setEditFollowUpNote(inq.followUpNote || "");
+                          }}
+                          className="bg-white rounded-xl p-3.5 border border-slate-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer space-y-2.5 group"
+                        >
                         <div className="flex items-start justify-between">
                           <h4 className="font-bold text-xs text-slate-900 group-hover:text-slate-900 line-clamp-1">
                             {inq.customer.name}
@@ -753,7 +772,7 @@ export function InquiriesHub() {
                         </div>
                       </div>
                     );
-                  })}
+                  }))}
                 </div>
               </div>
             );
@@ -778,9 +797,10 @@ export function InquiriesHub() {
               <button
                 type="button"
                 onClick={() => setSelectedInquiry(null)}
-                className="p-1 rounded-lg text-emerald-300 hover:text-white"
+                className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl hover:bg-emerald-900/60 active:scale-95 text-emerald-200 hover:text-white flex items-center justify-center transition-[background-color,transform,color] duration-150 cursor-pointer"
+                aria-label="Close inquiry details"
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
@@ -988,7 +1008,8 @@ export function InquiriesHub() {
               <button
                 type="button"
                 onClick={() => setShowAddModal(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-800"
+                className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl hover:bg-slate-100 active:scale-95 text-slate-400 hover:text-slate-800 flex items-center justify-center transition-[background-color,transform,color] duration-150 cursor-pointer"
+                aria-label="Close modal"
               >
                 <X className="w-5 h-5" />
               </button>

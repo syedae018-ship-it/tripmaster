@@ -119,11 +119,18 @@ export async function GET(
     const protocol = req.headers.get("x-forwarded-proto") || "http";
     const paymentUrl = `${protocol}://${host}/pay/quote/${quotation.shareSlug}`;
 
+    const totalTripAmount =
+      quotation.totalAmount || quotation.pricePerPerson * quotation.paxCount;
+    const amountDue =
+      quotation.paymentAmountDue !== null && quotation.paymentAmountDue !== undefined
+        ? quotation.paymentAmountDue
+        : totalTripAmount;
+
     return NextResponse.json({
       success: true,
       quotation,
       paymentUrl,
-      amountDue: quotation.paymentAmountDue,
+      amountDue,
       paymentStatus: quotation.paymentStatus,
       paymentLinkActive: quotation.paymentLinkActive,
     });

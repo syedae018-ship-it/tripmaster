@@ -413,6 +413,13 @@ export function PresetsManager() {
                 <img
                   src={activeCountry.bannerImage}
                   alt={activeCountry.name}
+                  onError={(e) => {
+                    const target = e.currentTarget as HTMLImageElement;
+                    if (!target.src.includes("1598091383021")) {
+                      target.src =
+                        "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=1200&q=80";
+                    }
+                  }}
                   className="w-full h-full object-cover opacity-70"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex items-end p-5">
@@ -547,6 +554,13 @@ export function PresetsManager() {
                               <img
                                 src={place.photos[0]}
                                 alt={place.name}
+                                onError={(e) => {
+                                  const target = e.currentTarget as HTMLImageElement;
+                                  if (!target.src.includes("1598091383021")) {
+                                    target.src =
+                                      "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=800&q=80";
+                                  }
+                                }}
                                 className="w-full h-full object-cover"
                               />
                             ) : (
@@ -619,6 +633,13 @@ export function PresetsManager() {
                               <img
                                 src={hotel.photos[0]}
                                 alt={hotel.name}
+                                onError={(e) => {
+                                  const target = e.currentTarget as HTMLImageElement;
+                                  if (!target.src.includes("1566837945700")) {
+                                    target.src =
+                                      "https://images.unsplash.com/photo-1566837945700-30057527ade0?auto=format&fit=crop&w=800&q=80";
+                                  }
+                                }}
                                 className="w-full h-full object-cover"
                               />
                             ) : (
@@ -690,6 +711,13 @@ export function PresetsManager() {
                               <img
                                 src={transfer.photo}
                                 alt={transfer.title}
+                                onError={(e) => {
+                                  const target = e.currentTarget as HTMLImageElement;
+                                  if (!target.src.includes("1598091383021")) {
+                                    target.src =
+                                      "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=800&q=80";
+                                  }
+                                }}
                                 className="w-full h-full object-cover"
                               />
                             ) : (

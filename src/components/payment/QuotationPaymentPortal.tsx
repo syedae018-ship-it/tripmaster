@@ -298,6 +298,12 @@ export function QuotationPaymentPortal({ slug }: QuotationPaymentPortalProps) {
           <img
             src="/logo.png"
             alt="Trip Master"
+            onError={(e) => {
+              const target = e.currentTarget as HTMLImageElement;
+              if (!target.src.includes("/images/logo.png")) {
+                target.src = "/images/logo.png";
+              }
+            }}
             className="h-8 w-auto object-contain"
           />
         </Link>
@@ -396,6 +402,13 @@ export function QuotationPaymentPortal({ slug }: QuotationPaymentPortalProps) {
             <img
               src={content.heroImage || "/images/banner.jpg"}
               alt={quotation.title}
+              onError={(e) => {
+                const target = e.currentTarget as HTMLImageElement;
+                if (!target.src.includes("1598091383021")) {
+                  target.src =
+                    "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=1200&q=80";
+                }
+              }}
               className="w-full h-full object-cover opacity-80"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
@@ -653,11 +666,11 @@ export function QuotationPaymentPortal({ slug }: QuotationPaymentPortalProps) {
                   type="button"
                   onClick={handleStartPayment}
                   disabled={processingPayment}
-                  className="w-full py-4 px-6 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-heading font-bold text-sm sm:text-base uppercase tracking-wider transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group disabled:opacity-50"
+                  className="w-full min-h-[48px] py-4 px-6 rounded-2xl bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-heading font-bold text-sm sm:text-base uppercase tracking-wider transition-[background-color,transform,box-shadow] duration-150 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none cursor-pointer"
                 >
                   <CreditCard className="w-5 h-5" />
                   <span>
-                    Pay ₹{amountToPay.toLocaleString("en-IN")} Securely via Razorpay
+                    Pay <span className="tabular-nums">₹{amountToPay.toLocaleString("en-IN")}</span> Securely via Razorpay
                   </span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
